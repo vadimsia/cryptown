@@ -14,17 +14,17 @@ import java.util.Map;
 
 public class WorldChange {
     static int[] testRegion;
-    static World world = Bukkit.getWorld("World");                                            // Мир
+    static World world = Bukkit.getWorld("World");                                                  // Мир
     private static Map<String, Integer> worldScript = new HashMap<String, Integer>();               // Колекция шифрования
     private static Map<Integer, String> worldDescriptor = new HashMap<Integer, String>();           // Коллекция дешифрования
-    private static int countRegionsX = 2;                                                           // Количество регионов по X
-    private static int countRegionsZ = 2;                                                           // Количество регионов по Z
-    private static int regionSizeX = 4;                                                             // Размер региона X
-    private static int regionSizeY = 4;                                                             // Размер региона Y
+    private static int countRegionsX = 16;                                                           // Количество регионов по X
+    private static int countRegionsZ = 16;                                                           // Количество регионов по Z
+    private static int regionSizeX = 17;                                                             // Размер региона X
+    private static int regionSizeY = 64;                                                             // Размер региона Y
     private static int regionInitY = -60;                                                           // Начальная координата Y
-    private static int regionSizeZ = 4;                                                             // Размер региона Z
+    private static int regionSizeZ = 17;                                                             // Размер региона Z
     private static int regionBorder = 2;                                                            // Размер дорожек вокруг региона
-    static public void downloadScriptData() {
+    static public void downloadScriptData() {                                                        // Загрузка коллекций на сервер
         JSONParser parser = new JSONParser();
         try {
             Object obj = parser.parse(new FileReader("descriptor.json"));
@@ -41,8 +41,8 @@ public class WorldChange {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-    }                                                   // Загрузка коллекций на сервер
-    static public void uploadScriptData() {
+    }
+    static public void uploadScriptData() {                                                          // Выгрузка коллекций в JSON
         JSONArray bufferArray = new JSONArray();
         for(int i = 0; i < worldScript.size(); i++) {
             JSONObject obj = new JSONObject();
@@ -55,18 +55,6 @@ public class WorldChange {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }                                                     // Выгрузка коллекций в JSON
-    public static void setRegion(int regionId, int[] codingWorld) {
-        int[] initCoordinates = getRegionInitialCoordinates(regionId);
-        for (int y = 0; y < regionSizeY; y++) {
-            for(int x = 0; x < regionSizeX; x++) {
-                for (int z = 0; z < regionSizeZ; z++) {
-                    int id = y*regionSizeZ*regionSizeX+x*regionSizeZ+z;
-                    String s = worldDescriptor.get(codingWorld[id]);
-                    world.setBlockData(initCoordinates[0] + x,regionInitY + y,initCoordinates[1] + z, Bukkit.createBlockData(s.substring(s.indexOf(":") + 1, s.indexOf("}"))));
-                }
-            }
-        }
     }
 
     static private int[] getRegionInitialCoordinates(int regionId) {                                      // id начинаются с 0
@@ -78,6 +66,20 @@ public class WorldChange {
         coordinates[0] = worldRegionCoordinatesX * regionSizeWithBorderX + regionBorder;
         coordinates[1] = worldRegionCoordinatesZ * regionSizeWithBorderZ + regionBorder;
         return  coordinates;
+    }
+
+
+    public static void setRegion(int regionId, int[] codingWorld) {
+        int[] initCoordinates = getRegionInitialCoordinates(regionId);
+        for (int y = 0; y < regionSizeY; y++) {
+            for(int x = 0; x < regionSizeX; x++) {
+                for (int z = 0; z < regionSizeZ; z++) {
+                    int id = y*regionSizeZ*regionSizeX+x*regionSizeZ+z;
+                    String s = worldDescriptor.get(codingWorld[id]);
+                    world.setBlockData(initCoordinates[0] + x,regionInitY + y,initCoordinates[1] + z, Bukkit.createBlockData(s.substring(s.indexOf(":") + 1, s.indexOf("}"))));
+                }
+            }
+        }
     }
     public static int[] getRegion(int regionId) {
         int[] codingWorld = new int[regionSizeX*regionSizeY*regionSizeZ];

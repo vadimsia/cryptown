@@ -11,7 +11,6 @@ public final class PluginMain extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
-        Bukkit.getLogger().info("ver1222");
 
         WorldChange.downloadScriptData();
 
@@ -19,10 +18,10 @@ public final class PluginMain extends JavaPlugin {
     }
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if(cmd.getName().equals("parseWorld")){
+        if(cmd.getName().equals("getRegion")){
            WorldChange.getRegion(parseInt(args[0]));
             return true;
-        } else if((cmd.getName().equals("setWorld"))) {
+        } else if((cmd.getName().equals("setRegion"))) {
             WorldChange.setRegion(parseInt(args[0]), WorldChange.testRegion);
             return true;
         }

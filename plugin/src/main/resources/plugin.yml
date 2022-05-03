@@ -4,10 +4,10 @@ main: simpleprojecttest.simpleprojecttest.SimpleProjectTest
 api-version: 1.18
 commands:
   parseWorld:
-    description: parseWorld
-    permission: <plugin name>.basic
+    description: getRegion
+    permission: <plugin name>.getRegion
     usage: /<command>
-  setWorld:
-    description: setWorld
-    permission: <plugin name>.nobasic
+  setRegion:
+    description: setRegion
+    permission: <plugin name>.setRegion
     usage: /<command>

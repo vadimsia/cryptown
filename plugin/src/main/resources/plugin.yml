@@ -1,0 +1,9 @@
+name: SimplePlugin
+version: '${project.version}'
+main: simpleplugin.simpleplugin.SimplePlugin
+api-version: 1.15
+commands:
+  basic:
+    description: Пример команды
+    permission: <plugin name>.basic
+    usage: /<command>

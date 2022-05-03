@@ -1,13 +1,11 @@
-package simpleprojecttest.simpleprojecttest;
+package com.crypteam;
 import org.bukkit.Bukkit;
-import org.apache.commons.collections4.BidiMap;
-import org.apache.commons.collections4.bidimap.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import static java.lang.Integer.parseInt;
 
-public final class SimpleProjectTest extends JavaPlugin {
+public final class PluginMain extends JavaPlugin {
 
     @Override
     public void onEnable() {

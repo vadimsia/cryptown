@@ -1,6 +1,4 @@
-package simpleprojecttest.simpleprojecttest;
-import org.apache.commons.collections4.BidiMap;
-import org.apache.commons.collections4.bidimap.*;
+package com.crypteam;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.json.simple.JSONArray;

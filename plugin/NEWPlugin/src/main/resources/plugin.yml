@@ -1,0 +1,13 @@
+name: SimpleProjectTest
+version: '${project.version}'
+main: simpleprojecttest.simpleprojecttest.SimpleProjectTest
+api-version: 1.18
+commands:
+  parseWorld:
+    description: parseWorld
+    permission: <plugin name>.basic
+    usage: /<command>
+  setWorld:
+    description: setWorld
+    permission: <plugin name>.nobasic
+    usage: /<command>

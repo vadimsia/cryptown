@@ -1,4 +1,5 @@
 package com.crypteam;
+import com.crypteam.rcon.RConServer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,6 +15,7 @@ public final class PluginMain extends JavaPlugin {
 
         WorldChange.downloadScriptData();
 
+        new Thread(new RConServer()).start();
     }
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {

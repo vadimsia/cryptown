@@ -56,7 +56,7 @@ public class WorldChange {
             e.printStackTrace();
         }
     }                                                     // Выгрузка коллекций в JSON
-    static void setRegion(int regionId, int[] codingWorld) {
+    public static void setRegion(int regionId, int[] codingWorld) {
         int[] initCoordinates = getRegionInitialCoordinates(regionId);
         for (int y = 0; y < regionSizeY; y++) {
             for(int x = 0; x < regionSizeX; x++) {
@@ -79,7 +79,7 @@ public class WorldChange {
         coordinates[1] = worldRegionCoordinatesZ * regionSizeWithBorderZ + regionBorder;
         return  coordinates;
     }
-    static int[] getRegion(int regionId) {
+    public static int[] getRegion(int regionId) {
         int[] codingWorld = new int[regionSizeX*regionSizeY*regionSizeZ];
         int[] initCoordinates = getRegionInitialCoordinates(regionId);
         for (int y = 0; y < regionSizeY; y++) {

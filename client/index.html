@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+    <title>Web3 Solana!</title>
+</head>
+<body>
+    <button>Action!</button>
+</body>
+
+<script>
+    (async () => {
+        let resp = await window.solana.connect()
+        console.log(resp)
+
+        let seed = 'test3'
+
+        let web3 = solanaWeb3
+        let programId = new web3.PublicKey('9ZzWpfxJJHaSmAUkKe4ZbQJ1WmE4sTTitx7Fa1mDA21Q')
+        let greetedPublicKey = await web3.PublicKey.createWithSeed(
+            resp.publicKey,
+            seed,
+            programId
+        )
+        
+        greetedPublicKey = new web3.PublicKey('459vUz6L6i2BdrdejKFukMmLP1CtQPaH2zHv8NfNxCbd')
+        console.log(greetedPublicKey.toBase58())
+
+        let size = 36
+
+
+        let connection = new web3.Connection(
+            web3.clusterApiUrl('mainnet-beta'),
+            'confirmed',
+        )
+        
+
+        let tokens = await connection.getParsedTokenAccountsByOwner(new web3.PublicKey('EgscqwjXqYeR1m3erN3VL9j96sgma2aJrxaamhRD5xE7'), {programId: new web3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')})
+        console.log(tokens)
+        console.log(tokens.value[0].account.owner.toBase58())
+        return
+        
+        // Получение владельца нфтихи
+        mint = await connection.getTokenLargestAccounts(new web3.PublicKey('G5kGWLs2uTY5ygosKnnW9d6UiZwqSPKdzJExnwBE2vXT'))
+        let mint_pubkey = mint.value[0].address
+        let account = await connection.getParsedAccountInfo(mint_pubkey)
+        console.log(account.value.data.parsed.info.owner == resp.publicKey.toBase58())
+        return
+
+        let parsedAcc = await connection.getParsedAccountInfo(programId)
+        let authority = await connection.getParsedAccountInfo(new web3.PublicKey(parsedAcc.value.data.parsed.info.programData))
+        console.log(authority)
+
+        
+        return
+        let greetedAccount = await connection.getAccountInfo(greetedPublicKey)
+        if (!greetedAccount) {
+            console.log("Creating associated account")
+            
+            let lamports = await connection.getMinimumBalanceForRentExemption(size)
+
+            let transaction = new web3.Transaction({
+                recentBlockhash: (await connection.getLatestBlockhash()).blockhash,
+                feePayer: resp.publicKey
+            }).add(
+                web3.SystemProgram.createAccountWithSeed({
+                    fromPubkey: resp.publicKey,
+                    basePubkey: resp.publicKey,
+                    seed,
+                    newAccountPubkey: greetedPublicKey,
+                    lamports,
+                    space: size,
+                    programId
+                })
+            )
+
+            let signed = await window.solana.signTransaction(transaction)
+            let signature = await connection.sendRawTransaction(signed.serialize())
+            console.log(await connection.confirmTransaction(signature))
+        }
+
+        console.log(greetedAccount)
+        
+
+
+        const instruction = new web3.TransactionInstruction({
+            keys: [
+                {pubkey: greetedPublicKey, isSigner: false, isWritable: true},
+                {pubkey: resp.publicKey, isSigner: false, isWritable: false}
+            ],
+            programId: programId,
+            data: 0
+        })
+
+        let transaction = new web3.Transaction({
+            recentBlockhash: (await connection.getLatestBlockhash()).blockhash,
+            feePayer: resp.publicKey
+        }).add(instruction)
+
+        let signed = await window.solana.signTransaction(transaction)
+        let signature = await connection.sendRawTransaction(signed.serialize())
+        console.log(await connection.confirmTransaction(signature))
+    })()
+
+</script>
+
+
+</html>

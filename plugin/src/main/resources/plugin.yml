@@ -1,9 +1,10 @@
 name: SimpleProjectTest
 version: '${project.version}'
-main: simpleprojecttest.simpleprojecttest.SimpleProjectTest
+main: com.crypteam.PluginMain
 api-version: 1.18
+depend: [WorldGuard]
 commands:
-  parseWorld:
+  getRegion:
     description: getRegion
     permission: <plugin name>.getRegion
     usage: /<command>

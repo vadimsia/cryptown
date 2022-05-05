@@ -1,4 +1,10 @@
 package com.crypteam;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.json.simple.JSONArray;
@@ -19,6 +25,8 @@ public class WorldChange {
     private static Map<Integer, String> worldDescriptor = new HashMap<Integer, String>();           // Коллекция дешифрования
     private static int countRegionsX = 16;                                                           // Количество регионов по X
     private static int countRegionsZ = 16;                                                           // Количество регионов по Z
+
+
     private static int regionSizeX = 17;                                                             // Размер региона X
     private static int regionSizeY = 64;                                                             // Размер региона Y
     private static int regionInitY = -60;                                                           // Начальная координата Y
@@ -100,5 +108,10 @@ public class WorldChange {
         uploadScriptData();
         testRegion = codingWorld;
         return codingWorld;
+    }
+
+    public static void RegionAccess() {
+        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionManager regions = container.get(BukkitAdapter.adapt(world));
     }
 }

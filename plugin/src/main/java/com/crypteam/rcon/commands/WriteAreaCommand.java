@@ -1,6 +1,6 @@
 package com.crypteam.rcon.commands;
 
-import com.crypteam.WorldChange;
+import com.crypteam.Section;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -20,7 +20,7 @@ public class WriteAreaCommand implements RconCommand {
 
         IntBuffer intBuf = ByteBuffer.wrap(area).order(ByteOrder.BIG_ENDIAN).asIntBuffer();
         int[] area_int = new int[intBuf.remaining()];
-
-        WorldChange.setRegion(area_id, area_int);
+        Section sec = new Section(area_id);
+        sec.setRegion(area_int);
     }
 }

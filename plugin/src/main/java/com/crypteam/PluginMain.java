@@ -12,17 +12,19 @@ public final class PluginMain extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
 
-        WorldChange.downloadScriptData();
+        Section.downloadScriptData();
 
         new Thread(new RConServer()).start();
     }
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if(cmd.getName().equals("getRegion")){
-           WorldChange.getRegion(parseInt(args[0]));
+            Section sec = new Section(parseInt(args[0]));
+          sec.getRegion();
             return true;
         } else if((cmd.getName().equals("setRegion"))) {
-            WorldChange.setRegion(parseInt(args[0]), WorldChange.testRegion);
+            Section sec = new Section(parseInt(args[0]));
+           sec.setRegion(Section.testRegion);
             return true;
         }
         return false;

@@ -1,7 +1,7 @@
 package com.crypteam.rcon.commands;
 
 
-import com.crypteam.WorldChange;
+import com.crypteam.Section;
 
 import java.io.*;
 
@@ -13,8 +13,8 @@ public class ReadAreaCommand implements RconCommand {
         DataOutputStream dos = new DataOutputStream(os);
 
         int area_id = dis.readInt();
-
-        for (int part :WorldChange.getRegion(area_id))
+        Section sec = new Section(area_id);
+        for (int part :sec.getRegion())
             dos.writeInt(part);
 
         dos.flush();

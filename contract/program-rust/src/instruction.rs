@@ -1,21 +1,25 @@
-use std::convert::{TryInto};
+use std::convert::TryInto;
 use solana_program::program_error::ProgramError;
 use solana_program::msg;
 use solana_program::pubkey::Pubkey;
 use crate::error::ChunkError::InvalidInstruction;
 
 pub enum ChunkInstruction {
-    // accounts in every instruction:
     // [chunk account]
     // [signer]
-
     InitChunk,
+
+    // [chunk account]
+    // [signer]
+    // [token]
     UpdateChunk {
         data: [u8; 8]
     },
-    UpdateToken {
-        token: Pubkey
-    },
+
+    // [chunk account]
+    // [signer]
+    // [token]
+    UpdateToken,
 }
 
 impl ChunkInstruction {
@@ -32,9 +36,7 @@ impl ChunkInstruction {
                 1 => Self::UpdateChunk {
                     data: payload.try_into().unwrap()
                 },
-                2 => Self::UpdateToken {
-                    token: Pubkey::new_from_array(payload.try_into().unwrap())
-                },
+                2 => Self::UpdateToken,
                 _ => return Err(InvalidInstruction.into())
             }
         )

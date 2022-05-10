@@ -1,9 +1,14 @@
-name: SimplePlugin
+name: SimpleProjectTest
 version: '${project.version}'
-main: simpleplugin.simpleplugin.SimplePlugin
-api-version: 1.15
+main: com.crypteam.PluginMain
+api-version: 1.18
+depend: [WorldGuard]
 commands:
-  basic:
-    description: Пример команды
-    permission: <plugin name>.basic
+  getRegion:
+    description: getRegion
+    permission: <plugin name>.getRegion
+    usage: /<command>
+  setRegion:
+    description: setRegion
+    permission: <plugin name>.setRegion
     usage: /<command>

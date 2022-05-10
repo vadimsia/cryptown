@@ -1,0 +1,62 @@
+import { Connection, Keypair, PublicKey, type Transaction } from '@solana/web3.js';
+import type { Wallet } from './IWallet';
+import type { IWalletController } from './IWalletController';
+
+interface SignResult {
+	serialize(): Buffer;
+}
+
+interface PhantomProvider {
+	connect(): Promise<{ publicKey: PublicKey }>;
+	signTransaction(transaction: Transaction): Promise<SignResult>;
+}
+
+declare global {
+	interface Window {
+		solana?: PhantomProvider;
+	}
+}
+
+export class PhantomWallet implements IWalletController {
+	private _wallet: Wallet;
+	private _solana_interface?: PhantomProvider;
+	private _connection: Connection;
+
+	constructor() {
+		this._solana_interface = window.solana;
+		this._connection = new Connection('https://api.devnet.solana.com');
+
+		this._wallet = {
+			publicKey: Keypair.generate().publicKey,
+			connection: this._connection,
+			sendTransaction: this.sendTransaction.bind(this)
+		};
+
+		console.log(this._solana_interface);
+	}
+
+	private async sendTransaction(transaction: Transaction): Promise<string> {
+		if (this._solana_interface) {
+			const signed = await this._solana_interface.signTransaction(transaction);
+			const signature = await this._connection.sendRawTransaction(signed.serialize());
+			await this._connection.confirmTransaction(signature);
+			return signature;
+		} else throw 'Cant find phantom wallet';
+	}
+
+	async connect(): Promise<void> {
+		if (this._solana_interface) {
+			const result = await this._solana_interface.connect();
+
+			this._wallet.publicKey = result.publicKey;
+		} else throw 'Cant find phantom wallet';
+	}
+
+	public get wallet(): Wallet {
+		return this._wallet;
+	}
+
+	public get connection(): Connection {
+		return this._connection;
+	}
+}

@@ -1,9 +1,9 @@
-import type { Connection } from "@solana/web3.js"
-import type { IWallet } from "./IWallet"
+import type { Connection } from '@solana/web3.js';
+import type { Wallet } from './IWallet';
 
 export interface IWalletController {
-    Wallet: IWallet
-    Connection: Connection
+	wallet: Wallet;
+	connection: Connection;
 
-    connect () : Promise<void>
+	connect(): Promise<void>;
 }

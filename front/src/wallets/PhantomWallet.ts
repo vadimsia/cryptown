@@ -1,44 +1,62 @@
-import { Connection, PublicKey, type SignatureResult, type Transaction } from "@solana/web3.js";
-import type { IWallet } from "./IWallet";
-import type { IWalletController } from "./IWalletController";
+import { Connection, Keypair, PublicKey, type Transaction } from '@solana/web3.js';
+import type { Wallet } from './IWallet';
+import type { IWalletController } from './IWalletController';
 
-interface ConnectResult {
-    publicKey: PublicKey
+interface SignResult {
+	serialize(): Buffer;
 }
 
 interface PhantomProvider {
-    connect () : Promise<ConnectResult>
-    signAndSendTransaction (transaction: Transaction) : Promise<SignatureResult>
+	connect(): Promise<{ publicKey: PublicKey }>;
+	signTransaction(transaction: Transaction): Promise<SignResult>;
+}
+
+declare global {
+	interface Window {
+		solana?: PhantomProvider;
+	}
 }
 
 export class PhantomWallet implements IWalletController {
-    private _wallet: IWallet;
-    private _solana_interface: PhantomProvider
-    private _connection: Connection
+	private _wallet: Wallet;
+	private _solana_interface?: PhantomProvider;
+	private _connection: Connection;
 
-    constructor () {
-        // @ts-ignore
-        this._solana_interface = window.solana as PhantomProvider
-        // @ts-ignore
-        this._wallet = null
+	constructor() {
+		this._solana_interface = window.solana;
+		this._connection = new Connection('https://api.devnet.solana.com');
 
-        this._connection = new Connection("https://api.devnet.solana.com")
-    }
+		this._wallet = {
+			publicKey: Keypair.generate().publicKey,
+			connection: this._connection,
+			sendTransaction: this.sendTransaction.bind(this)
+		};
 
-    async connect(): Promise<void> {
-        let result = await this._solana_interface.connect()
-        this._wallet = {
-            publicKey: result.publicKey,
-            connection: this._connection,
-            signAndSendTransaction: this._solana_interface.signAndSendTransaction
-        }
-    }
-    
-    public get Wallet () : IWallet {
-        return this._wallet
-    }
+		console.log(this._solana_interface);
+	}
 
-    public get Connection() : Connection {
-        return this._connection
-    }
+	private async sendTransaction(transaction: Transaction): Promise<string> {
+		if (this._solana_interface) {
+			const signed = await this._solana_interface.signTransaction(transaction);
+			const signature = await this._connection.sendRawTransaction(signed.serialize());
+			await this._connection.confirmTransaction(signature);
+			return signature;
+		} else throw 'Cant find phantom wallet';
+	}
+
+	async connect(): Promise<void> {
+		if (this._solana_interface) {
+			const result = await this._solana_interface.connect();
+
+			this._wallet.publicKey = result.publicKey;
+		} else throw 'Cant find phantom wallet';
+	}
+
+	public get wallet(): Wallet {
+		return this._wallet;
+	}
+
+	public get connection(): Connection {
+		return this._connection;
+	}
 }

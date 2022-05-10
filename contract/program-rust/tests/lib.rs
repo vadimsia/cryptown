@@ -25,8 +25,6 @@ use solana_sdk::signature::Keypair;
 
 //#[tokio::test]
 async fn initialize_mint () {
-    let programID = Keypair::new();
-
     let mut program_test = ProgramTest::default();
     let (mut banks_client, payer, recent_blockhash) = program_test.start().await;
 
@@ -141,7 +139,7 @@ async fn initialize_mint () {
     println!("My Account data: {:?}", my_account_info);
 }
 
-#[tokio::test]
+//#[tokio::test]
 async fn test_init() {
     let program_id = Pubkey::new_unique();
     let greeted_pubkey = Pubkey::new_unique();
@@ -196,6 +194,7 @@ async fn test_init() {
 async fn test_update_data() {
     let program_id = Pubkey::new_unique();
     let greeted_pubkey = Pubkey::new_unique();
+    let token_pubkey = Pubkey::new_unique();
 
     let mut program_test = ProgramTest::new(
         "helloworld", // Run the BPF version with `cargo test-bpf`
@@ -212,6 +211,17 @@ async fn test_update_data() {
             ..Account::default()
         },
     );
+
+    program_test.add_account(
+        token_pubkey,
+        Account {
+            lamports: 50,
+            data: vec![1, 0, 0, 0, 70, 127, 112, 132, 70, 252, 26, 28, 96, 54, 144, 252, 19, 188, 85, 142, 247, 91, 205, 117, 126, 246, 50, 168, 17, 179, 47, 16, 55, 35, 236, 143, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 70, 127, 112, 132, 70, 252, 26, 28, 96, 54, 144, 252, 19, 188, 85, 142, 247, 91, 205, 117, 126, 246, 50, 168, 17, 179, 47, 16, 55, 35, 236, 143],
+            owner: program_id,
+            ..Account::default()
+        }
+    );
+
     let (mut banks_client, payer, recent_blockhash) = program_test.start().await;
 
     let mut transaction = Transaction::new_with_payer(
@@ -228,6 +238,7 @@ async fn test_update_data() {
     transaction.sign(&[&payer], recent_blockhash);
     banks_client.process_transaction(transaction).await.unwrap();
 
+
     let mut transaction = Transaction::new_with_payer(
         &[Instruction::new_with_bincode(
             program_id,
@@ -235,7 +246,7 @@ async fn test_update_data() {
             vec![
                 AccountMeta::new(greeted_pubkey, false),
                 AccountMeta::new(payer.pubkey(), true),
-                AccountMeta::new(greeted_pubkey, false)
+                AccountMeta::new(token_pubkey, false)
             ],
         )],
         Some(&payer.pubkey()),
@@ -258,18 +269,7 @@ async fn test_update_data() {
     assert_eq!(chunk_data.daddy, payer.pubkey());
 }
 
-fn pubkey_to_u32 (pubkey: Pubkey) -> [u32; 9] {
-    let pk_bytes = pubkey.to_bytes();
-    let mut result: [u32; 9] = [2, 0, 0, 0, 0, 0, 0, 0, 0];
-
-    for i in (0..32).step_by(4) {
-        result[i / 4 + 1] = u32::from_le_bytes([pk_bytes[i], pk_bytes[i + 1], pk_bytes[i + 2], pk_bytes[i + 3]]);
-    }
-
-    result
-}
-
-#[tokio::test]
+//#[tokio::test]
 async fn test_update_token() {
     let program_id = Pubkey::new_unique();
     let greeted_pubkey = Pubkey::new_unique();
@@ -313,10 +313,11 @@ async fn test_update_token() {
     let mut transaction = Transaction::new_with_payer(
         &[Instruction::new_with_bincode(
             program_id,
-            &pubkey_to_u32(owner_token), // ignored but makes the instruction unique in the slot
+            &[2], // ignored but makes the instruction unique in the slot
             vec![
                 AccountMeta::new(greeted_pubkey, false),
-                AccountMeta::new(payer.pubkey(), true)
+                AccountMeta::new(payer.pubkey(), true),
+                AccountMeta::new(owner_token, false)
             ],
         )],
         Some(&payer.pubkey()),
@@ -335,20 +336,4 @@ async fn test_update_token() {
 
     assert_eq!(chunk_data.owner_token, owner_token);
     assert_eq!(chunk_data.daddy, payer.pubkey());
-
-    // correct token
-    let mut transaction = Transaction::new_with_payer(
-        &[Instruction::new_with_bincode(
-            program_id,
-            &[1, 1, 1], // ignored but makes the instruction unique in the slot
-            vec![
-                AccountMeta::new(greeted_pubkey, false),
-                AccountMeta::new(payer.pubkey(), true),
-                AccountMeta::new(owner_token, false)
-            ],
-        )],
-        Some(&payer.pubkey()),
-    );
-    transaction.sign(&[&payer], recent_blockhash);
-    banks_client.process_transaction(transaction).await.unwrap();
 }

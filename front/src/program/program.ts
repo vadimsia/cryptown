@@ -5,6 +5,8 @@ import type { Wallet } from '../wallets/IWallet';
 import type { ProgramAccount } from './ProgramAccount';
 import type { TokenAccount } from './TokenAccount';
 
+import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
+
 export class Program {
 	private _TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
 
@@ -28,7 +30,8 @@ export class Program {
 				publicKey: account.pubkey,
 				daddy: new PublicKey(account.account.data.slice(0, 32)),
 				owner_token: new PublicKey(account.account.data.slice(32, 64)),
-				data: account.account.data.slice(64)
+				data: account.account.data.slice(64),
+				nft_metadata: null
 			});
 		}
 
@@ -38,7 +41,7 @@ export class Program {
 	/**
 	 * @returns all user tokens (+ nfts)
 	 */
-	async getUserTokens(): Promise<TokenAccount[]> {
+	private async getUserTokens(): Promise<TokenAccount[]> {
 		const result: TokenAccount[] = [];
 		const accounts = (
 			await this._wallet.connection.getTokenAccountsByOwner(this._wallet.publicKey, {
@@ -47,23 +50,36 @@ export class Program {
 		).value;
 
 		for (const account of accounts) {
+			const amount = Number(account.account.data.readBigUInt64LE(64));
+			if (amount == 0) continue;
+
 			result.push({
 				publicKey: account.pubkey,
 				mint: new PublicKey(account.account.data.slice(0, 32)),
 				owner: new PublicKey(account.account.data.slice(32, 64)),
-				amount: Number(account.account.data.readBigUInt64LE(64))
+				amount
 			});
 		}
 
 		return result;
 	}
 
+	async getUserAccounts(): Promise<ProgramAccount[]> {
+		const program_accounts = await this.getProgramAccounts();
+		const user_tokens = await this.getUserTokens();
+
+		return program_accounts.filter(
+			(account) =>
+				user_tokens.find(
+					(user_account) => account.owner_token.toBase58() == user_account.mint.toBase58()
+				) != undefined
+		);
+	}
+
 	async updateChunk(account: ProgramAccount, data: number[]): Promise<void> {
 		const token = (
 			await this._wallet.connection.getTokenLargestAccounts(account.owner_token)
 		).value.filter((pair) => pair.uiAmount)[0].address;
-
-		console.log(token.toBase58());
 
 		const transaction = new Transaction({
 			recentBlockhash: (await this._wallet.connection.getLatestBlockhash()).blockhash,
@@ -83,5 +99,21 @@ export class Program {
 		const signature = await this._wallet.sendTransaction(transaction);
 
 		console.log(`Update data signature: ${signature}`);
+	}
+
+	/**
+	 * Fetching nft metadata
+	 * @param program_account
+	 */
+	public async fetchNFTMetadata(program_account: ProgramAccount): Promise<void> {
+		const pda = await Metadata.getPDA(program_account.owner_token);
+		const metadata = await Metadata.load(this._wallet.connection, pda);
+
+		const response = await (await fetch(metadata.data.data.uri, { redirect: 'follow' })).json();
+
+		program_account.nft_metadata = {
+			name: response.name,
+			image: response.image
+		};
 	}
 }

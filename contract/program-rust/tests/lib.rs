@@ -1,5 +1,4 @@
 use std::borrow::Borrow;
-use std::convert::TryInto;
 use borsh::BorshDeserialize;
 use solana_program_test::*;
 
@@ -23,9 +22,9 @@ use solana_program::program_pack::Pack;
 use solana_sdk::account::ReadableAccount;
 use solana_sdk::signature::Keypair;
 
-//#[tokio::test]
+#[tokio::test]
 async fn initialize_mint () {
-    let mut program_test = ProgramTest::default();
+    let program_test = ProgramTest::default();
     let (mut banks_client, payer, recent_blockhash) = program_test.start().await;
 
     // CREATING MINT
@@ -139,7 +138,7 @@ async fn initialize_mint () {
     println!("My Account data: {:?}", my_account_info);
 }
 
-//#[tokio::test]
+#[tokio::test]
 async fn test_init() {
     let program_id = Pubkey::new_unique();
     let greeted_pubkey = Pubkey::new_unique();
@@ -269,7 +268,7 @@ async fn test_update_data() {
     assert_eq!(chunk_data.daddy, payer.pubkey());
 }
 
-//#[tokio::test]
+#[tokio::test]
 async fn test_update_token() {
     let program_id = Pubkey::new_unique();
     let greeted_pubkey = Pubkey::new_unique();
@@ -322,6 +321,7 @@ async fn test_update_token() {
         )],
         Some(&payer.pubkey()),
     );
+
     transaction.sign(&[&payer], recent_blockhash);
     banks_client.process_transaction(transaction).await.unwrap();
 

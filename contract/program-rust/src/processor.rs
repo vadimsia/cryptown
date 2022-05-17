@@ -6,7 +6,7 @@ use solana_program::{
     program_error::ProgramError
 };
 
-use spl_token::state::{Account as TokenAccount, AccountState};
+use spl_token::state::{Account as TokenAccount};
 
 use crate::instruction::ChunkInstruction;
 use crate::instruction::ChunkInstruction::{InitChunk, UpdateChunk, UpdateToken};
@@ -108,11 +108,14 @@ impl Processor {
             return Err(ProgramError::IllegalOwner);
         }
 
+        if !chunk_data.owner_token.to_bytes().iter().all(|&x| x == 0) {
+            return Err(ProgramError::AccountAlreadyInitialized);
+        }
+
         msg!("Setting token: {}", token_account.key.to_string());
 
         chunk_data.owner_token = *token_account.key;
         chunk_data.serialize(&mut &mut chunk_account.data.borrow_mut()[..])?;
-
         Ok(())
     }
 }

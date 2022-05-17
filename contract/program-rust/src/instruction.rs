@@ -1,7 +1,6 @@
 use std::convert::TryInto;
 use solana_program::program_error::ProgramError;
 use solana_program::msg;
-use solana_program::pubkey::Pubkey;
 use crate::error::ChunkError::InvalidInstruction;
 
 pub enum ChunkInstruction {

@@ -6,16 +6,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.io.*;
-import java.io.IOException;
 import java.sql.*;
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 

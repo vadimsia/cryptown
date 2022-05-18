@@ -12,3 +12,7 @@ commands:
     description: setRegion
     permission: <plugin name>.setRegion
     usage: /<command>
+  regionAccess:
+    description: regionAccess
+    permission: <plugin name>.regionAccess
+    usage: /<command>

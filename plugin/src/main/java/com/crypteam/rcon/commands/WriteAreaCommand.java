@@ -19,7 +19,7 @@ public class WriteAreaCommand implements RconCommand {
     public void execute(InputStream is, OutputStream os) throws IOException {
         DataInputStream dis = new DataInputStream(is);
 
-        String areaPK = dis.readAllBytes().toString();
+        String areaPK = dis.readAllBytes().toString(); // key example: cryptown001kKfdjsfeioKSF...
         int areaID = Integer.valueOf(areaPK.substring(8, 11));
 
         SolanaRPC solanaRPC = new SolanaRPC("https://explorer-api.devnet.solana.com/");

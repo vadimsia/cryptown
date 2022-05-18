@@ -1,6 +1,10 @@
 package com.crypteam.rcon.commands;
 
 import com.crypteam.Section;
+import com.crypteam.solana.SolanaRPC;
+import com.crypteam.solana.misc.AccountInfo;
+import com.crypteam.solana.misc.PublicKey;
+import com.crypteam.solana.misc.RegionAccountInfo;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -15,12 +19,24 @@ public class WriteAreaCommand implements RconCommand {
     public void execute(InputStream is, OutputStream os) throws IOException {
         DataInputStream dis = new DataInputStream(is);
 
-        int area_id = dis.readInt();
-        byte[] area = dis.readAllBytes();
+        String areaPK = dis.readAllBytes().toString();
+        int areaID = Integer.valueOf(areaPK.substring(8, 11));
 
-        IntBuffer intBuf = ByteBuffer.wrap(area).order(ByteOrder.BIG_ENDIAN).asIntBuffer();
+        SolanaRPC solanaRPC = new SolanaRPC("https://explorer-api.devnet.solana.com/");
+        AccountInfo accountInfo;
+
+        try {
+            accountInfo = solanaRPC.getAccountInfo(new PublicKey(areaPK));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+        RegionAccountInfo regionAccount = new RegionAccountInfo(accountInfo);
+
+        IntBuffer intBuf = ByteBuffer.wrap(regionAccount.getPayload()).order(ByteOrder.BIG_ENDIAN).asIntBuffer();
         int[] area_int = new int[intBuf.remaining()];
-        Section sec = new Section(area_id);
+        Section sec = new Section(areaID);
         sec.setRegion(area_int);
     }
 }

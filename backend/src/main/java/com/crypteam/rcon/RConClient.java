@@ -1,10 +1,9 @@
 package com.crypteam.rcon;
 
-import com.crypteam.DemoApplication;
+import com.crypteam.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -13,7 +12,7 @@ import java.net.Socket;
 public class RConClient {
     private static RConClient instance = null;
 
-    Logger LOGGER = LoggerFactory.getLogger(DemoApplication.class);
+    Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
     Socket socket;
 
@@ -31,29 +30,24 @@ public class RConClient {
         instance = this;
     }
 
-    public void readArea (int x, int y) throws IOException {
+    public byte[] readArea (String id) throws IOException {
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 
         dos.writeInt(RconCommand.READ_AREA.ordinal());
-        dos.writeInt(x);
-        dos.writeInt(y);
+        dos.writeChars(id);
 
         dos.flush();
 
         byte[] data = socket.getInputStream().readNBytes(16*16*2);
 
-        for (byte b : data)
-            LOGGER.info("GOT BYTE: " + b);
+        return data;
     }
 
-    public void writeArea (int x, int y, byte[] data) throws IOException {
+    public void refreshArea (String id) throws IOException {
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 
         dos.writeInt(RconCommand.WRITE_AREA.ordinal());
-        dos.writeInt(x);
-        dos.writeInt(y);
-
-        dos.write(data);
+        dos.writeChars(id);
 
         dos.flush();
     }

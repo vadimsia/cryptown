@@ -22,9 +22,9 @@ public class RegionAccountInfo extends AccountInfo {
     public RegionAccountInfo(AccountInfo accountInfo) {
         super(accountInfo.publicKey, accountInfo.data);
 
-        this.daddy = new PublicKey(Arrays.copyOfRange(data, 0, 33));
-        this.owner = new PublicKey(Arrays.copyOfRange(data, 33, 66));
-        this.payload = Arrays.copyOfRange(data, 66, data.length);
+        this.daddy = new PublicKey(Arrays.copyOfRange(data, 0, 32));
+        this.owner = new PublicKey(Arrays.copyOfRange(data, 32, 64));
+        this.payload = Arrays.copyOfRange(data, 64, data.length);
     }
 
     public PublicKey getDaddy() {
@@ -33,5 +33,9 @@ public class RegionAccountInfo extends AccountInfo {
 
     public PublicKey getOwner() {
         return owner;
+    }
+
+    public byte[] getPayload() {
+        return payload;
     }
 }

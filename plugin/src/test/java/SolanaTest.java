@@ -32,12 +32,15 @@ public class SolanaTest {
             System.out.println(e);
         }
 
-        pk = new PublicKey("9v4t7MNLyzXRYgqwLU6bzq8jf4haWfrSziVwzXHPRDcX");
+        pk = new PublicKey("52UjnFqhUyPvRPxhbvdSWcgzJ7oDikHeD9DFe9q7EHHL");
 
         try {
             AccountInfo accountInfo = rpc.getAccountInfo(pk);
             RegionAccountInfo regionAccount = new RegionAccountInfo(accountInfo);
-            System.out.println(regionAccount.getOwner().toString());
+
+            assertEquals(regionAccount.getOwner().toString(), "s5E5TCxx2DNjoENQ6wmRQNR2pVjNFC1cy1tWfaFLQNV");
+            assertEquals(regionAccount.getDaddy().toString(), "HCMDYFaAWD3YuaBMLiftc5MzNKcLrPmjASRaciRdAAYU");
+            assertArrayEquals(regionAccount.getPayload(), new byte[] { 1, 1, 1, 1, 1, 1, 1, 1 });
         } catch (ApiRequestException e) {
             System.out.println(e);
         }

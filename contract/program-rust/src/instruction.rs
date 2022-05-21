@@ -12,7 +12,7 @@ pub enum ChunkInstruction {
     // [signer]
     // [token]
     UpdateChunk {
-        data: [u8; 8]
+        data: Box<[u8]>
     },
 
     // [chunk account]
@@ -33,7 +33,7 @@ impl ChunkInstruction {
             match tag {
                 0 => Self::InitChunk,
                 1 => Self::UpdateChunk {
-                    data: payload.try_into().unwrap()
+                    data: Box::from(payload)
                 },
                 2 => Self::UpdateToken,
                 _ => return Err(InvalidInstruction.into())

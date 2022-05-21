@@ -38,7 +38,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
             return true;
         } else if (cmd.getName().equals("regionAccess")) {
             sec = new Section(Integer.parseInt(args[0]));
-            sec.RegionAccess(args[1]);
+            sec.setRegionAccess(args[1]);
             return true;
         } else {
             return false;

@@ -20,10 +20,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 public class Section {
-    public static int[] testRegion;
+    public static short[] testRegion;
     static World world = Bukkit.getWorld("World");
-    private static Map<String, Integer> worldScript = new HashMap();
-    private static Map<Integer, String> worldDescriptor = new HashMap();
+    private static Map<String, Short> worldScript = new HashMap();
+    private static Map<Short, String> worldDescriptor = new HashMap();
     private static final int countSectionsX = 4;
     private static final int countSectionsZ = 4;
     private static final int sectionSizeX = 200;
@@ -85,7 +85,7 @@ public class Section {
             ResultSet result = statmnt.executeQuery("SELECT * FROM descriptor");
 
             while(result.next()) {
-                int id = result.getInt("id");
+                short id = (short) result.getInt("id");
                 String blockData = result.getString("blockData");
                 worldScript.put(blockData, id);
                 worldDescriptor.put(id, blockData);
@@ -110,7 +110,7 @@ public class Section {
             int start = statmnt.executeQuery("SELECT id FROM descriptor WHERE id=(SELECT MAX(id) FROM descriptor)").getInt("id") + 1;
 
             for(int i = start; i < worldScript.size(); ++i) {
-                String var10001 = (String)worldDescriptor.get(i);
+                String var10001 = (String) worldDescriptor.get(i);
                 statmnt.execute("INSERT INTO 'descriptor' ('blockData', 'id') VALUES ('" + var10001 + "', " + worldScript.get(worldDescriptor.get(i)) + ")");
             }
 
@@ -122,7 +122,7 @@ public class Section {
 
     }
 
-    public void setRegion(int[] codingWorld) {
+    public void setRegion(short[] codingWorld) {
         for(int y = 0; y < 64; ++y) {
             for(int x = 0; x < this.regionSizeX; ++x) {
                 for(int z = 0; z < this.regionSizeZ; ++z) {
@@ -135,8 +135,8 @@ public class Section {
 
     }
 
-    public int[] getRegion() {
-        int[] codingWorld = new int[this.regionSizeX * 64 * this.regionSizeZ];
+    public short[] getRegion() {
+        short[] codingWorld = new short[this.regionSizeX * 64 * this.regionSizeZ];
 
         for(int y = 0; y < 64; ++y) {
             for(int x = 0; x < this.regionSizeX; ++x) {
@@ -144,11 +144,11 @@ public class Section {
                     int id = y * this.regionSizeZ * this.regionSizeX + x * this.regionSizeZ + z;
                     String block = world.getBlockAt(this.regionStartX + x, -60 + y, this.regionStartZ + z).getBlockData().toString();
                     if (!worldScript.containsKey(block)) {
-                        worldScript.put(block, worldScript.size());
-                        worldDescriptor.put(worldScript.size() - 1, block);
+                        worldScript.put(block, (short) worldScript.size());
+                        worldDescriptor.put((short) (worldScript.size() - 1), block);
                     }
 
-                    codingWorld[id] = (Integer)worldScript.get(block);
+                    codingWorld[id] = (short) worldScript.get(block);
                 }
             }
         }
@@ -201,7 +201,7 @@ public class Section {
         Bukkit.getLogger().info("Complete");
     }
 
-    public void RegionAccess(String name) {
+    public void setRegionAccess(String name) {
         RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
         RegionManager regions = container.get(BukkitAdapter.adapt(world));
         DefaultDomain domain = new DefaultDomain();

@@ -10,7 +10,7 @@ use solana_sdk::{
     instruction::{AccountMeta, Instruction},
     pubkey::Pubkey,
     signature::Signer,
-    transaction::Transaction,
+    transaction::Transaction
 };
 
 use spl_token::{id, instruction, state::{Account as TokenAccount, Mint}};
@@ -18,6 +18,7 @@ use spl_token::{id, instruction, state::{Account as TokenAccount, Mint}};
 
 use std::mem;
 use std::str::FromStr;
+use solana_program::program_error::ProgramError;
 use solana_program::program_pack::Pack;
 use solana_sdk::account::ReadableAccount;
 use solana_sdk::signature::Keypair;
@@ -165,7 +166,7 @@ async fn test_init() {
         let mut transaction = Transaction::new_with_payer(
             &[Instruction::new_with_bincode(
                 program_id,
-                &[0, i], // ignored but makes the instruction unique in the slot
+                &[0, i + 1500], // ignored but makes the instruction unique in the slot
                 vec![
                     AccountMeta::new(greeted_pubkey, false),
                     AccountMeta::new(payer.pubkey(), true)
@@ -184,9 +185,13 @@ async fn test_init() {
         .expect("get_account")
         .expect("greeted_account not found");
 
-    // let chunk_data = ChunkAccount::new(&greeted_account.data)?;
-    //
-    // assert_eq!(chunk_data.daddy, payer.pubkey());
+    let chunk_data = ChunkAccount::new(&greeted_account.data);
+
+    if let Ok(data) = chunk_data {
+        println!("Data: {}", data.daddy.to_string());
+        assert_eq!(data.daddy, payer.pubkey());
+        assert_eq!(data.id, 1500);
+    }
 }
 
 #[tokio::test]

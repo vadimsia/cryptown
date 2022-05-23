@@ -1,8 +1,9 @@
 package com.crypteam;
 import com.crypteam.rcon.RConServer;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.entity.Player;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -53,6 +54,8 @@ public final class PluginMain extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onLogout(PlayerQuitEvent event) {
+        Player player = BukkitAdapter.adapt(event.getPlayer());
+        Section.removeRegionAccess(player);
         getLogger().info("Player " + event.getPlayer().getName() + " is logout");
     }
 }

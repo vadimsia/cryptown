@@ -1,6 +1,7 @@
 package com.crypteam;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.domains.DefaultDomain;
@@ -18,12 +19,19 @@ import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.plugin.Plugin;
+
+import static org.bukkit.Bukkit.getServer;
 
 public class Section {
     public static short[] testRegion;
     static World world = Bukkit.getWorld("World");
     private static Map<String, Short> worldScript = new HashMap();
     private static Map<Short, String> worldDescriptor = new HashMap();
+
+    private static RegionManager regions =  WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
+
+    private static Map<String, ProtectedRegion> regionMap =  regions.getRegions();
     private static final int countSectionsX = 4;
     private static final int countSectionsZ = 4;
     private static final int sectionSizeX = 200;
@@ -202,8 +210,6 @@ public class Section {
     }
 
     public void setRegionAccess(String name) {
-        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-        RegionManager regions = container.get(BukkitAdapter.adapt(world));
         DefaultDomain domain = new DefaultDomain();
         domain.addPlayer(name);
         BlockVector3 start = BlockVector3.at(this.regionStartX, -60, this.regionStartZ);
@@ -214,12 +220,17 @@ public class Section {
         regions.addRegion(region);
     }
 
-    public static void MapAccess() {
-        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-        RegionManager regions = container.get(BukkitAdapter.adapt(world));
+    public static void removeRegionAccess(Player player) {
+        for(ProtectedRegion region : regionMap.values()) {
+            if (region.isOwner(player.getName())) {
+                regions.removeRegion(region.getId());
+            }
+        }
+    }
+//    public static void MapAccess() {
 //        BlockVector3 start = BlockVector3.at(0, -61, 0);
 //        BlockVector3 end = BlockVector3.at(200, 4, 200);
-        ProtectedRegion region = new GlobalProtectedRegion("template");
-        regions.addRegion(region);
-    }
+//        ProtectedRegion region = new GlobalProtectedRegion("template");
+//        regions.addRegion(region);
+//    }
 }

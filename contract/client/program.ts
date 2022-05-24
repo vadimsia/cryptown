@@ -16,7 +16,7 @@ export class Program {
     private connection: Connection
 
     private readonly CHUNKS_NUM = 5
-    private readonly ACCOUNT_SPACE = 72
+    private readonly ACCOUNT_SPACE = 100
 
     constructor (programID: PublicKey, payer: Keypair, connection: Connection) {
         this.programID = programID
@@ -71,7 +71,12 @@ export class Program {
     }
     
     async initAccounts (accounts: PublicKey[]) : Promise<void> {
-        for (let account of accounts) {
+        for (let i in accounts) {
+            let account = accounts[i]
+
+            let data = Buffer.from([0, 0, 0, 0, 0, 0, 0, 0])
+            data.writeInt32LE(Number(i), 4)
+
             let transaction = new Transaction().add(
                 new TransactionInstruction({
                     keys: [
@@ -79,7 +84,7 @@ export class Program {
                         {pubkey: this.payer.publicKey, isSigner: true, isWritable: false}
                     ],
                     programId: this.programID,
-                    data: Buffer.from([0, 0, 0, 0])
+                    data: data
                 })
             )
 

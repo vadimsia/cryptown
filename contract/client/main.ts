@@ -14,7 +14,7 @@ import {
 
 
 (async () => {
-    const PROGRAM_ID = new PublicKey('9sbRLyisEEu3ybKwonrfyNxQNU2NZzxApTtYJhfBmXfK')
+    const PROGRAM_ID = new PublicKey('AoNiQdgpqwE1PYc5R5gYqxWv9nQtr3xN3gTEdGb4tFeW')
 
     let connection = new Connection(await getRpcUrl(), 'confirmed')
     let program = new Program(PROGRAM_ID, await getPayer(), connection)
@@ -25,10 +25,10 @@ import {
     let mint = new PublicKey('s5E5TCxx2DNjoENQ6wmRQNR2pVjNFC1cy1tWfaFLQNV')
 
     let accounts = await program.getOrCreateAccounts()
-    //await program.initAccounts([accounts[0].pubkey])
-    //await program.updateTokens([accounts[0].pubkey], [mint])
+    // await program.initAccounts([accounts[0].pubkey])
+    // await program.updateTokens([accounts[0].pubkey], [mint])
     let data = []
-    for (let i = 0; i < 8; i++) 
+    for (let i = 0; i < 32; i++) 
         data.push(i)
 
     try {
@@ -41,5 +41,5 @@ import {
     let result = await connection.getAccountInfo(accounts[0].pubkey)
 
     // @ts-ignore
-    console.log(Uint8Array.from(result.data))
+    console.log(Uint8Array.from(result.data).slice(68))
 })()

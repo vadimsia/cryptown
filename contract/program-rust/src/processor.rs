@@ -1,5 +1,4 @@
 use std::cell::RefMut;
-use std::mem;
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
     entrypoint::ProgramResult,
@@ -164,8 +163,8 @@ impl Processor {
             return Err(ProgramError::IllegalOwner);
         }
 
-        if data.len() != &chunk_account.data.borrow().len() - mem::size_of::<ChunkAccount>() {
-            msg!("Invalid data. Excepted length: {}, got: {}",  chunk_account.data.borrow().len() - mem::size_of::<ChunkAccount>(), data.len());
+        if data.len() != &chunk_account.data.borrow().len() - 68 {
+            msg!("Invalid data. Excepted length: {}, got: {}",  chunk_account.data.borrow().len() - 68, data.len());
             return Err(ProgramError::InvalidInstructionData);
         }
 

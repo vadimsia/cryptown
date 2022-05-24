@@ -217,7 +217,7 @@ public class Section {
         int i;
         int z;
         int x;
-        for(i = -61; i < -57; i++) {
+        for(i = -60; i < -57; i++) {
             for(z = 0; z < 200; z++) {
                 for(x = 0; x < 200; x++) {
                     world.setBlockData(z + sectionStartX, i, x + sectionStartZ, Bukkit.createBlockData("air"));

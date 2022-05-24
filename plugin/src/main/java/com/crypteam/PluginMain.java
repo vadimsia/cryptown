@@ -1,5 +1,8 @@
 package com.crypteam;
 import com.crypteam.rcon.RConServer;
+import com.crypteam.solana.SolanaProgramID;
+import com.crypteam.solana.exceptions.AddressFormatException;
+import com.crypteam.solana.misc.PublicKey;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
 import org.bukkit.command.Command;
@@ -8,15 +11,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.event.player.PlayerEvent;
-import org.jetbrains.annotations.NotNull;
-
-import static java.lang.Integer.parseInt;
 
 public final class PluginMain extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        try {
+            SolanaProgramID.PROGRAM_ID = new PublicKey("AoNiQdgpqwE1PYc5R5gYqxWv9nQtr3xN3gTEdGb4tFeW");
+        } catch (AddressFormatException e) {
+            throw new RuntimeException(e);
+        }
         // Plugin startup logic
         getServer().getPluginManager().registerEvents(this, this);
         Section.downloadScriptData();

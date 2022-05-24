@@ -30,11 +30,11 @@ public class RConClient {
         instance = this;
     }
 
-    public byte[] readArea (String id) throws IOException {
+    public byte[] readArea (int id) throws IOException {
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 
         dos.writeInt(RconCommand.READ_AREA.ordinal());
-        dos.writeChars(id);
+        dos.writeInt(id);
 
         dos.flush();
 
@@ -43,11 +43,11 @@ public class RConClient {
         return data;
     }
 
-    public void refreshArea (String id) throws IOException {
+    public void refreshArea (int id) throws IOException {
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 
         dos.writeInt(RconCommand.WRITE_AREA.ordinal());
-        dos.writeChars(id);
+        dos.writeInt(id);
 
         dos.flush();
     }

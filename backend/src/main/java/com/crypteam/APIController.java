@@ -46,7 +46,7 @@ class Region {
 @RestController
 public class APIController {
     @GetMapping("/api/get_region/{id}")
-    public APIResponse<Region> getRegion (@PathVariable String id) {
+    public APIResponse<Region> getRegion (@PathVariable int id) {
         RConClient client = RConClient.getInstance();
         APIResponseBuilder<Region> responseBuilder = new APIResponseBuilder<>();
         if (client == null)

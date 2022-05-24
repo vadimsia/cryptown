@@ -30,8 +30,6 @@ public class Section {
     private static Map<Short, String> worldDescriptor = new HashMap();
 
     private static RegionManager regions =  WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
-
-    private static Map<String, ProtectedRegion> regionMap =  regions.getRegions();
     private static final int countSectionsX = 4;
     private static final int countSectionsZ = 4;
     private static final int sectionSizeX = 200;
@@ -155,7 +153,6 @@ public class Section {
                         worldScript.put(block, (short) worldScript.size());
                         worldDescriptor.put((short) (worldScript.size() - 1), block);
                     }
-
                     codingWorld[id] = (short) worldScript.get(block);
                 }
             }
@@ -221,6 +218,7 @@ public class Section {
     }
 
     public static void removeRegionAccess(Player player) {
+        Map<String, ProtectedRegion> regionMap =  regions.getRegions();
         for(ProtectedRegion region : regionMap.values()) {
             if (region.isOwner(player.getName())) {
                 regions.removeRegion(region.getId());

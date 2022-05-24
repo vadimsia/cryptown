@@ -6,7 +6,7 @@
 	import { PublicKey } from '@solana/web3.js';
 
 	// ID программы по маинкрафту в солане
-	const PROGRAM_ID = new PublicKey('9sbRLyisEEu3ybKwonrfyNxQNU2NZzxApTtYJhfBmXfK');
+	const PROGRAM_ID = new PublicKey('AoNiQdgpqwE1PYc5R5gYqxWv9nQtr3xN3gTEdGb4tFeW');
 
 	let controller: IWalletController;
 
@@ -20,15 +20,16 @@
 		let program = new Program(PROGRAM_ID, controller.wallet);
 
 		// Достает все участки данной программы
-		// let program_accounts = await program.getProgramAccounts();
+		//let program_accounts = await program.getProgramAccounts();
 
 		// Достает только участки авторизованного пользователя
 		let user_accounts = await program.getUserAccounts();
+		console.log(user_accounts)
 
 		// Загружает данные о нфт (картинка, название)
 		await program.fetchNFTMetadata(user_accounts[0]);
 
-		user_accounts[0].nft_metadata; // <-- После выполнения fetchNFTMetadata здесь лежат данные о нфт, которые можно отобразить
+		console.log(user_accounts[0].nft_metadata); // <-- После выполнения fetchNFTMetadata здесь лежат данные о нфт, которые можно отобразить
 	}
 </script>
 

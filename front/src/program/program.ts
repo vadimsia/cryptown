@@ -28,9 +28,10 @@ export class Program {
 		for (const account of accounts) {
 			result.push({
 				publicKey: account.pubkey,
-				daddy: new PublicKey(account.account.data.slice(0, 32)),
-				owner_token: new PublicKey(account.account.data.slice(32, 64)),
-				data: account.account.data.slice(64),
+				id: Buffer.from(account.account.data.slice(0, 4)).readInt32LE(),
+				daddy: new PublicKey(account.account.data.slice(4, 36)),
+				owner_token: new PublicKey(account.account.data.slice(36, 68)),
+				data: account.account.data.slice(68),
 				nft_metadata: null
 			});
 		}

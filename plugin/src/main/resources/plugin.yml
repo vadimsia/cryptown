@@ -16,3 +16,11 @@ commands:
     description: regionAccess
     permission: <plugin name>.regionAccess
     usage: /<command>
+  initRegions:
+    description: initRegions
+    permission: <plugin name>.initRegions
+    usage: /<command>
+  removeRegions:
+    description: removeRegions
+    permission: <plugin name>.removeRegions
+    usage: /<command>

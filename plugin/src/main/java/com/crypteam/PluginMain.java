@@ -41,6 +41,9 @@ public final class PluginMain extends JavaPlugin implements Listener {
         } else if (cmd.getName().equals("initRegions")) {
             Section.initRegions(Integer.parseInt(args[0]));
             return true;
+        } else if (cmd.getName().equals("removeRegions")) {
+            Section.removeRegions(Integer.parseInt(args[0]));
+            return true;
         } else if (cmd.getName().equals("regionAccess")) {
             sec = new Section(Integer.parseInt(args[0]));
             sec.setRegionAccess(args[1]);

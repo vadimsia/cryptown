@@ -62,9 +62,11 @@ public class Section {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:db.s3db");
             Statement statmnt = connection.createStatement();
-            ResultSet result = statmnt.executeQuery("SELECT * FROM sectionRegions WHERE id=" + this.regionSectionId);
-            this.regionStartX = this.regionId / 192 * 200 + result.getInt("posX");
-            this.regionStartZ = this.regionId / 48 % 4 * 200 + result.getInt("posZ");
+            ResultSet result = statmnt.executeQuery("SELECT * FROM sectionRegions WHERE id=" + this.regionId);
+            this.regionStartX = result.getInt("posX");
+            this.regionStartZ = result.getInt("posZ");
+//            this.regionStartX = this.regionId / 192 * 200 + result.getInt("posX");
+//            this.regionStartZ = this.regionId / 48 % 4 * 200 + result.getInt("posZ");
             this.regionSizeX = result.getInt("sizeX");
             this.regionSizeZ = result.getInt("sizeZ");
             connection.close();
@@ -129,16 +131,17 @@ public class Section {
     }
 
     public void setRegion(short[] codingWorld) {
-        for(int y = 0; y < 64; ++y) {
-            for(int x = 0; x < this.regionSizeX; ++x) {
-                for(int z = 0; z < this.regionSizeZ; ++z) {
-                    int id = y * this.regionSizeZ * this.regionSizeX + x * this.regionSizeZ + z;
-                    String s = (String)worldDescriptor.get(codingWorld[id]);
-                    world.setBlockData(this.regionStartX + x, -60 + y, this.regionStartZ + z, Bukkit.createBlockData(s.substring(s.indexOf(":") + 1, s.indexOf("}"))));
+        if(codingWorld.length == regionSizeX*regionSizeY*regionSizeZ) {
+            for (int y = 0; y < 64; ++y) {
+                for (int x = 0; x < this.regionSizeX; ++x) {
+                    for (int z = 0; z < this.regionSizeZ; ++z) {
+                        int id = y * this.regionSizeZ * this.regionSizeX + x * this.regionSizeZ + z;
+                        String s = (String) worldDescriptor.get(codingWorld[id]);
+                        world.setBlockData(this.regionStartX + x, -60 + y, this.regionStartZ + z, Bukkit.createBlockData(s.substring(s.indexOf(":") + 1, s.indexOf("}"))));
+                    }
                 }
             }
-        }
-
+        } else Bukkit.getLogger().info("Error. Region sizes do not match.");
     }
 
     public short[] getRegion() {
@@ -172,30 +175,29 @@ public class Section {
         int i;
         int z;
         int x;
-        for(i = -60; i < -57; ++i) {
-            for(z = 0; z < 200; ++z) {
-                for(x = 0; x < 200; ++x) {
+        for(i = -60; i < -57; z++) {
+            for(z = 0; z < 200; z++) {
+                for(x = 0; x < 200; z++) {
                     world.setBlockData(z + sectionStartX, i, x + sectionStartZ, Bukkit.createBlockData("stone"));
                 }
             }
         }
 
-        for(i = 0; i < 200; ++i) {
-            for(z = 0; z < 200; ++z) {
+        for(i = 0; i < 200; i++) {
+            for(z = 0; z < 200; z++) {
                 world.setBlockData(i + sectionStartX, -57, z + sectionStartZ, Bukkit.createBlockData("dirt"));
             }
         }
 
-        for(i = 0; i < 200; ++i) {
-            for(z = 0; z < 200; ++z) {
+        for(i = 0; i < 200; i++) {
+            for(z = 0; z < 200; z++) {
                 world.setBlockData(i + sectionStartX, -56, z + sectionStartZ, Bukkit.createBlockData("stone_bricks"));
             }
         }
 
-        for(i = 0; i <= 48; ++i) {
-            Bukkit.getLogger().info("" + i);
-            Section sec = new Section(i + 48 * sectionId);
+        for(i=0; i <= 48; ++i) {
 
+            Section sec = new Section(i + 49 * sectionId);
             for(x = 0; x < sec.regionSizeX; ++x) {
                 for(z = 0; z < sec.regionSizeZ; ++z) {
                     world.setBlockData(sec.regionStartX + x, -56, sec.regionStartZ + z, Bukkit.createBlockData("grass_block[snowy=false]"));
@@ -206,6 +208,37 @@ public class Section {
         Bukkit.getLogger().info("Complete");
     }
 
+    public static void removeRegions(int sectionId) {
+        int sectionIdX = sectionId / 4;
+        int sectionIdZ = sectionId % 4;
+        int sectionStartX = 200 * sectionIdX;
+        int sectionStartZ = 200 * sectionIdZ;
+
+        int i;
+        int z;
+        int x;
+        for(i = -61; i < -57; i++) {
+            for(z = 0; z < 200; z++) {
+                for(x = 0; x < 200; x++) {
+                    world.setBlockData(z + sectionStartX, i, x + sectionStartZ, Bukkit.createBlockData("air"));
+                }
+            }
+        }
+
+        for(i = 0; i < 200; i++) {
+            for(z = 0; z < 200; z++) {
+                world.setBlockData(i + sectionStartX, -57, z + sectionStartZ, Bukkit.createBlockData("air"));
+            }
+        }
+
+        for(i = 0; i < 200; i++) {
+            for(z = 0; z < 200; z++) {
+                world.setBlockData(i + sectionStartX, -56, z + sectionStartZ, Bukkit.createBlockData("air"));
+                world.setBlockData(i + sectionStartX, -55, z + sectionStartZ, Bukkit.createBlockData("air"));
+            }
+        }
+        Bukkit.getLogger().info("Complete");
+    }
     public void setRegionAccess(String name) {
         DefaultDomain domain = new DefaultDomain();
         domain.addPlayer(name);

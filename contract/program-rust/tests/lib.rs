@@ -1,5 +1,4 @@
 use std::borrow::Borrow;
-use borsh::BorshDeserialize;
 use solana_program_test::*;
 
 use helloworld::processor::Processor;
@@ -18,7 +17,6 @@ use spl_token::{id, instruction, state::{Account as TokenAccount, Mint}};
 
 use std::mem;
 use std::str::FromStr;
-use solana_program::program_error::ProgramError;
 use solana_program::program_pack::Pack;
 use solana_sdk::account::ReadableAccount;
 use solana_sdk::signature::Keypair;
@@ -259,7 +257,7 @@ async fn test_update_data() {
     banks_client.process_transaction(transaction).await.unwrap();
 
     // Verify account has one greeting
-    let greeted_account = banks_client
+    let _greeted_account = banks_client
         .get_account(greeted_pubkey)
         .await
         .expect("get_account")
@@ -301,7 +299,7 @@ async fn test_update_token() {
     let mut transaction = Transaction::new_with_payer(
         &[Instruction::new_with_bincode(
             program_id,
-            &[0], // ignored but makes the instruction unique in the slot
+            &[0, 1], // ignored but makes the instruction unique in the slot
             vec![
                 AccountMeta::new(greeted_pubkey, false),
                 AccountMeta::new(payer.pubkey(), true)
@@ -337,8 +335,10 @@ async fn test_update_token() {
         .expect("get_account")
         .expect("greeted_account not found");
 
-    // let chunk_data = ChunkAccount::try_from_slice(&greeted_account.data).unwrap();
-    //
-    // assert_eq!(chunk_data.owner_token, owner_token);
-    // assert_eq!(chunk_data.daddy, payer.pubkey());
+    let chunk_data = ChunkAccount::new(&greeted_account.data);
+
+    if let Ok(data) = chunk_data {
+        assert_eq!(data.owner_token, owner_token);
+        assert_eq!(data.daddy, payer.pubkey());
+    }
 }

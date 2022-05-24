@@ -13,9 +13,7 @@ use spl_token::state::{Account as TokenAccount};
 use crate::instruction::ChunkInstruction;
 use crate::instruction::ChunkInstruction::{InitChunk, UpdateChunk, UpdateToken};
 
-use borsh::{BorshDeserialize, BorshSerialize};
 use solana_program::program_pack::Pack;
-use std::convert::AsMut;
 
 // #[derive(BorshSerialize, BorshDeserialize, Debug)]
 // pub struct ChunkAccount {
@@ -151,20 +149,20 @@ impl Processor {
         let mut chunk_data: ChunkAccount = ChunkAccount::new(&chunk_account.data.borrow())?;
         msg!("Unpacking spl account data {:?}", token.data);
 
-        // let spl_token_account = TokenAccount::unpack(&token.data.borrow())?;
-        //
-        // msg!("Matching owner");
-        // msg!("Mint: {}", spl_token_account.mint.to_string());
-        // msg!("Amount: {}", spl_token_account.amount);
+        let spl_token_account = TokenAccount::unpack(&token.data.borrow())?;
+
+        msg!("Matching owner");
+        msg!("Mint: {}", spl_token_account.mint.to_string());
+        msg!("Amount: {}", spl_token_account.amount);
 
 
-        // if chunk_data.owner_token != spl_token_account.mint {
-        //     return Err(ProgramError::InvalidInstructionData);
-        // }
-        //
-        // if spl_token_account.owner != *signer_account.key || spl_token_account.amount == 0 {
-        //     return Err(ProgramError::IllegalOwner);
-        // }
+        if chunk_data.owner_token != spl_token_account.mint {
+            return Err(ProgramError::InvalidInstructionData);
+        }
+
+        if spl_token_account.owner != *signer_account.key || spl_token_account.amount == 0 {
+            return Err(ProgramError::IllegalOwner);
+        }
 
         if data.len() != &chunk_account.data.borrow().len() - mem::size_of::<ChunkAccount>() {
             msg!("Invalid data. Excepted length: {}, got: {}",  chunk_account.data.borrow().len() - mem::size_of::<ChunkAccount>(), data.len());
@@ -173,28 +171,28 @@ impl Processor {
 
 
         msg!("Data length: {}", data.len());
-        //chunk_data.data = data;
-        //chunk_data.serialize(&mut &mut chunk_account.data.borrow_mut()[..])?;
+        chunk_data.data = Box::from(data);
+        chunk_data.serialize(chunk_account.try_borrow_mut_data()?);
 
         Ok(())
     }
 
     pub fn update_token(chunk_account: &AccountInfo, signer_account: &AccountInfo, token_account: &AccountInfo) -> ProgramResult {
-        // let mut chunk_data: ChunkAccount = ChunkAccount::try_from_slice(&chunk_account.data.borrow())?;
-        //
-        // if chunk_data.daddy != *signer_account.key {
-        //     msg!("Invalid daddy!");
-        //     return Err(ProgramError::IllegalOwner);
-        // }
-        //
-        // if !chunk_data.owner_token.to_bytes().iter().all(|&x| x == 0) {
-        //     return Err(ProgramError::AccountAlreadyInitialized);
-        // }
-        //
-        // msg!("Setting token: {}", token_account.key.to_string());
-        //
-        // chunk_data.owner_token = *token_account.key;
-        // chunk_data.serialize(&mut &mut chunk_account.data.borrow_mut()[..])?;
+        let mut chunk_data: ChunkAccount = ChunkAccount::new(&chunk_account.data.borrow())?;
+
+        if chunk_data.daddy != *signer_account.key {
+            msg!("Invalid daddy!");
+            return Err(ProgramError::IllegalOwner);
+        }
+
+        if !chunk_data.owner_token.to_bytes().iter().all(|&x| x == 0) {
+            return Err(ProgramError::AccountAlreadyInitialized);
+        }
+
+        msg!("Setting token: {}", token_account.key.to_string());
+
+        chunk_data.owner_token = *token_account.key;
+        chunk_data.serialize(chunk_account.try_borrow_mut_data()?);
         Ok(())
     }
 }

@@ -1,5 +1,6 @@
 package com.crypteam;
 
+import com.crypteam.rcon.RConClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -19,7 +20,7 @@ public class Application {
 	public static void main(String[] args) throws IOException {
 		ctx = SpringApplication.run(Application.class, args);
 
-		//new RConClient();
+		new RConClient();
 	}
 
 }

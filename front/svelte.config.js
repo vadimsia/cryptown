@@ -8,8 +8,15 @@ const config = {
 	preprocess: preprocess(),
 
 	kit: {
-		adapter: adapter()
-	}
+		adapter: adapter(),
+		vite: {
+			server: {
+				proxy: {
+					'/api': 'http://localhost:8080'
+				}
+			}
+		}
+	},
 };
 
 export default config;

@@ -4,6 +4,8 @@
 	import { Program } from '../program/program';
 
 	import { PublicKey } from '@solana/web3.js';
+	import { APIController } from '../api/APIController';
+	import { Buffer } from 'buffer'
 
 	// ID программы по маинкрафту в солане
 	const PROGRAM_ID = new PublicKey('AoNiQdgpqwE1PYc5R5gYqxWv9nQtr3xN3gTEdGb4tFeW');
@@ -28,6 +30,12 @@
 
 		// Загружает данные о нфт (картинка, название)
 		await program.fetchNFTMetadata(user_accounts[0]);
+
+		const response = await APIController.getRegion(user_accounts[0].id)
+		let data  = Buffer.from(response.data.region_raw, 'base64')
+		console.log(data)
+		program.updateChunk(user_accounts[0], data)
+		
 
 		console.log(user_accounts[0].nft_metadata); // <-- После выполнения fetchNFTMetadata здесь лежат данные о нфт, которые можно отобразить
 	}

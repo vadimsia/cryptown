@@ -77,25 +77,35 @@ export class Program {
 		);
 	}
 
-	async updateChunk(account: ProgramAccount, data: number[]): Promise<void> {
+	async updateChunk(account: ProgramAccount, data: Buffer): Promise<void> {
 		const token = (
 			await this._wallet.connection.getTokenLargestAccounts(account.owner_token)
 		).value.filter((pair) => pair.uiAmount)[0].address;
+		
+		let buf = [1, 0, 0, 0].concat([...data])
+
+		console.log("Buffer")
+		console.log(buf)
 
 		const transaction = new Transaction({
 			recentBlockhash: (await this._wallet.connection.getLatestBlockhash()).blockhash,
 			feePayer: this._wallet.publicKey
-		}).add(
-			new TransactionInstruction({
-				keys: [
-					{ pubkey: account.publicKey, isSigner: false, isWritable: true },
-					{ pubkey: this._wallet.publicKey, isSigner: true, isWritable: false },
-					{ pubkey: token, isSigner: false, isWritable: false }
-				],
-				programId: this._programID,
-				data: Buffer.from([1, 0, 0, 0].concat(data))
-			})
-		);
+		});
+
+		for (let i = 0; i < buf.length / 1000; i++) {
+			transaction.add(
+				new TransactionInstruction({
+					keys: [
+						{ pubkey: account.publicKey, isSigner: false, isWritable: true },
+						{ pubkey: this._wallet.publicKey, isSigner: true, isWritable: false },
+						{ pubkey: token, isSigner: false, isWritable: false }
+					],
+					programId: this._programID,
+					data: Buffer.from(buf.slice(i * 1000, i * 1000 + 1000))
+				})
+			)
+			console.log('transaction', i)
+		}
 
 		const signature = await this._wallet.sendTransaction(transaction);
 

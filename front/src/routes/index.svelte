@@ -24,7 +24,7 @@
 
 		// Достает только участки авторизованного пользователя
 		let user_accounts = await program.getUserAccounts();
-		console.log(user_accounts)
+		console.log(user_accounts);
 
 		// Загружает данные о нфт (картинка, название)
 		await program.fetchNFTMetadata(user_accounts[0]);

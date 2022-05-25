@@ -39,6 +39,7 @@ public class RConServer implements Runnable {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                client.close();
             }
         } catch (IOException e) {
             e.printStackTrace();

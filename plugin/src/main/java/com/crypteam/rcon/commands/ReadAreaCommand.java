@@ -14,9 +14,18 @@ public class ReadAreaCommand implements RconCommand {
 
         int areaID = dis.readInt();
 
+        System.out.println("AreaID: " + areaID);
+
         Section sec = new Section(areaID);
-        for (short part :sec.getRegion())
+        short[] region = sec.getRegion();
+
+        System.out.println("AreaLength: " + region.length);
+        dos.writeInt(region.length);
+
+        for (short part : sec.getRegion())
             dos.writeShort(part);
+
+
 
         dos.flush();
     }

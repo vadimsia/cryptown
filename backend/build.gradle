@@ -16,10 +16,6 @@ repositories {
 	mavenCentral()
 }
 
-def grpcVersion = '1.46.0' // CURRENT_GRPC_VERSION
-def protobufVersion = '3.19.2'
-def protocVersion = protobufVersion
-
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.springframework.boot:spring-boot-starter-web'

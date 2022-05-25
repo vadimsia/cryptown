@@ -11,17 +11,14 @@ import java.io.IOException;
 
 
 @SpringBootApplication
-public class DemoApplication {
-	private static final Logger LOGGER = LoggerFactory.getLogger(DemoApplication.class);
+public class Application {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
 	public static ApplicationContext ctx;
 
 
 	public static void main(String[] args) throws IOException {
-		ctx = SpringApplication.run(DemoApplication.class, args);
-
-
-		new RConClient();
+		ctx = SpringApplication.run(Application.class, args);
 	}
 
 }

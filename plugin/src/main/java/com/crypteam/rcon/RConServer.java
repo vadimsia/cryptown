@@ -26,7 +26,7 @@ public class RConServer implements Runnable {
 
             Bukkit.getLogger().info("RCON Server started at :4004");
 
-            while (true) {
+            while (!Thread.currentThread().isInterrupted()) {
                 Socket client = server.accept();
 
                 DataInputStream is = new DataInputStream(client.getInputStream());

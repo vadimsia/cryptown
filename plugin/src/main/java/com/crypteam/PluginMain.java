@@ -14,6 +14,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class PluginMain extends JavaPlugin implements Listener {
 
+    Thread RConThread;
+
     @Override
     public void onEnable() {
         try {
@@ -25,14 +27,17 @@ public final class PluginMain extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
         Section.downloadScriptData();
 //        Section.MapAccess();
-        new Thread(new RConServer()).start();
+        RConThread = new Thread(new RConServer());
+        RConThread.start();
     }
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         Section sec;
         if (cmd.getName().equals("getRegion")) {
             sec = new Section(Integer.parseInt(args[0]));
-            sec.getRegion();
+            short[] region = sec.getRegion();
+            for (short s : region)
+                System.out.println(s);
             return true;
         } else if (cmd.getName().equals("setRegion")) {
             sec = new Section(Integer.parseInt(args[0]));
@@ -57,6 +62,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        RConThread.interrupt();
     }
 
     @EventHandler

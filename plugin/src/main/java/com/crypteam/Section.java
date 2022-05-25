@@ -175,28 +175,27 @@ public class Section {
         int i;
         int z;
         int x;
-        for(i = -60; i < -57; z++) {
-            for(z = 0; z < 200; z++) {
-                for(x = 0; x < 200; z++) {
+        for(i = -61; i < -57; ++i) {
+            for(z = 0; z < 200; ++z) {
+                for(x = 0; x < 200; ++x) {
                     world.setBlockData(z + sectionStartX, i, x + sectionStartZ, Bukkit.createBlockData("stone"));
                 }
             }
         }
 
-        for(i = 0; i < 200; i++) {
-            for(z = 0; z < 200; z++) {
+        for(i = 0; i < 200; ++i) {
+            for(z = 0; z < 200; ++z) {
                 world.setBlockData(i + sectionStartX, -57, z + sectionStartZ, Bukkit.createBlockData("dirt"));
             }
         }
 
-        for(i = 0; i < 200; i++) {
-            for(z = 0; z < 200; z++) {
+        for(i = 0; i < 200; ++i) {
+            for(z = 0; z < 200; ++z) {
                 world.setBlockData(i + sectionStartX, -56, z + sectionStartZ, Bukkit.createBlockData("stone_bricks"));
             }
         }
 
         for(i=0; i <= 48; ++i) {
-
             Section sec = new Section(i + 49 * sectionId);
             for(x = 0; x < sec.regionSizeX; ++x) {
                 for(z = 0; z < sec.regionSizeZ; ++z) {

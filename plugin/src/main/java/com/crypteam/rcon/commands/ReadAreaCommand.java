@@ -12,12 +12,20 @@ public class ReadAreaCommand implements RconCommand {
         DataInputStream dis = new DataInputStream(is);
         DataOutputStream dos = new DataOutputStream(os);
 
-        String areaPK = dis.readAllBytes().toString(); // key example: cryptown001kKfdjsfeioKSF...
-        int areaID = Integer.valueOf(areaPK.substring(8, 11));
+        int areaID = dis.readInt();
+
+        System.out.println("AreaID: " + areaID);
 
         Section sec = new Section(areaID);
-        for (int part :sec.getRegion())
-            dos.writeInt(part);
+        short[] region = sec.getRegion();
+
+        System.out.println("AreaLength: " + region.length);
+        dos.writeInt(region.length);
+
+        for (short part : sec.getRegion())
+            dos.writeShort(part);
+
+
 
         dos.flush();
     }

@@ -7,6 +7,7 @@ import com.crypteam.solana.misc.RegionAccountInfo;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,5 +45,32 @@ public class SolanaTest {
         } catch (ApiRequestException e) {
             System.out.println(e);
         }
+    }
+    @Test
+    public void getProgramAccountsTest () throws AddressFormatException, ApiRequestException, IOException {
+        SolanaRPC rpc = new SolanaRPC("https://explorer-api.devnet.solana.com/");
+        PublicKey pk = new PublicKey("AoNiQdgpqwE1PYc5R5gYqxWv9nQtr3xN3gTEdGb4tFeW");
+
+
+        List<AccountInfo> accounts = rpc.getProgramAccounts(pk);
+        for (AccountInfo account : accounts) {
+            RegionAccountInfo accountInfo = new RegionAccountInfo(account);
+            System.out.println(accountInfo.getPublicKey());
+            System.out.println(accountInfo.getDaddy());
+            System.out.println(accountInfo.getId());
+            System.out.println("");
+        }
+    }
+
+    @Test
+    public void getRegionByIDTest () throws AddressFormatException, ApiRequestException, IOException {
+        SolanaRPC rpc = new SolanaRPC("https://explorer-api.devnet.solana.com/");
+        PublicKey pk = new PublicKey("AoNiQdgpqwE1PYc5R5gYqxWv9nQtr3xN3gTEdGb4tFeW");
+
+
+        RegionAccountInfo accountInfo = rpc.getAccountInfoByRegionID(pk, 0);
+        assertNotEquals(accountInfo, null);
+        accountInfo = rpc.getAccountInfoByRegionID(pk, 1);
+        assertEquals(accountInfo, null);
     }
 }

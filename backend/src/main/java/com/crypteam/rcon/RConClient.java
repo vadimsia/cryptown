@@ -38,7 +38,13 @@ public class RConClient {
 
         dos.flush();
 
-        byte[] data = socket.getInputStream().readNBytes(16*16*2);
+
+        System.out.println("Buffer size: " + socket.getReceiveBufferSize());
+
+        byte[] data = new byte[socket.getReceiveBufferSize()];
+        socket.getInputStream().read(data);
+
+        System.out.println("Buffer size: " + socket.getReceiveBufferSize());
 
         return data;
     }

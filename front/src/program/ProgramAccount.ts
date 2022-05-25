@@ -4,6 +4,7 @@ import type { NFTMetadata } from './NFTMetadata';
 export type ProgramAccount = {
 	publicKey: PublicKey;
 
+	id: number;
 	owner_token: PublicKey;
 	daddy: PublicKey;
 	data: Buffer;

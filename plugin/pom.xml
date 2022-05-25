@@ -59,6 +59,10 @@
 
     <repositories>
         <repository>
+            <id>bstats</id>
+            <url>https://maven.elmakers.com/repository/org/bstats/bstats-bukkit/</url>
+        </repository>
+        <repository>
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>

@@ -11,12 +11,10 @@ class ApplicationTests {
 
 	@Test
 	void contextLoads() throws IOException {
-		new RConClient();
-
-		byte[] area = RConClient.getInstance().readArea(1);
+		byte[] area = new RConClient().readArea(1);
 		System.out.println("Area 0 length: " + area.length);
 
-		area = RConClient.getInstance().readArea(36);
+		area = new RConClient().readArea(36);
 		System.out.println("Area 35 length: " + area.length);
 	}
 

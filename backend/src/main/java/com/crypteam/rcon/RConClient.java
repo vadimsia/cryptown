@@ -4,13 +4,13 @@ import com.crypteam.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
 public class RConClient {
-    private static RConClient instance = null;
 
     Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
@@ -22,16 +22,14 @@ public class RConClient {
     }
 
     public RConClient () throws IOException {
-        if (instance != null) return;
-
         socket = new Socket();
         socket.connect(new InetSocketAddress(4004));
 
-        instance = this;
     }
 
     public byte[] readArea (int id) throws IOException {
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+        DataInputStream dis = new DataInputStream(socket.getInputStream());
 
         dos.writeInt(RconCommand.READ_AREA.ordinal());
         dos.writeInt(id);
@@ -39,12 +37,10 @@ public class RConClient {
         dos.flush();
 
 
-        System.out.println("Buffer size: " + socket.getReceiveBufferSize());
+        int length = dis.readInt();
 
-        byte[] data = new byte[socket.getReceiveBufferSize()];
-        socket.getInputStream().read(data);
-
-        System.out.println("Buffer size: " + socket.getReceiveBufferSize());
+        byte[] data = new byte[length * 2];
+        dis.readFully(data);
 
         return data;
     }
@@ -58,7 +54,4 @@ public class RConClient {
         dos.flush();
     }
 
-    public static RConClient getInstance() {
-        return instance;
-    }
 }

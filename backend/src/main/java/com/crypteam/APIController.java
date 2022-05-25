@@ -47,10 +47,14 @@ class Region {
 public class APIController {
     @GetMapping("/api/get_region/{id}")
     public APIResponse<Region> getRegion (@PathVariable int id) {
-        RConClient client = RConClient.getInstance();
         APIResponseBuilder<Region> responseBuilder = new APIResponseBuilder<>();
-        if (client == null)
-            return responseBuilder.makeFailed("NullRconClient").build();
+        RConClient client;
+
+        try {
+            client = new RConClient();
+        } catch (Exception e) {
+            return responseBuilder.makeFailed("Cant connect to minecraft server...").build();
+        }
 
         try {
             Region region = new Region(client.readArea(id));

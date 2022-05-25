@@ -19,8 +19,6 @@ public class Application {
 
 	public static void main(String[] args) throws IOException {
 		ctx = SpringApplication.run(Application.class, args);
-
-		new RConClient();
 	}
 
 }

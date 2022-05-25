@@ -36,8 +36,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
         if (cmd.getName().equals("getRegion")) {
             sec = new Section(Integer.parseInt(args[0]));
             short[] region = sec.getRegion();
-            for (short s : region)
-                System.out.println(s);
+            System.out.println("Sector length: " + region.length);
             return true;
         } else if (cmd.getName().equals("setRegion")) {
             sec = new Section(Integer.parseInt(args[0]));

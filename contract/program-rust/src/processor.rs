@@ -1,4 +1,5 @@
 use std::cell::RefMut;
+use std::convert::{TryFrom};
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
     entrypoint::ProgramResult,
@@ -71,6 +72,13 @@ impl ChunkAccount {
         }
     }
 
+    fn update(&mut self, offset: u32, data: &[u8]) {
+        for i in 0..data.len() {
+            let temp: usize = i + usize::try_from(offset).unwrap();
+            self.data[temp] = data[i];
+        }
+    }
+
     pub fn new (data: &[u8]) -> Result<ChunkAccount, ProgramError> {
         if data.len() <= 68 {
             return Err(ProgramError::AccountDataTooSmall);
@@ -121,7 +129,7 @@ impl Processor {
 
         match instruction {
             InitChunk {id} => Self::init_chunk(chunk_account, signer_account, id),
-            UpdateChunk {data} => Self::update_chunk(chunk_account, signer_account,next_account_info(accounts_iter).unwrap(), &data),
+            UpdateChunk {offset, data} => Self::update_chunk(chunk_account, signer_account,next_account_info(accounts_iter).unwrap(), &data, offset),
             UpdateToken  => Self::update_token(chunk_account,  signer_account, next_account_info(accounts_iter).unwrap())
         }
     }
@@ -144,7 +152,7 @@ impl Processor {
         Ok(())
     }
 
-    pub fn update_chunk(chunk_account: &AccountInfo, signer_account: &AccountInfo, token: &AccountInfo, data: &[u8]) -> ProgramResult {
+    pub fn update_chunk(chunk_account: &AccountInfo, signer_account: &AccountInfo, token: &AccountInfo, data: &[u8], offset: u32) -> ProgramResult {
         let mut chunk_data: ChunkAccount = ChunkAccount::new(&chunk_account.data.borrow())?;
         msg!("Unpacking spl account data {:?}", token.data);
 
@@ -163,14 +171,14 @@ impl Processor {
             return Err(ProgramError::IllegalOwner);
         }
 
-        if data.len() != &chunk_account.data.borrow().len() - 68 {
-            msg!("Invalid data. Excepted length: {}, got: {}",  chunk_account.data.borrow().len() - 68, data.len());
+        if data.len() + usize::try_from(offset).unwrap() > &chunk_account.data.borrow().len() - 68 {
+            msg!("Invalid data. Too much numbers");
             return Err(ProgramError::InvalidInstructionData);
         }
 
 
         msg!("Data length: {}", data.len());
-        chunk_data.data = Box::from(data);
+        chunk_data.update(offset, data);
         chunk_data.serialize(chunk_account.try_borrow_mut_data()?);
 
         Ok(())

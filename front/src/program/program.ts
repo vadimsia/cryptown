@@ -6,6 +6,8 @@ import type { ProgramAccount } from './ProgramAccount';
 import type { TokenAccount } from './TokenAccount';
 
 import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
+import { UpdateTask } from './UpdateTask';
+import { APIController } from '../api/APIController';
 
 export class Program {
 	private _TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
@@ -77,7 +79,7 @@ export class Program {
 		);
 	}
 
-	async updateChunk(account: ProgramAccount, offset: number, data: Buffer): Promise<void> {
+	async updateChunk(account: ProgramAccount, offset: number, data: Buffer): Promise<string> {
 		const token = (
 			await this._wallet.connection.getTokenLargestAccounts(account.owner_token)
 		).value.filter((pair) => pair.uiAmount)[0].address;
@@ -106,8 +108,7 @@ export class Program {
 		)
 
 		const signature = await this._wallet.sendTransaction(transaction);
-
-		console.log(`Update data signature: ${signature}`);
+		return signature
 	}
 
 	/**
@@ -124,5 +125,26 @@ export class Program {
 			name: response.name,
 			image: response.image
 		};
+	}
+
+	public async syncChunks (account: ProgramAccount) : Promise<UpdateTask[]> {
+		let result: UpdateTask[] = []
+
+		const response = await APIController.getRegion(account.id)
+		let data  = Buffer.from(response.data.region_raw, 'base64')
+
+		console.log(data)
+		console.log(account.data)
+
+		for (let i = 0; i < data.length; i++) {
+			if (data[i] != account.data[i]) {
+				console.log(i, data[i], account.data[i])
+				const offset = Math.floor(i / 900) * 900
+				result.push(new UpdateTask(this, account, offset, data.slice(offset, offset + 900)))
+				i = offset + 900;
+			}
+		}
+
+		return result
 	}
 }

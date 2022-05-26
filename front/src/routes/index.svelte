@@ -8,7 +8,7 @@
 	import { Buffer } from 'buffer'
 
 	// ID программы по маинкрафту в солане
-	const PROGRAM_ID = new PublicKey('AoNiQdgpqwE1PYc5R5gYqxWv9nQtr3xN3gTEdGb4tFeW');
+	const PROGRAM_ID = new PublicKey('BoJibLNDthR9j5A4SqpzSGTdULiR8d43kEat3bbbufhq');
 
 	let controller: IWalletController;
 
@@ -30,11 +30,11 @@
 
 		// Загружает данные о нфт (картинка, название)
 		await program.fetchNFTMetadata(user_accounts[0]);
-
-		const response = await APIController.getRegion(user_accounts[0].id)
-		let data  = Buffer.from(response.data.region_raw, 'base64')
-		console.log(data)
-		program.updateChunk(user_accounts[0], 0, data.slice(0, 32))
+		
+		let tasks = await program.syncChunks(user_accounts[0])
+		console.log(tasks)
+		for (let task of tasks)
+			await task.execute()
 		
 
 		console.log(user_accounts[0].nft_metadata); // <-- После выполнения fetchNFTMetadata здесь лежат данные о нфт, которые можно отобразить

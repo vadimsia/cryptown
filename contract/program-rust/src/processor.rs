@@ -26,8 +26,7 @@ use solana_program::program_pack::Pack;
 pub struct ChunkAccount {
     pub id: u32,
     pub daddy: Pubkey,
-    pub owner_token: Pubkey,
-    pub data: Box<[u8]>
+    pub owner_token: Pubkey
 }
 
 impl ChunkAccount {
@@ -66,16 +65,12 @@ impl ChunkAccount {
         for (i, b) in self.owner_token.to_bytes().iter().enumerate() {
             dst[i + 36] = *b;
         }
-
-        for (i, b) in self.data.iter().enumerate() {
-            dst[i + 68] = *b;
-        }
     }
 
-    fn update(&mut self, offset: u32, data: &[u8]) {
-        for i in 0..data.len() {
-            let temp: usize = i + usize::try_from(offset).unwrap();
-            self.data[temp] = data[i];
+    fn update(mut dst: RefMut<&mut [u8]>, offset: u32, data: &[u8]) {
+        for (i, b) in data.iter().enumerate() {
+            let temp: usize = i + 68 + usize::try_from(offset).unwrap();
+            dst[temp] = *b;
         }
     }
 
@@ -83,11 +78,11 @@ impl ChunkAccount {
         if data.len() <= 68 {
             return Err(ProgramError::AccountDataTooSmall);
         }
+
         let account = ChunkAccount {
             id: ChunkAccount::as_u32_be( & data[0..4]),
             daddy: Pubkey::new(&data[4..36]),
-            owner_token: Pubkey::new(&data[36..68]),
-            data: Box::from(&data[68..data.len()])
+            owner_token: Pubkey::new(&data[36..68])
         };
 
         Ok(account)
@@ -178,8 +173,7 @@ impl Processor {
 
 
         msg!("Data length: {}", data.len());
-        chunk_data.update(offset, data);
-        chunk_data.serialize(chunk_account.try_borrow_mut_data()?);
+        ChunkAccount::update(chunk_account.try_borrow_mut_data()?, offset, data);
 
         Ok(())
     }

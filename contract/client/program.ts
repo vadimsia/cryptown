@@ -16,7 +16,7 @@ export class Program {
     private connection: Connection
 
     private readonly CHUNKS_NUM = 5
-    private readonly ACCOUNT_SPACE = 100
+    private readonly ACCOUNT_SPACE = 32768 + 68
 
     constructor (programID: PublicKey, payer: Keypair, connection: Connection) {
         this.programID = programID
@@ -95,7 +95,9 @@ export class Program {
         }
     }
 
-    async updateChunk (account: PublicKey, token: PublicKey, data: number[]) : Promise<void> {
+    async updateChunk (account: PublicKey, token: PublicKey, offset: number, data: number[]) : Promise<void> {
+        let offset_buf = Buffer.alloc(4)
+        offset_buf.writeUInt32LE(offset, 0)
 
         let transaction = new Transaction().add(
             new TransactionInstruction({
@@ -105,7 +107,7 @@ export class Program {
                     {pubkey: token, isSigner: false, isWritable: false}
                 ],
                 programId: this.programID,
-                data: Buffer.from([1, 0, 0, 0].concat(data))
+                data: Buffer.from([1, 0, 0, 0].concat(...offset_buf).concat(data))
             })
         )
 

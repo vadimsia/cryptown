@@ -208,7 +208,7 @@ async fn test_update_data() {
         greeted_pubkey,
         Account {
             lamports: 5,
-            data: vec![0_u8; 68 + 16],
+            data: vec![0_u8; 68 + 32768],
             owner: program_id,
             ..Account::default()
         },
@@ -278,10 +278,8 @@ async fn test_update_data() {
         .expect("get_account")
         .expect("greeted_account not found");
 
-    let chunk_data = ChunkAccount::new(&greeted_account.data);
-    if let Ok(account) = chunk_data {
-        println!("{:?}", account.data);
-    }
+
+    println!("{:?}", greeted_account.data.split_at(68).1);
     //
     // assert_eq!(chunk_data.data[0], 1);
     // assert_eq!(chunk_data.data[4], 1);

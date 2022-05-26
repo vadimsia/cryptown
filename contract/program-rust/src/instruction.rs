@@ -15,6 +15,7 @@ pub enum ChunkInstruction {
     // [signer]
     // [token]
     UpdateChunk {
+        offset: u32,
         data: Box<[u8]>
     },
 
@@ -40,7 +41,8 @@ impl ChunkInstruction {
                     id: ChunkAccount::as_u32_le(payload.try_into().unwrap())
                 },
                 1 => Self::UpdateChunk {
-                    data: Box::from(payload)
+                    offset: ChunkAccount::as_u32_le(payload.split_at(4).0.try_into().unwrap()),
+                    data: Box::from(payload.split_at(4).1)
                 },
                 2 => Self::UpdateToken,
                 _ => return Err(InvalidInstruction.into())

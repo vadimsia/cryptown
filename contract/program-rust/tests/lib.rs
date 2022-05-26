@@ -208,7 +208,7 @@ async fn test_update_data() {
         greeted_pubkey,
         Account {
             lamports: 5,
-            data: vec![0_u8; mem::size_of::<ChunkAccount>() + 25],
+            data: vec![0_u8; 68 + 16],
             owner: program_id,
             ..Account::default()
         },
@@ -229,7 +229,7 @@ async fn test_update_data() {
     let mut transaction = Transaction::new_with_payer(
         &[Instruction::new_with_bincode(
             program_id,
-            &[0], // ignored but makes the instruction unique in the slot
+            &[0, 0], // ignored but makes the instruction unique in the slot
             vec![
                 AccountMeta::new(greeted_pubkey, false),
                 AccountMeta::new(payer.pubkey(), true)
@@ -244,7 +244,22 @@ async fn test_update_data() {
     let mut transaction = Transaction::new_with_payer(
         &[Instruction::new_with_bincode(
             program_id,
-            &[1, 1, 1, 1, 1, 1], // ignored but makes the instruction unique in the slot
+            &[1, 0, 1, 2, 3, 4], // ignored but makes the instruction unique in the slot
+            vec![
+                AccountMeta::new(greeted_pubkey, false),
+                AccountMeta::new(payer.pubkey(), true),
+                AccountMeta::new(token_pubkey, false)
+            ],
+        )],
+        Some(&payer.pubkey()),
+    );
+    transaction.sign(&[&payer], recent_blockhash);
+    banks_client.process_transaction(transaction).await.unwrap();
+
+    let mut transaction = Transaction::new_with_payer(
+        &[Instruction::new_with_bincode(
+            program_id,
+            &[1, 8, 33, 15], // ignored but makes the instruction unique in the slot
             vec![
                 AccountMeta::new(greeted_pubkey, false),
                 AccountMeta::new(payer.pubkey(), true),
@@ -257,13 +272,16 @@ async fn test_update_data() {
     banks_client.process_transaction(transaction).await.unwrap();
 
     // Verify account has one greeting
-    let _greeted_account = banks_client
+    let greeted_account = banks_client
         .get_account(greeted_pubkey)
         .await
         .expect("get_account")
         .expect("greeted_account not found");
 
-    // let chunk_data = ChunkAccount::try_from_slice(&greeted_account.data).unwrap();
+    let chunk_data = ChunkAccount::new(&greeted_account.data);
+    if let Ok(account) = chunk_data {
+        println!("{:?}", account.data);
+    }
     //
     // assert_eq!(chunk_data.data[0], 1);
     // assert_eq!(chunk_data.data[4], 1);

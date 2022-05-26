@@ -34,7 +34,7 @@
 		const response = await APIController.getRegion(user_accounts[0].id)
 		let data  = Buffer.from(response.data.region_raw, 'base64')
 		console.log(data)
-		program.updateChunk(user_accounts[0], data)
+		program.updateChunk(user_accounts[0], 0, data.slice(0, 32))
 		
 
 		console.log(user_accounts[0].nft_metadata); // <-- После выполнения fetchNFTMetadata здесь лежат данные о нфт, которые можно отобразить

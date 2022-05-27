@@ -1,5 +1,4 @@
 use std::cell::RefMut;
-use std::convert::{TryFrom};
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
     entrypoint::ProgramResult,
@@ -11,23 +10,18 @@ use solana_program::{
 use spl_token::state::{Account as TokenAccount};
 
 use crate::instruction::ChunkInstruction;
-use crate::instruction::ChunkInstruction::{InitChunk, UpdateChunk, UpdateToken};
+use crate::instruction::ChunkInstruction::{InitChunk, UpdateChunk};
 
 use solana_program::program_pack::Pack;
 
-// #[derive(BorshSerialize, BorshDeserialize, Debug)]
-// pub struct ChunkAccount {
-//     pub id: i32,
-//     pub daddy: Pubkey,
-//     pub owner_token: Pubkey
-// }
 
 
 pub struct ChunkAccount {
     pub id: u32,
-    pub daddy: Pubkey,
     pub owner_token: Pubkey
 }
+
+const CHUNK_ACCOUNT_SIZE: usize = 36;
 
 impl ChunkAccount {
     pub fn as_u32_be(array: &[u8]) -> u32 {
@@ -58,31 +52,26 @@ impl ChunkAccount {
             dst[i] = *b;
         }
 
-        for (i, b) in self.daddy.to_bytes().iter().enumerate() {
-            dst[i + 4] = *b;
-        }
-
         for (i, b) in self.owner_token.to_bytes().iter().enumerate() {
-            dst[i + 36] = *b;
+            dst[i + 4] = *b;
         }
     }
 
-    fn update(mut dst: RefMut<&mut [u8]>, offset: u32, data: &[u8]) {
+    fn update(mut dst: RefMut<&mut [u8]>, offset: usize, data: &[u8]) {
         for (i, b) in data.iter().enumerate() {
-            let temp: usize = i + 68 + usize::try_from(offset).unwrap();
+            let temp: usize = i + CHUNK_ACCOUNT_SIZE + offset;
             dst[temp] = *b;
         }
     }
 
     pub fn new (data: &[u8]) -> Result<ChunkAccount, ProgramError> {
-        if data.len() <= 68 {
+        if data.len() <= CHUNK_ACCOUNT_SIZE {
             return Err(ProgramError::AccountDataTooSmall);
         }
 
         let account = ChunkAccount {
             id: ChunkAccount::as_u32_be( & data[0..4]),
-            daddy: Pubkey::new(&data[4..36]),
-            owner_token: Pubkey::new(&data[36..68])
+            owner_token: Pubkey::new(&data[4..36])
         };
 
         Ok(account)
@@ -123,32 +112,31 @@ impl Processor {
         msg!("Matching instruiction!");
 
         match instruction {
-            InitChunk {id} => Self::init_chunk(chunk_account, signer_account, id),
-            UpdateChunk {offset, data} => Self::update_chunk(chunk_account, signer_account,next_account_info(accounts_iter).unwrap(), &data, offset),
-            UpdateToken  => Self::update_token(chunk_account,  signer_account, next_account_info(accounts_iter).unwrap())
+            InitChunk {id} => Self::init_chunk(chunk_account, next_account_info(accounts_iter).unwrap(), id),
+            UpdateChunk {offset, data} => Self::update_chunk(chunk_account, signer_account,next_account_info(accounts_iter).unwrap(), &data, offset)
         }
     }
 
-    pub fn init_chunk(chunk_account: &AccountInfo, signer_account: &AccountInfo, id: u32) -> ProgramResult {
+    pub fn init_chunk(chunk_account: &AccountInfo, token: &AccountInfo, id: u32) -> ProgramResult {
         msg!("Init instruction");
         let mut chunk_data = ChunkAccount::new(&chunk_account.data.borrow())?;
 
-        let pb: Pubkey = chunk_data.daddy;
+        let pb: Pubkey = chunk_data.owner_token;
 
-        msg!("Daddy is: {:?}", pb);
+        msg!("Owner token is: {:?}", pb);
 
         if pb.to_bytes().iter().all(|&x| x == 0) {
-            msg!("Setting daddy!");
-            chunk_data.daddy = *signer_account.key;
+            msg!("Setting id and owner!");
             chunk_data.id = id;
+            chunk_data.owner_token = *token.key;
             chunk_data.serialize(chunk_account.try_borrow_mut_data()?);
         }
 
         Ok(())
     }
 
-    pub fn update_chunk(chunk_account: &AccountInfo, signer_account: &AccountInfo, token: &AccountInfo, data: &[u8], offset: u32) -> ProgramResult {
-        let mut chunk_data: ChunkAccount = ChunkAccount::new(&chunk_account.data.borrow())?;
+    pub fn update_chunk(chunk_account: &AccountInfo, signer_account: &AccountInfo, token: &AccountInfo, data: &[u8], offset: usize) -> ProgramResult {
+        let chunk_data: ChunkAccount = ChunkAccount::new(&chunk_account.data.borrow())?;
         msg!("Unpacking spl account data {:?}", token.data);
 
         let spl_token_account = TokenAccount::unpack(&token.data.borrow())?;
@@ -156,6 +144,7 @@ impl Processor {
         msg!("Matching owner");
         msg!("Mint: {}", spl_token_account.mint.to_string());
         msg!("Amount: {}", spl_token_account.amount);
+        msg!("Owner: {}", spl_token_account.owner);
 
 
         if chunk_data.owner_token != spl_token_account.mint {
@@ -166,7 +155,7 @@ impl Processor {
             return Err(ProgramError::IllegalOwner);
         }
 
-        if data.len() + usize::try_from(offset).unwrap() > &chunk_account.data.borrow().len() - 68 {
+        if data.len() + offset > &chunk_account.data.borrow().len() - CHUNK_ACCOUNT_SIZE {
             msg!("Invalid data. Too much numbers");
             return Err(ProgramError::InvalidInstructionData);
         }
@@ -175,25 +164,6 @@ impl Processor {
         msg!("Data length: {}", data.len());
         ChunkAccount::update(chunk_account.try_borrow_mut_data()?, offset, data);
 
-        Ok(())
-    }
-
-    pub fn update_token(chunk_account: &AccountInfo, signer_account: &AccountInfo, token_account: &AccountInfo) -> ProgramResult {
-        let mut chunk_data: ChunkAccount = ChunkAccount::new(&chunk_account.data.borrow())?;
-
-        if chunk_data.daddy != *signer_account.key {
-            msg!("Invalid daddy!");
-            return Err(ProgramError::IllegalOwner);
-        }
-
-        if !chunk_data.owner_token.to_bytes().iter().all(|&x| x == 0) {
-            return Err(ProgramError::AccountAlreadyInitialized);
-        }
-
-        msg!("Setting token: {}", token_account.key.to_string());
-
-        chunk_data.owner_token = *token_account.key;
-        chunk_data.serialize(chunk_account.try_borrow_mut_data()?);
         Ok(())
     }
 }

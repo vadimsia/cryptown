@@ -1,4 +1,4 @@
-use std::convert::TryInto;
+use std::convert::{TryFrom, TryInto};
 use solana_program::program_error::ProgramError;
 use solana_program::msg;
 use crate::error::ChunkError::InvalidInstruction;
@@ -7,6 +7,7 @@ use crate::processor::ChunkAccount;
 pub enum ChunkInstruction {
     // [chunk account]
     // [signer]
+    // [token]
     InitChunk {
         id: u32
     },
@@ -15,14 +16,9 @@ pub enum ChunkInstruction {
     // [signer]
     // [token]
     UpdateChunk {
-        offset: u32,
+        offset: usize,
         data: Box<[u8]>
-    },
-
-    // [chunk account]
-    // [signer]
-    // [token]
-    UpdateToken,
+    }
 }
 
 impl ChunkInstruction {
@@ -41,10 +37,9 @@ impl ChunkInstruction {
                     id: ChunkAccount::as_u32_le(payload.try_into().unwrap())
                 },
                 1 => Self::UpdateChunk {
-                    offset: ChunkAccount::as_u32_le(payload.split_at(4).0.try_into().unwrap()),
+                    offset: usize::try_from(ChunkAccount::as_u32_le(payload.split_at(4).0.try_into().unwrap())).unwrap(),
                     data: Box::from(payload.split_at(4).1)
                 },
-                2 => Self::UpdateToken,
                 _ => return Err(InvalidInstruction.into())
             }
         )

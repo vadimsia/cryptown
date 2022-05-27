@@ -38,10 +38,15 @@ import {
     //     console.log(e)
     // }
 
-    for (let account of accounts) {
-        let result = await connection.getAccountInfo(account.pubkey)
+    // for (let account of accounts) {
+    //     let result = await connection.getAccountInfo(account.pubkey)
 
-        // @ts-ignore
-        console.log(Uint8Array.from(result.data).slice(0, 4))
+    //     // @ts-ignore
+    //     console.log(Uint8Array.from(result.data).slice(0, 4))
+    // }
+
+    let info = await connection.getAccountInfo(token)
+    if (info) {
+        console.dir([...info.data], {'maxArrayLength': null});
     }
 })()

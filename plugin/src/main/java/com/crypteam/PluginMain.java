@@ -18,6 +18,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        Section.setMapAccess();
         try {
             SolanaProgramID.PROGRAM_ID = new PublicKey("AoNiQdgpqwE1PYc5R5gYqxWv9nQtr3xN3gTEdGb4tFeW");
         } catch (AddressFormatException e) {

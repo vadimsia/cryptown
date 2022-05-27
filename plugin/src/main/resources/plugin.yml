@@ -1,4 +1,4 @@
-name: SimpleProjectTest
+name: SolanaRegionPlugin
 version: '${project.version}'
 main: com.crypteam.PluginMain
 api-version: 1.18
@@ -12,9 +12,9 @@ commands:
     description: setRegion
     permission: <plugin name>.setRegion
     usage: /<command>
-  regionAccess:
-    description: regionAccess
-    permission: <plugin name>.regionAccess
+  setRegionAccess:
+    description: setRegionAccess
+    permission: <plugin name>.setRegionAccess
     usage: /<command>
   initRegions:
     description: initRegions

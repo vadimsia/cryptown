@@ -26,8 +26,8 @@ import {
 
     let accounts = await program.getOrCreateAccounts()
     // console.log(accounts[0].pubkey.toBase58())
-    // await program.initAccounts([accounts[0].pubkey])
-    // await program.updateTokens([accounts[0].pubkey], [mint])
+    // await program.initAccounts(accounts)
+    //await program.updateTokens([accounts[0].pubkey], [mint])
     // let data = []
     // for (let i = 0; i < 32; i++) 
     //     data.push(i)
@@ -38,9 +38,10 @@ import {
     //     console.log(e)
     // }
 
+    for (let account of accounts) {
+        let result = await connection.getAccountInfo(account.pubkey)
 
-    let result = await connection.getAccountInfo(accounts[0].pubkey)
-
-    // @ts-ignore
-    console.log(Uint8Array.from(result.data))
+        // @ts-ignore
+        console.log(Uint8Array.from(result.data).slice(0, 4))
+    }
 })()

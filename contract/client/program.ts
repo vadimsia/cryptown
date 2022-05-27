@@ -10,6 +10,11 @@ import {
     TransactionInstruction
 } from "@solana/web3.js";
 
+interface Account {
+    pubkey: PublicKey
+    account: AccountInfo<Buffer | ParsedAccountData>
+}
+
 export class Program {
     private programID: PublicKey
     private payer: Keypair
@@ -24,7 +29,7 @@ export class Program {
         this.connection = connection
     }
 
-    async getOrCreateAccounts () : Promise<{pubkey: PublicKey, account: AccountInfo<Buffer | ParsedAccountData>}[]> {
+    async getOrCreateAccounts () : Promise<Account[]> {
         let result = await this.connection.getParsedProgramAccounts(this.programID)
         
         if (result.length < this.CHUNKS_NUM) {
@@ -70,7 +75,7 @@ export class Program {
         return result
     }
     
-    async initAccounts (accounts: PublicKey[]) : Promise<void> {
+    async initAccounts (accounts: Account[]) : Promise<void> {
         for (let i in accounts) {
             let account = accounts[i]
 
@@ -80,7 +85,7 @@ export class Program {
             let transaction = new Transaction().add(
                 new TransactionInstruction({
                     keys: [
-                        {pubkey: account, isSigner: false, isWritable: true},
+                        {pubkey: account.pubkey, isSigner: false, isWritable: true},
                         {pubkey: this.payer.publicKey, isSigner: true, isWritable: false}
                     ],
                     programId: this.programID,

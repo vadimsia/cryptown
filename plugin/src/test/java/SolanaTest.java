@@ -7,6 +7,9 @@ import com.crypteam.solana.misc.RegionAccountInfo;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -65,12 +68,17 @@ public class SolanaTest {
     @Test
     public void getRegionByIDTest () throws AddressFormatException, ApiRequestException, IOException {
         SolanaRPC rpc = new SolanaRPC("https://explorer-api.devnet.solana.com/");
-        PublicKey pk = new PublicKey("AoNiQdgpqwE1PYc5R5gYqxWv9nQtr3xN3gTEdGb4tFeW");
+        PublicKey pk = new PublicKey("BoJibLNDthR9j5A4SqpzSGTdULiR8d43kEat3bbbufhq");
 
 
         RegionAccountInfo accountInfo = rpc.getAccountInfoByRegionID(pk, 0);
+        System.out.println(accountInfo.getData());
+
         assertNotEquals(accountInfo, null);
-        accountInfo = rpc.getAccountInfoByRegionID(pk, 1);
-        assertEquals(accountInfo, null);
+
+        ShortBuffer buf = ByteBuffer.wrap(accountInfo.getPayload()).order(ByteOrder.BIG_ENDIAN).asShortBuffer();
+        short[] region = new short[buf.limit()];
+        buf.get(region);
+        assertEquals(region.length, 16384);
     }
 }

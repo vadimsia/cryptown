@@ -1,8 +1,10 @@
 package com.crypteam;
 import com.crypteam.rcon.RConServer;
 import com.crypteam.solana.SolanaProgramID;
+import com.crypteam.solana.SolanaRPC;
 import com.crypteam.solana.exceptions.AddressFormatException;
 import com.crypteam.solana.misc.PublicKey;
+import com.crypteam.solana.misc.RegionAccountInfo;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
 import org.bukkit.command.Command;
@@ -12,6 +14,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
+
 public final class PluginMain extends JavaPlugin implements Listener {
 
     Thread RConThread;
@@ -20,7 +26,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
     public void onEnable() {
         Section.setMapAccess();
         try {
-            SolanaProgramID.PROGRAM_ID = new PublicKey("AoNiQdgpqwE1PYc5R5gYqxWv9nQtr3xN3gTEdGb4tFeW");
+            SolanaProgramID.PROGRAM_ID = new PublicKey("BoJibLNDthR9j5A4SqpzSGTdULiR8d43kEat3bbbufhq");
         } catch (AddressFormatException e) {
             throw new RuntimeException(e);
         }
@@ -31,31 +37,67 @@ public final class PluginMain extends JavaPlugin implements Listener {
         RConThread = new Thread(new RConServer());
         RConThread.start();
     }
+
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        Section sec;
-        if (cmd.getName().equals("getRegion")) {
-            sec = new Section(Integer.parseInt(args[0]));
-            short[] region = sec.getRegion();
-            System.out.println("Sector length: " + region.length);
-            return true;
-        } else if (cmd.getName().equals("setRegion")) {
-            sec = new Section(Integer.parseInt(args[0]));
-            sec.setRegion(Section.testRegion);
-            return true;
-        } else if (cmd.getName().equals("initRegions")) {
-            Section.initRegions(Integer.parseInt(args[0]));
-            return true;
-        } else if (cmd.getName().equals("removeRegions")) {
-            Section.removeRegions(Integer.parseInt(args[0]));
-            return true;
-        } else if (cmd.getName().equals("regionAccess")) {
-            sec = new Section(Integer.parseInt(args[0]));
-            sec.setRegionAccess(args[1]);
-            return true;
-        } else {
-            return false;
+        switch (cmd.getName()) {
+            case "getRegion":
+            {
+                Section sec = new Section(Integer.parseInt(args[0]));
+                short[] region = sec.getRegion();
+                System.out.println("Sector length: " + region.length);
+                break;
+            }
+            case "setRegion":
+            {
+                Section sec = new Section(Integer.parseInt(args[0]));
+                sec.setRegion(Section.testRegion);
+                break;
+            }
+            case "initRegions":
+            {
+                Section.initRegions(Integer.parseInt(args[0]));
+                break;
+            }
+            case "removeRegions":
+            {
+                Section.removeRegions(Integer.parseInt(args[0]));
+                break;
+            }
+            case "regionAccess":
+            {
+                Section sec = new Section(Integer.parseInt(args[0]));
+                sec.setRegionAccess(args[1]);
+                break;
+            }
+            case "refreshRegion":
+            {
+                int areaID = Integer.parseInt(args[0]);
+
+                SolanaRPC solanaRPC = new SolanaRPC("https://explorer-api.devnet.solana.com/");
+                RegionAccountInfo accountInfo;
+
+                try {
+                    accountInfo = solanaRPC.getAccountInfoByRegionID(SolanaProgramID.PROGRAM_ID, areaID);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return true;
+                }
+
+                ShortBuffer buf = ByteBuffer.wrap(accountInfo.getPayload()).order(ByteOrder.BIG_ENDIAN).asShortBuffer();
+                short[] region = new short[buf.limit()];
+                buf.get(region);
+
+                Section sec = new Section(areaID);
+                sec.setRegion(region);
+
+                System.out.println("Region length: " + region.length);
+                System.out.println("Original region length: " + sec.getRegion().length);
+            }
         }
+
+        return true;
     }
 
 

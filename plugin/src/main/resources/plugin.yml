@@ -24,3 +24,7 @@ commands:
     description: removeRegions
     permission: <plugin name>.removeRegions
     usage: /<command>
+  refreshRegion:
+    description: refreshing region from solana account
+    permission: <plugin name>.removeRegions
+    usage: /<command>

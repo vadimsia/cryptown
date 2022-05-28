@@ -1,4 +1,3 @@
-use std::str::FromStr;
 use solana_program_test::*;
 
 use helloworld::processor::Processor;
@@ -15,91 +14,12 @@ use solana_sdk::signature::Keypair;
 
 
 #[tokio::test]
-async fn test_init() {
-    let program_id = Pubkey::new_unique();
-    let greeted_pubkey = Pubkey::new_unique();
-    let token = Pubkey::new_unique();
-    let wrong_token = Pubkey::new_unique();
-
-    let mut program_test = ProgramTest::new(
-        "helloworld", // Run the BPF version with `cargo test-bpf`
-        program_id,
-        processor!(Processor::process), // Run the native version with `cargo test`
-    );
-
-    program_test.add_account(
-        greeted_pubkey,
-        Account {
-            lamports: 5,
-            data: vec![0_u8; 36 + 10],
-            owner: program_id,
-            ..Account::default()
-        },
-    );
-    let (mut banks_client, payer, recent_blockhash) = program_test.start().await;
-
-    // First init
-    let mut transaction = Transaction::new_with_payer(
-        &[Instruction::new_with_bincode(
-            program_id,
-            &[0, 1500], // ignored but makes the instruction unique in the slot
-            vec![
-                AccountMeta::new(greeted_pubkey, false),
-                AccountMeta::new(payer.pubkey(), true),
-                AccountMeta::new(token, false)
-            ],
-        )],
-        Some(&payer.pubkey()),
-    );
-    transaction.sign(&[&payer], recent_blockhash);
-    banks_client.process_transaction(transaction).await.unwrap();
-
-    // Second init
-    let mut transaction = Transaction::new_with_payer(
-        &[Instruction::new_with_bincode(
-            program_id,
-            &[0, 1501], // ignored but makes the instruction unique in the slot
-            vec![
-                AccountMeta::new(greeted_pubkey, false),
-                AccountMeta::new(payer.pubkey(), true),
-                AccountMeta::new(wrong_token, false)
-            ],
-        )],
-        Some(&payer.pubkey()),
-    );
-    transaction.sign(&[&payer], recent_blockhash);
-    banks_client.process_transaction(transaction).await.unwrap();
-
-
-    // Verify account has one greeting
-    let greeted_account = banks_client
-        .get_account(greeted_pubkey)
-        .await
-        .expect("get_account")
-        .expect("greeted_account not found");
-
-    let chunk_data = ChunkAccount::new(&greeted_account.data);
-
-    if let Ok(data) = chunk_data {
-        assert_eq!(data.owner_token, token);
-        assert_eq!(data.id, 1500);
-        println!("{:?}", greeted_account.data);
-        println!("{:?}", token.to_bytes().len());
-    }
-}
-
-#[tokio::test]
-async fn test_update_data() {
+async fn test_all() {
     let program_id = Pubkey::new_unique();
     let greeted_pubkey = Pubkey::new_unique();
     let token_account_pubkey = Pubkey::new_unique();
-    let token_pubkey;
 
     let owner_account = Keypair::new();
-
-    if let Ok(pk) = Pubkey::from_str("s5E5TCxx2DNjoENQ6wmRQNR2pVjNFC1cy1tWfaFLQNV") {
-        token_pubkey = pk
-    } else { panic!("Wrong pk") }
 
     let mut program_test = ProgramTest::new(
         "helloworld", // Run the BPF version with `cargo test-bpf`
@@ -166,16 +86,16 @@ async fn test_update_data() {
     let mut transaction = Transaction::new_with_payer(
         &[Instruction::new_with_bincode(
             program_id,
-            &[0, 0], // ignored but makes the instruction unique in the slot
+            &[0, 1599], // ignored but makes the instruction unique in the slot
             vec![
                 AccountMeta::new(greeted_pubkey, false),
-                AccountMeta::new(payer.pubkey(), true),
-                AccountMeta::new(token_pubkey, false)
+                AccountMeta::new(owner_account.pubkey(), true),
+                AccountMeta::new(token_account_pubkey, false)
             ],
         )],
         Some(&payer.pubkey()),
     );
-    transaction.sign(&[&payer], recent_blockhash);
+    transaction.sign(&[&payer, &owner_account], recent_blockhash);
     banks_client.process_transaction(transaction).await.unwrap();
 
 
@@ -204,9 +124,8 @@ async fn test_update_data() {
 
 
     println!("{:?}", greeted_account.data.split_at(36).1);
-    //
-    // assert_eq!(chunk_data.data[0], 1);
-    // assert_eq!(chunk_data.data[4], 1);
-    // assert_eq!(chunk_data.data[5], 0);
-    // assert_eq!(chunk_data.daddy, payer.pubkey());
+    if let Ok(data) = ChunkAccount::new(&greeted_account.data) {
+        println!("{}", data.id);
+        println!("{}", data.owner_token.to_string());
+    }
 }

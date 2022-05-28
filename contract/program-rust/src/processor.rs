@@ -113,23 +113,29 @@ impl Processor {
         msg!("Matching instruiction!");
 
         match instruction {
-            InitChunk {id} => Self::init_chunk(chunk_account, token, id),
+            InitChunk {id} => Self::init_chunk(chunk_account, signer_account, token, id),
             UpdateChunk {offset, data} => Self::update_chunk(chunk_account, signer_account, token, &data, offset)
         }
     }
 
-    pub fn init_chunk(chunk_account: &AccountInfo, mint_account: &AccountInfo, id: u32) -> ProgramResult {
+    pub fn init_chunk(chunk_account: &AccountInfo, signer_account: &AccountInfo, token: &AccountInfo, id: u32) -> ProgramResult {
         msg!("Init instruction");
         let mut chunk_data = ChunkAccount::new(&chunk_account.data.borrow())?;
+        let spl_token_account = TokenAccount::unpack(&token.data.borrow())?;
 
         let pb: Pubkey = chunk_data.owner_token;
+
+        if spl_token_account.owner != *signer_account.key || spl_token_account.amount == 0 {
+            return Err(ProgramError::IllegalOwner);
+        }
 
         msg!("Owner token is: {:?}", pb);
 
         if pb.to_bytes().iter().all(|&x| x == 0) {
             msg!("Setting id and owner!");
             chunk_data.id = id;
-            chunk_data.owner_token = *mint_account.key;
+            chunk_data.owner_token = spl_token_account.mint;
+            spl_token_account.state
             chunk_data.serialize(chunk_account.try_borrow_mut_data()?);
         }
 

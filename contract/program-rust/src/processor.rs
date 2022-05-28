@@ -93,6 +93,7 @@ impl Processor {
 
         let chunk_account = next_account_info(accounts_iter)?;
         let signer_account = next_account_info(accounts_iter)?;
+        let token = next_account_info(accounts_iter)?;
 
 
 
@@ -112,12 +113,12 @@ impl Processor {
         msg!("Matching instruiction!");
 
         match instruction {
-            InitChunk {id} => Self::init_chunk(chunk_account, next_account_info(accounts_iter).unwrap(), id),
-            UpdateChunk {offset, data} => Self::update_chunk(chunk_account, signer_account,next_account_info(accounts_iter).unwrap(), &data, offset)
+            InitChunk {id} => Self::init_chunk(chunk_account, token, id),
+            UpdateChunk {offset, data} => Self::update_chunk(chunk_account, signer_account, token, &data, offset)
         }
     }
 
-    pub fn init_chunk(chunk_account: &AccountInfo, token: &AccountInfo, id: u32) -> ProgramResult {
+    pub fn init_chunk(chunk_account: &AccountInfo, mint_account: &AccountInfo, id: u32) -> ProgramResult {
         msg!("Init instruction");
         let mut chunk_data = ChunkAccount::new(&chunk_account.data.borrow())?;
 
@@ -128,7 +129,7 @@ impl Processor {
         if pb.to_bytes().iter().all(|&x| x == 0) {
             msg!("Setting id and owner!");
             chunk_data.id = id;
-            chunk_data.owner_token = *token.key;
+            chunk_data.owner_token = *mint_account.key;
             chunk_data.serialize(chunk_account.try_borrow_mut_data()?);
         }
 
@@ -137,7 +138,7 @@ impl Processor {
 
     pub fn update_chunk(chunk_account: &AccountInfo, signer_account: &AccountInfo, token: &AccountInfo, data: &[u8], offset: usize) -> ProgramResult {
         let chunk_data: ChunkAccount = ChunkAccount::new(&chunk_account.data.borrow())?;
-        msg!("Unpacking spl account data {:?}", token.data);
+        msg!("Unpacking spl account data");
 
         let spl_token_account = TokenAccount::unpack(&token.data.borrow())?;
 

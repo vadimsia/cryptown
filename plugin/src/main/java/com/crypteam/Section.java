@@ -5,11 +5,13 @@ import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.domains.DefaultDomain;
+import com.sk89q.worldguard.protection.flags.Flag;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.GlobalProtectedRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -19,23 +21,15 @@ import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
-import static org.bukkit.Bukkit.getServer;
 
 public class Section {
     public static short[] testRegion;
     static World world = Bukkit.getWorld("World");
     private static Map<String, Short> worldScript = new HashMap();
     private static Map<Short, String> worldDescriptor = new HashMap();
-
     private static RegionManager regions =  WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
-    private static final int countSectionsX = 4;
-    private static final int countSectionsZ = 4;
-    private static final int sectionSizeX = 200;
-    private static final int sectionSizeZ = 200;
-    private static final int countSectionRegions = 48;
-    private static final int regionInitY = -60;
     private static final int regionSizeY = 64;
     private int regionId;
     private int regionSectionId;
@@ -49,11 +43,9 @@ public class Section {
     private void setRegionEndX() {
         this.regionEndX = Math.abs(this.regionStartX + this.regionSizeX) - 1;
     }
-
     private void setRegionEndZ() {
         this.regionEndZ = Math.abs(this.regionStartZ + this.regionSizeZ) - 1;
     }
-
     public Section(int regionId) {
         try {
             this.regionId = regionId;
@@ -65,8 +57,6 @@ public class Section {
             ResultSet result = statmnt.executeQuery("SELECT * FROM sectionRegions WHERE id=" + this.regionId);
             this.regionStartX = result.getInt("posX");
             this.regionStartZ = result.getInt("posZ");
-//            this.regionStartX = this.regionId / 192 * 200 + result.getInt("posX");
-//            this.regionStartZ = this.regionId / 48 % 4 * 200 + result.getInt("posZ");
             this.regionSizeX = result.getInt("sizeX");
             this.regionSizeZ = result.getInt("sizeZ");
             connection.close();
@@ -82,7 +72,6 @@ public class Section {
         this.setRegionEndX();
         this.setRegionEndZ();
     }
-
     public static void downloadScriptData() {
         Connection connection = null;
 
@@ -107,7 +96,6 @@ public class Section {
         }
 
     }
-
     public static void uploadScriptData() {
         Connection connection = null;
 
@@ -129,8 +117,7 @@ public class Section {
         }
 
     }
-
-    public void setRegion(short[] codingWorld) {
+    public void setRegion(short @NotNull [] codingWorld) {
         if(codingWorld.length == regionSizeX*regionSizeY*regionSizeZ) {
             for (int y = 0; y < 64; ++y) {
                 for (int x = 0; x < this.regionSizeX; ++x) {
@@ -143,7 +130,6 @@ public class Section {
             }
         } else Bukkit.getLogger().info("Error. Region sizes do not match.");
     }
-
     public short[] getRegion() {
         short[] codingWorld = new short[this.regionSizeX * 64 * this.regionSizeZ];
 
@@ -165,7 +151,6 @@ public class Section {
         testRegion = codingWorld;
         return codingWorld;
     }
-
     public static void initRegions(int sectionId) {
         int sectionIdX = sectionId / 4;
         int sectionIdZ = sectionId % 4;
@@ -175,28 +160,27 @@ public class Section {
         int i;
         int z;
         int x;
-        for(i = -60; i < -57; z++) {
-            for(z = 0; z < 200; z++) {
-                for(x = 0; x < 200; z++) {
+        for(i = -61; i < -57; ++i) {
+            for(z = 0; z < 200; ++z) {
+                for(x = 0; x < 200; ++x) {
                     world.setBlockData(z + sectionStartX, i, x + sectionStartZ, Bukkit.createBlockData("stone"));
                 }
             }
         }
 
-        for(i = 0; i < 200; i++) {
-            for(z = 0; z < 200; z++) {
+        for(i = 0; i < 200; ++i) {
+            for(z = 0; z < 200; ++z) {
                 world.setBlockData(i + sectionStartX, -57, z + sectionStartZ, Bukkit.createBlockData("dirt"));
             }
         }
 
-        for(i = 0; i < 200; i++) {
-            for(z = 0; z < 200; z++) {
+        for(i = 0; i < 200; ++i) {
+            for(z = 0; z < 200; ++z) {
                 world.setBlockData(i + sectionStartX, -56, z + sectionStartZ, Bukkit.createBlockData("stone_bricks"));
             }
         }
 
         for(i=0; i <= 48; ++i) {
-
             Section sec = new Section(i + 49 * sectionId);
             for(x = 0; x < sec.regionSizeX; ++x) {
                 for(z = 0; z < sec.regionSizeZ; ++z) {
@@ -207,7 +191,6 @@ public class Section {
 
         Bukkit.getLogger().info("Complete");
     }
-
     public static void removeRegions(int sectionId) {
         int sectionIdX = sectionId / 4;
         int sectionIdZ = sectionId % 4;
@@ -249,7 +232,6 @@ public class Section {
         region.setPriority(2);
         regions.addRegion(region);
     }
-
     public static void removeRegionAccess(Player player) {
         Map<String, ProtectedRegion> regionMap =  regions.getRegions();
         for(ProtectedRegion region : regionMap.values()) {
@@ -258,10 +240,9 @@ public class Section {
             }
         }
     }
-//    public static void MapAccess() {
-//        BlockVector3 start = BlockVector3.at(0, -61, 0);
-//        BlockVector3 end = BlockVector3.at(200, 4, 200);
-//        ProtectedRegion region = new GlobalProtectedRegion("template");
-//        regions.addRegion(region);
-//    }
+    public static void setMapAccess() {
+        ProtectedRegion region = new GlobalProtectedRegion("__global__");
+        region.setFlag(Flags.BUILD, StateFlag.State.DENY);
+        regions.addRegion(region);
+    }
 }

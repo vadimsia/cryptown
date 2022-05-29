@@ -60,7 +60,7 @@
     <repositories>
         <repository>
             <id>bstats</id>
-            <url>https://maven.elmakers.com/repository/org/bstats/bstats-bukkit/</url>
+            <url>https://maven.elmakers.com/repository/</url>
         </repository>
         <repository>
             <id>spigotmc-repo</id>

@@ -45,6 +45,9 @@ export class Program {
 			})
 		)
 		
+		if (account.program_account != null)
+			throw "Already initialized"
+
 		if (account.nft_metadata == null)
 			throw "Need nft metadata"
 
@@ -67,8 +70,6 @@ export class Program {
 		transaction.sign(program_account)
 		transaction = await this._wallet.signTransaction(transaction);
 		
-
-		console.log(transaction)
 		let signature = await this._wallet.connection.sendRawTransaction(transaction.serialize())
 		this._wallet.connection.confirmTransaction(signature)
 		return signature

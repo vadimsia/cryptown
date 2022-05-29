@@ -6,7 +6,7 @@
 	import { PublicKey } from '@solana/web3.js';
 
 	// ID программы по маинкрафту в солане
-	const PROGRAM_ID = new PublicKey('5ZEhvMGHknHdC5nSdMJEi3XQkpxe9fouGkrK6wUEBDyf');
+	const PROGRAM_ID = new PublicKey('9yjV8V4KyxvShVdeZvGCzLiNGPii1a6fCkFQeK21s22i');
 
 	let controller: IWalletController;
 

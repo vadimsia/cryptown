@@ -135,7 +135,6 @@ impl Processor {
             msg!("Setting id and owner!");
             chunk_data.id = id;
             chunk_data.owner_token = spl_token_account.mint;
-            spl_token_account.state
             chunk_data.serialize(chunk_account.try_borrow_mut_data()?);
         }
 

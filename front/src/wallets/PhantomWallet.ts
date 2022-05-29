@@ -2,13 +2,15 @@ import { Connection, Keypair, PublicKey, type Transaction } from '@solana/web3.j
 import type { Wallet } from './IWallet';
 import type { IWalletController } from './IWalletController';
 
-interface SignResult {
-	serialize(): Buffer;
+export interface SignedMessage {
+	publicKey: PublicKey,
+	signature: Uint8Array[]
 }
 
 interface PhantomProvider {
 	connect(): Promise<{ publicKey: PublicKey }>;
-	signTransaction(transaction: Transaction): Promise<SignResult>;
+	signTransaction(transaction: Transaction): Promise<Transaction>;
+	signMessage(encoded: Uint8Array, charset: string) : Promise<SignedMessage>
 }
 
 declare global {
@@ -29,10 +31,25 @@ export class PhantomWallet implements IWalletController {
 		this._wallet = {
 			publicKey: Keypair.generate().publicKey,
 			connection: this._connection,
-			sendTransaction: this.sendTransaction.bind(this)
+			sendTransaction: this.sendTransaction.bind(this),
+			signTransaction: this.signTransaction.bind(this),
+			signMessage: this.signMessage.bind(this)
 		};
 
 		console.log(this._solana_interface);
+	}
+
+	private async signMessage(message: string) : Promise<SignedMessage> {
+		if (this._solana_interface) {
+			const encoded = new TextEncoder().encode(message)
+			return await this._solana_interface.signMessage(encoded, "utf8");
+		} else throw 'Cant find phantom wallet';
+	}
+
+	private async signTransaction(transaction: Transaction) : Promise<Transaction> {
+		if (this._solana_interface) {
+			return await this._solana_interface.signTransaction(transaction);
+		} else throw 'Cant find phantom wallet';
 	}
 
 	private async sendTransaction(transaction: Transaction): Promise<string> {

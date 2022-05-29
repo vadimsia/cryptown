@@ -1,4 +1,4 @@
-import { PublicKey, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js';
+import { Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js';
 
 import { Buffer } from 'buffer';
 import type { Wallet } from '../wallets/IWallet';
@@ -22,15 +22,16 @@ export class Program {
 	}
 
 
-	async initAccount (account: TokenAccount) : Promise<void> {
+	async initAccount (account: TokenAccount) : Promise<string> {
 		let account_space = 32768 + this._BASE_ACCOUNT_SIZE
 		let rent = await this._wallet.connection.getMinimumBalanceForRentExemption(account_space)
+		let program_account = Keypair.generate();
 
 
 		let transaction = new Transaction(
 			{
 				recentBlockhash: (await this._wallet.connection.getLatestBlockhash()).blockhash,
-				feePayer: this._wallet.publicKey
+				feePayer: this._wallet.publicKey,
 			}
 		)
 
@@ -38,29 +39,40 @@ export class Program {
 			SystemProgram.createAccount({
 				fromPubkey: this._wallet.publicKey,
 				lamports: rent,
-				newAccountPubkey: account.publicKey,
+				newAccountPubkey: program_account.publicKey,
 				programId: this._programID,
 				space: account_space
 			})
 		)
-
-		let id_buf = Buffer.alloc(4)
-		id_buf.writeUint32LE(0)
 		
-		let buf = Buffer.from([1, 0, 0, 0].concat([...id_buf]))
+		if (account.program_account != null)
+			throw "Already initialized"
+
+		if (account.nft_metadata == null)
+			throw "Need nft metadata"
+
+		let command = Buffer.alloc(8)
+		command.writeUint32BE(0, 0) // command id - init
+		command.writeUint32LE(parseInt(account.nft_metadata?.name.split('#')[1]), 4) // id
 		
 		transaction.add(
 			new TransactionInstruction({
 				keys: [
-					{ pubkey: account.publicKey, isSigner: false, isWritable: true },
+					{ pubkey: program_account.publicKey, isSigner: false, isWritable: true },
 					{ pubkey: this._wallet.publicKey, isSigner: true, isWritable: false },
 					{ pubkey: account.publicKey, isSigner: false, isWritable: false }
 				],
 				programId: this._programID,
-				data: buf
+				data: command
 			})
 		)
 
+		transaction.sign(program_account)
+		transaction = await this._wallet.signTransaction(transaction);
+		
+		let signature = await this._wallet.connection.sendRawTransaction(transaction.serialize())
+		this._wallet.connection.confirmTransaction(signature)
+		return signature
 	}
 
 	/**
@@ -74,11 +86,12 @@ export class Program {
 			result.push({
 				publicKey: account.pubkey,
 				id: Buffer.from(account.account.data.slice(0, 4)).readInt32LE(),
-				daddy: new PublicKey(account.account.data.slice(4, 36)),
-				owner_token: new PublicKey(account.account.data.slice(36, 68)),
-				data: account.account.data.slice(68)
+				owner_token: new PublicKey(account.account.data.slice(4, 36)),
+				data: account.account.data.slice(36)
 			});
 		}
+
+		console.log(result)
 
 		return result;
 	}

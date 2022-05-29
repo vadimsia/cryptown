@@ -5,6 +5,5 @@ export type ProgramAccount = {
 
 	id: number;
 	owner_token: PublicKey;
-	daddy: PublicKey;
 	data: Buffer;
 };

@@ -2,13 +2,10 @@ import { Connection, Keypair, PublicKey, type Transaction } from '@solana/web3.j
 import type { Wallet } from './IWallet';
 import type { IWalletController } from './IWalletController';
 
-interface SignResult {
-	serialize(): Buffer;
-}
 
 interface PhantomProvider {
 	connect(): Promise<{ publicKey: PublicKey }>;
-	signTransaction(transaction: Transaction): Promise<SignResult>;
+	signTransaction(transaction: Transaction): Promise<Transaction>;
 }
 
 declare global {
@@ -29,10 +26,17 @@ export class PhantomWallet implements IWalletController {
 		this._wallet = {
 			publicKey: Keypair.generate().publicKey,
 			connection: this._connection,
-			sendTransaction: this.sendTransaction.bind(this)
+			sendTransaction: this.sendTransaction.bind(this),
+			signTransaction: this.signTransaction.bind(this)
 		};
 
 		console.log(this._solana_interface);
+	}
+
+	private async signTransaction(transaction: Transaction) : Promise<Transaction> {
+		if (this._solana_interface) {
+			return await this._solana_interface.signTransaction(transaction);
+		} else throw 'Cant find phantom wallet';
 	}
 
 	private async sendTransaction(transaction: Transaction): Promise<string> {

@@ -5,4 +5,5 @@ export type Wallet = {
 	connection: Connection;
 
 	sendTransaction(transaction: Transaction): Promise<string>;
+	signTransaction(transaction: Transaction) : Promise<Transaction>;
 };

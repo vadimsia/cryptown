@@ -14,17 +14,21 @@ public class RegionAccountInfo extends AccountInfo {
         super(publicKey, data);
 
         ByteBuffer buffer = ByteBuffer.wrap(data);
-        this.daddy = new PublicKey(Arrays.copyOfRange(data, 0, 33));
-        this.owner = new PublicKey(Arrays.copyOfRange(data, 33, 66));
-        this.payload = Arrays.copyOfRange(data, 66, data.length);
+        this.id = buffer.asIntBuffer().get(0);
+        this.daddy = new PublicKey(Arrays.copyOfRange(data, 4, 36));
+        this.owner = new PublicKey(Arrays.copyOfRange(data, 36, 68));
+        this.payload = Arrays.copyOfRange(data, 68, data.length);
     }
 
     public RegionAccountInfo(AccountInfo accountInfo) {
         super(accountInfo.publicKey, accountInfo.data);
 
-        this.daddy = new PublicKey(Arrays.copyOfRange(data, 0, 33));
-        this.owner = new PublicKey(Arrays.copyOfRange(data, 33, 66));
-        this.payload = Arrays.copyOfRange(data, 66, data.length);
+        ByteBuffer buffer = ByteBuffer.wrap(data);
+
+        this.id = buffer.asIntBuffer().get(0);
+        this.daddy = new PublicKey(Arrays.copyOfRange(data, 4, 36));
+        this.owner = new PublicKey(Arrays.copyOfRange(data, 36, 68));
+        this.payload = Arrays.copyOfRange(data, 68, data.length);
     }
 
     public PublicKey getDaddy() {
@@ -33,5 +37,13 @@ public class RegionAccountInfo extends AccountInfo {
 
     public PublicKey getOwner() {
         return owner;
+    }
+
+    public byte[] getPayload() {
+        return payload;
+    }
+
+    public int getId() {
+        return id;
     }
 }

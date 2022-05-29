@@ -1,4 +1,4 @@
-import { PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js';
+import { PublicKey, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js';
 
 import { Buffer } from 'buffer';
 import type { Wallet } from '../wallets/IWallet';
@@ -6,9 +6,12 @@ import type { ProgramAccount } from './ProgramAccount';
 import type { TokenAccount } from './TokenAccount';
 
 import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
+import { UpdateTask } from './UpdateTask';
+import { APIController } from '../api/APIController';
 
 export class Program {
 	private _TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
+	private _BASE_ACCOUNT_SIZE = 36
 
 	private _programID: PublicKey;
 	private _wallet: Wallet;
@@ -16,6 +19,48 @@ export class Program {
 	constructor(programID: PublicKey, wallet: Wallet) {
 		this._programID = programID;
 		this._wallet = wallet;
+	}
+
+
+	async initAccount (account: TokenAccount) : Promise<void> {
+		let account_space = 32768 + this._BASE_ACCOUNT_SIZE
+		let rent = await this._wallet.connection.getMinimumBalanceForRentExemption(account_space)
+
+
+		let transaction = new Transaction(
+			{
+				recentBlockhash: (await this._wallet.connection.getLatestBlockhash()).blockhash,
+				feePayer: this._wallet.publicKey
+			}
+		)
+
+		transaction.add(
+			SystemProgram.createAccount({
+				fromPubkey: this._wallet.publicKey,
+				lamports: rent,
+				newAccountPubkey: account.publicKey,
+				programId: this._programID,
+				space: account_space
+			})
+		)
+
+		let id_buf = Buffer.alloc(4)
+		id_buf.writeUint32LE(0)
+		
+		let buf = Buffer.from([1, 0, 0, 0].concat([...id_buf]))
+		
+		transaction.add(
+			new TransactionInstruction({
+				keys: [
+					{ pubkey: account.publicKey, isSigner: false, isWritable: true },
+					{ pubkey: this._wallet.publicKey, isSigner: true, isWritable: false },
+					{ pubkey: account.publicKey, isSigner: false, isWritable: false }
+				],
+				programId: this._programID,
+				data: buf
+			})
+		)
+
 	}
 
 	/**
@@ -28,10 +73,10 @@ export class Program {
 		for (const account of accounts) {
 			result.push({
 				publicKey: account.pubkey,
-				daddy: new PublicKey(account.account.data.slice(0, 32)),
-				owner_token: new PublicKey(account.account.data.slice(32, 64)),
-				data: account.account.data.slice(64),
-				nft_metadata: null
+				id: Buffer.from(account.account.data.slice(0, 4)).readInt32LE(),
+				daddy: new PublicKey(account.account.data.slice(4, 36)),
+				owner_token: new PublicKey(account.account.data.slice(36, 68)),
+				data: account.account.data.slice(68)
 			});
 		}
 
@@ -41,7 +86,9 @@ export class Program {
 	/**
 	 * @returns all user tokens (+ nfts)
 	 */
-	private async getUserTokens(): Promise<TokenAccount[]> {
+	async getUserTokens(): Promise<TokenAccount[]> {
+		const program_accounts = await this.getProgramAccounts();
+		
 		const result: TokenAccount[] = [];
 		const accounts = (
 			await this._wallet.connection.getTokenAccountsByOwner(this._wallet.publicKey, {
@@ -51,12 +98,16 @@ export class Program {
 
 		for (const account of accounts) {
 			const amount = Number(account.account.data.readBigUInt64LE(64));
+			const mint = new PublicKey(account.account.data.slice(0, 32));
+			const owner = new PublicKey(account.account.data.slice(32, 64))
 			if (amount == 0) continue;
 
 			result.push({
 				publicKey: account.pubkey,
-				mint: new PublicKey(account.account.data.slice(0, 32)),
-				owner: new PublicKey(account.account.data.slice(32, 64)),
+				mint,
+				owner,
+				nft_metadata: null,
+				program_account: program_accounts.find((account) => account.owner_token.toBase58() == mint.toBase58()) || null,
 				amount
 			});
 		}
@@ -64,22 +115,15 @@ export class Program {
 		return result;
 	}
 
-	async getUserAccounts(): Promise<ProgramAccount[]> {
-		const program_accounts = await this.getProgramAccounts();
-		const user_tokens = await this.getUserTokens();
-
-		return program_accounts.filter(
-			(account) =>
-				user_tokens.find(
-					(user_account) => account.owner_token.toBase58() == user_account.mint.toBase58()
-				) != undefined
-		);
-	}
-
-	async updateChunk(account: ProgramAccount, data: number[]): Promise<void> {
+	async updateChunk(account: ProgramAccount, offset: number, data: Buffer): Promise<string> {
 		const token = (
 			await this._wallet.connection.getTokenLargestAccounts(account.owner_token)
 		).value.filter((pair) => pair.uiAmount)[0].address;
+
+		let offset_buf = Buffer.alloc(4)
+		offset_buf.writeUint32LE(offset)
+		
+		let buf = Buffer.from([1, 0, 0, 0].concat([...offset_buf]).concat([...data]))
 
 		const transaction = new Transaction({
 			recentBlockhash: (await this._wallet.connection.getLatestBlockhash()).blockhash,
@@ -92,28 +136,45 @@ export class Program {
 					{ pubkey: token, isSigner: false, isWritable: false }
 				],
 				programId: this._programID,
-				data: Buffer.from([1, 0, 0, 0].concat(data))
+				data: buf
 			})
-		);
+		)
 
 		const signature = await this._wallet.sendTransaction(transaction);
-
-		console.log(`Update data signature: ${signature}`);
+		return signature
 	}
 
 	/**
 	 * Fetching nft metadata
 	 * @param program_account
 	 */
-	public async fetchNFTMetadata(program_account: ProgramAccount): Promise<void> {
-		const pda = await Metadata.getPDA(program_account.owner_token);
+	public async fetchNFTMetadata(token_account: TokenAccount): Promise<void> {
+		const pda = await Metadata.getPDA(token_account.mint);
 		const metadata = await Metadata.load(this._wallet.connection, pda);
 
 		const response = await (await fetch(metadata.data.data.uri, { redirect: 'follow' })).json();
 
-		program_account.nft_metadata = {
+		token_account.nft_metadata = {
 			name: response.name,
 			image: response.image
 		};
+	}
+
+	public async syncChunks (account: ProgramAccount) : Promise<UpdateTask[]> {
+		let result: UpdateTask[] = []
+
+		const response = await APIController.getRegion(account.id)
+		let data  = Buffer.from(response.data.region_raw, 'base64')
+
+		for (let i = 0; i < data.length; i++) {
+			if (data[i] != account.data[i]) {
+				console.log(i, data[i], account.data[i])
+				const offset = Math.floor(i / 900) * 900
+				result.push(new UpdateTask(this, account, offset, data.slice(offset, offset + 900)))
+				i = offset + 900;
+			}
+		}
+
+		return result
 	}
 }

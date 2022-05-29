@@ -38,17 +38,17 @@ impl ChunkAccount {
             ((array[0] as u32) <<  0)
     }
 
-    fn as_u8_be(x: u32) -> [u8;4] {
-        let b1 : u8 = ((x >> 24) & 0xff) as u8;
-        let b2 : u8 = ((x >> 16) & 0xff) as u8;
-        let b3 : u8 = ((x >> 8) & 0xff) as u8;
-        let b4 : u8 = (x & 0xff) as u8;
+    fn as_u8_le(x: u32) -> [u8;4] {
+        let b4 : u8 = ((x >> 24) & 0xff) as u8;
+        let b3 : u8 = ((x >> 16) & 0xff) as u8;
+        let b2 : u8 = ((x >> 8) & 0xff) as u8;
+        let b1 : u8 = (x & 0xff) as u8;
         return [b1, b2, b3, b4]
     }
 
     fn serialize(&self, mut dst: RefMut<&mut [u8]>) {
 
-        for (i, b) in ChunkAccount::as_u8_be(self.id).iter().enumerate() {
+        for (i, b) in ChunkAccount::as_u8_le(self.id).iter().enumerate() {
             dst[i] = *b;
         }
 

@@ -1,5 +1,8 @@
 package com.crypteam;
 import com.crypteam.rcon.RConServer;
+import com.crypteam.rpc.RPCPublisher;
+import com.crypteam.rpc.RPCSubscriber;
+import com.crypteam.rpc.RPCThread;
 import com.crypteam.solana.SolanaProgramID;
 import com.crypteam.solana.SolanaRPC;
 import com.crypteam.solana.exceptions.AddressFormatException;
@@ -13,6 +16,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -20,7 +25,7 @@ import java.nio.ShortBuffer;
 
 public final class PluginMain extends JavaPlugin implements Listener {
 
-    Thread RConThread;
+    RPCSubscriber subscriber;
 
     @Override
     public void onEnable() {
@@ -34,8 +39,14 @@ public final class PluginMain extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
         Section.downloadScriptData();
 //        Section.MapAccess();
-        RConThread = new Thread(new RConServer());
-        RConThread.start();
+        JedisPool pool = new JedisPool("localhost", 6379);
+        Jedis subInstance = pool.getResource();
+        Jedis pubInstance = pool.getResource();
+
+
+        subscriber = new RPCSubscriber();
+        new RPCThread(subInstance, subscriber).start();
+        new RPCPublisher(pubInstance);
     }
 
 
@@ -104,7 +115,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        RConThread.interrupt();
+        subscriber.unsubscribe();
     }
 
     @EventHandler

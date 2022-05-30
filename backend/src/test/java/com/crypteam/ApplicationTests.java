@@ -24,11 +24,11 @@ class ApplicationTests {
 
 	@Test
 	void signatureTest() {
-		byte[] key = new byte[] {-75, 19, 83, -34, -42, -61, -66, -5, -79, -13, 14, -109, -64, 4, -58, -101, -52, 42, 63, 16, -12, -62, 64, -110, 91, 45, -69, 88, -99, -28, -119, 103};
-
-		TweetNaclFast.Signature sign = new TweetNaclFast.Signature(key, key);
+		byte[] key = Base64.decodeBase64("tRNT3tbDvvux8w6TwATGm8wqPxD0wkCSWy27WJ3kiWc=");
 		byte[] signature = Base64.decodeBase64("VIMffpLOsZtEAT8UsJ8s+NW1+DMTqYbY0DM+dvdsaTYTP1/cAzdD2Ip7bex0dHXfI3oe/zEfslZEwHoyhNX9Ag==");
 		String msg = "Hello world!";
+
+		TweetNaclFast.Signature sign = new TweetNaclFast.Signature(key, key);
 
 		System.out.println(sign.detached_verify(msg.getBytes(), signature));
 	}

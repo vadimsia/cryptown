@@ -32,6 +32,7 @@
 		// controller.wallet.connection.
 		let result = await controller.wallet.signMessage("Hello world!")
 		console.log(result.signature.toString('base64'))
+		console.log(controller.wallet.publicKey.toBytes().toString('base64'))
 	}
 </script>
 

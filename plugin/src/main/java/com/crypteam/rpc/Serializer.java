@@ -31,32 +31,4 @@ public class Serializer {
 
         return o;
     }
-
-    public static byte[] serialize(Object obj, boolean b) throws IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream out;
-
-        out = new ObjectOutputStream(bos);
-        out.writeObject(obj);
-        out.flush();
-        byte[] yourBytes = bos.toByteArray();
-
-        bos.close();
-
-        return yourBytes;
-    }
-
-    public static Object deserialize(byte[] bytes, boolean b) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-        ObjectInput in;
-
-        in = new ObjectInputStream(bis);
-        Object o = in.readObject();
-
-        if (in != null) {
-            in.close();
-        }
-
-        return o;
-    }
 }

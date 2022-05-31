@@ -8,8 +8,7 @@ public class RPCPublisher {
     public RPCPublisher (Jedis jedis) {
         instance = jedis;
     }
-
-    public Jedis getInstance () {
-        return instance;
+    public static void publish (String message) {
+        instance.publish("rpc", message);
     }
 }

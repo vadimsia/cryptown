@@ -1,4 +1,6 @@
 import com.crypteam.rpc.*;
+import com.crypteam.rpc.requests.ReadDataRequest;
+import com.crypteam.rpc.requests.ReadDataResponse;
 import org.junit.Test;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -47,28 +49,35 @@ public class RCONTest {
 
         Thread.sleep(1000);
 
-        RPCRequest request = new RPCRequest(RPCCommand.AUTHORIZE_USER, new byte[] {1, 2, 3, 4, 5});
+        RPCRequest request = new RPCRequest(RPCCommand.AUTHORIZE_USER);
         publisher.publish("rpc", Serializer.serialize(request));
         Thread.sleep(1000*5);
         listener.unsubscribe();
     }
 
     @Test
-    public void serializerTest () throws IOException, ClassNotFoundException {
-        RPCRequest request = new RPCRequest(RPCCommand.READ_DATA, new byte[] {1, 2, 3, 4});
+    public void readDataRequestTest () throws IOException, ClassNotFoundException {
+        ReadDataRequest request = new ReadDataRequest(1);
 
-        byte[] data = Serializer.serialize(request, true);
-        RPCRequest request1 = (RPCRequest) Serializer.deserialize(data, true);
+        String data = Serializer.serialize(request);
+        RPCRequest request1 = (RPCRequest) Serializer.deserialize(data);
 
-        assertEquals(request1.command, RPCCommand.READ_DATA);
-        assertArrayEquals(request.payload, request1.payload);
+        ReadDataRequest typed_request = (ReadDataRequest) request1;
 
-        request = new RPCRequest(RPCCommand.READ_DATA, new byte[] {1, 2, 3, 4});
+        assertEquals(typed_request.command, RPCCommand.READ_DATA);
+        assertEquals(typed_request.area_id, 1);
+    }
 
-        String str_data = Serializer.serialize(request);
-        request1 = (RPCRequest) Serializer.deserialize(str_data);
+    @Test
+    public void readDataResponseTest () throws IOException, ClassNotFoundException {
+        ReadDataResponse request = new ReadDataResponse(new short[] {1,2,3,4,5});
 
-        assertEquals(request1.command, RPCCommand.READ_DATA);
-        assertArrayEquals(request.payload, request1.payload);
+        String data = Serializer.serialize(request);
+        RPCRequest request1 = (RPCRequest) Serializer.deserialize(data);
+
+        ReadDataResponse typed_request = (ReadDataResponse) request1;
+
+        assertEquals(typed_request.command, RPCCommand.READ_DATA_RESPONSE);
+        assertArrayEquals(typed_request.payload, new short[] {1,2,3,4,5});
     }
 }

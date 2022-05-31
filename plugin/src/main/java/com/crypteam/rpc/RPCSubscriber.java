@@ -1,7 +1,11 @@
 package com.crypteam.rpc;
 
 import com.crypteam.Section;
+import com.crypteam.rpc.requests.ReadDataRequest;
+import com.crypteam.rpc.requests.ReadDataResponse;
 import redis.clients.jedis.JedisPubSub;
+
+import java.io.IOException;
 
 public class RPCSubscriber extends JedisPubSub {
     public void onMessage(String channel, String message) {
@@ -15,12 +19,17 @@ public class RPCSubscriber extends JedisPubSub {
         }
 
         if (request.command == RPCCommand.READ_DATA) {
-            Section sec = new Section(0);
-            //RPCRequest response = new RPCRequest(RPCCommand.READ_DATA_RESPONSE,)
+            ReadDataRequest typed_request = (ReadDataRequest) request;
+            Section sec = new Section(typed_request.area_id);
+
+            ReadDataResponse response = new ReadDataResponse(sec.getRegion());
+
+            try {
+                RPCPublisher.publish(Serializer.serialize(response));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        System.out.println(request.command);
-        for (byte b : request.payload)
-            System.out.println(b);
     }
 
     public void onSubscribe(String channel, int subscribedChannels) {

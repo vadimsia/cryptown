@@ -70,14 +70,16 @@ public class RCONTest {
 
     @Test
     public void readDataResponseTest () throws IOException, ClassNotFoundException {
-        ReadDataResponse request = new ReadDataResponse(new short[] {1,2,3,4,5});
+        ReadDataRequest request = new ReadDataRequest(1);
+        ReadDataResponse response = new ReadDataResponse(request, new short[] {1,2,3,4,5});
 
-        String data = Serializer.serialize(request);
+        String data = Serializer.serialize(response);
         RPCRequest request1 = (RPCRequest) Serializer.deserialize(data);
 
-        ReadDataResponse typed_request = (ReadDataResponse) request1;
+        ReadDataResponse typed_response = (ReadDataResponse) request1;
 
-        assertEquals(typed_request.command, RPCCommand.READ_DATA_RESPONSE);
-        assertArrayEquals(typed_request.payload, new short[] {1,2,3,4,5});
+        assertEquals(typed_response.command, RPCCommand.READ_DATA_RESPONSE);
+        assertEquals(request.uuid, typed_response.uuid);
+        assertArrayEquals(typed_response.payload, new short[] {1,2,3,4,5});
     }
 }

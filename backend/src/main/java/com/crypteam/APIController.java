@@ -1,12 +1,19 @@
 package com.crypteam;
 
 import com.crypteam.crypto.TweetNaclFast;
-import com.crypteam.rcon.RConClient;
+import com.crypteam.rpc.RPCCommand;
+import com.crypteam.rpc.RPCJedisPool;
+import com.crypteam.rpc.RPCPublisher;
+import com.crypteam.rpc.RPCWaitMessage;
+import com.crypteam.rpc.requests.ReadDataRequest;
+import com.crypteam.rpc.requests.ReadDataResponse;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.nio.ShortBuffer;
 
 class APIResponse<T> {
     public boolean success = true;
@@ -51,18 +58,18 @@ public class APIController {
     @GetMapping("/api/get_region/{id}")
     public APIResponse<Region> getRegion (@PathVariable int id) {
         APIResponseBuilder<Region> responseBuilder = new APIResponseBuilder<>();
-        RConClient client;
 
         try {
-            client = new RConClient();
-        } catch (Exception e) {
-            return responseBuilder.makeFailed("Cant connect to minecraft server...").build();
-        }
+            ReadDataRequest request = new ReadDataRequest(id);
+            RPCPublisher.publish(request);
 
-        try {
-            Region region = new Region(client.readArea(id));
+            RPCWaitMessage messageWaiter = new RPCWaitMessage(RPCJedisPool.getResource(), request, RPCCommand.READ_DATA_RESPONSE);
+            ReadDataResponse response = (ReadDataResponse) messageWaiter.waitMessage();
+
+            Region region = new Region(new byte[] {1,2,3});
             return responseBuilder.setPayload(region).makeSuccess().build();
         } catch (Exception e) {
+            e.printStackTrace();
             return responseBuilder.makeFailed("Some error here...").build();
         }
     }

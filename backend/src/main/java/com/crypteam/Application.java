@@ -1,6 +1,7 @@
 package com.crypteam;
 
-import com.crypteam.rcon.RConClient;
+import com.crypteam.rpc.RPCJedisPool;
+import com.crypteam.rpc.RPCPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -19,6 +20,9 @@ public class Application {
 
 	public static void main(String[] args) throws IOException {
 		ctx = SpringApplication.run(Application.class, args);
+
+		new RPCJedisPool();
+		new RPCPublisher(RPCJedisPool.getResource());
 	}
 
 }

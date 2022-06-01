@@ -23,16 +23,17 @@
 		//let program_accounts = await program.getProgramAccounts();
 
 		// Достает только участки авторизованного пользователя
-		// let user_tokens = await program.getUserTokens();
+		let user_tokens = await program.getUserTokens();
 		// console.log(user_tokens);
-		// await program.fetchNFTMetadata(user_tokens[0])
-		// let signature = await program.initAccount(user_tokens[0])
-		// console.log(signature)
+		await program.fetchNFTMetadata(user_tokens[0])
+		console.log(user_tokens[0].program_account)
+		let signature = await program.initAccount(user_tokens[0])
+		console.log(signature)
 
 		// controller.wallet.connection.
-		let result = await controller.wallet.signMessage("Hello world!")
-		console.log(result.signature.toString('base64'))
-		console.log(controller.wallet.publicKey.toBytes().toString('base64'))
+		// let result = await controller.wallet.signMessage("Hello world!")
+		// console.log(result.signature.toString('base64'))
+		// console.log(controller.wallet.publicKey.toBytes().toString('base64'))
 	}
 </script>
 

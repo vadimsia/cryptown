@@ -93,7 +93,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
                 try {
                     accountInfo = solanaRPC.getAccountInfoByRegionID(SolanaProgramID.PROGRAM_ID, areaID);
                 } catch (Exception e) {
-                    sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.DARK_PURPLE + e.toString());
+                    sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.DARK_PURPLE + e);
                     return true;
                 }
 
@@ -106,6 +106,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
 
                 System.out.println("Region length: " + region.length);
                 System.out.println("Original region length: " + sec.getRegion().length);
+                sender.sendMessage(ChatColor.GREEN + "Region successfully refreshed from solana!");
             }
         }
 

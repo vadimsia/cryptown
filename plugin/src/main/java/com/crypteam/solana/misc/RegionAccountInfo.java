@@ -1,6 +1,7 @@
 package com.crypteam.solana.misc;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 
 public class RegionAccountInfo extends AccountInfo {
@@ -23,7 +24,7 @@ public class RegionAccountInfo extends AccountInfo {
 
         ByteBuffer buffer = ByteBuffer.wrap(data);
 
-        this.id = buffer.asIntBuffer().get(0);
+        this.id = buffer.order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().get(0);
         this.owner = new PublicKey(Arrays.copyOfRange(data, 4, 36));
         this.payload = Arrays.copyOfRange(data, 36, data.length);
     }

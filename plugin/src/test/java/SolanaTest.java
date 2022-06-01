@@ -67,17 +67,17 @@ public class SolanaTest {
     @Test
     public void getRegionByIDTest () throws AddressFormatException, ApiRequestException, IOException, AccountInfoNotFoundException {
         SolanaRPC rpc = new SolanaRPC("https://explorer-api.devnet.solana.com/");
-        PublicKey pk = new PublicKey("BoJibLNDthR9j5A4SqpzSGTdULiR8d43kEat3bbbufhq");
+        PublicKey pk = new PublicKey("u35VEZ9gPkPg1VAp3YAxPejRhKKu5q8FJagEc7vUs6Y");
 
 
-        RegionAccountInfo accountInfo = rpc.getAccountInfoByRegionID(pk, 0);
+        RegionAccountInfo accountInfo = rpc.getAccountInfoByRegionID(pk, 4);
         System.out.println(accountInfo.getData());
 
         assertNotEquals(accountInfo, null);
+        assertEquals(accountInfo.getId(), 4);
 
         ShortBuffer buf = ByteBuffer.wrap(accountInfo.getPayload()).order(ByteOrder.BIG_ENDIAN).asShortBuffer();
         short[] region = new short[buf.limit()];
-        buf.get(region);
         assertEquals(region.length, 16384);
     }
 }

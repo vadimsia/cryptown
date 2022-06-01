@@ -10,6 +10,10 @@ import org.junit.jupiter.api.Test;
 import redis.clients.jedis.JedisPool;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,6 +26,16 @@ class ApplicationTests {
 		RPCRequest request = new ReadDataRequest(1);
 		RPCRequest response = new RPCWaitMessage(pool.getResource(), request, RPCCommand.READ_DATA_RESPONSE).waitMessage();
 		assertEquals(response, null);
+	}
+
+	@Test
+	void byteCastTest () {
+		ByteBuffer buf = ByteBuffer.wrap(new byte[] {1,2,3,4});
+
+		short[] data = new short[buf.limit() / 2];
+		buf.asShortBuffer().get(data);
+
+		assertArrayEquals(new byte[] {1,2,3,4}, Utils.short2byte(data));
 	}
 
 	@Test

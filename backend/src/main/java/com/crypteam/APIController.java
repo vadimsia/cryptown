@@ -66,7 +66,7 @@ public class APIController {
             RPCWaitMessage messageWaiter = new RPCWaitMessage(RPCJedisPool.getResource(), request, RPCCommand.READ_DATA_RESPONSE);
             ReadDataResponse response = (ReadDataResponse) messageWaiter.waitMessage();
 
-            Region region = new Region(new byte[] {1,2,3});
+            Region region = new Region(Utils.short2byte(response.payload));
             return responseBuilder.setPayload(region).makeSuccess().build();
         } catch (Exception e) {
             e.printStackTrace();

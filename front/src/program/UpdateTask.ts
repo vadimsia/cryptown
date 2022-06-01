@@ -2,10 +2,10 @@ import type { Program } from "./program";
 import type { ProgramAccount } from "./ProgramAccount";
 
 export class UpdateTask {
-    program: Program
-    account: ProgramAccount
-    offset: number
-    data: Buffer
+    private program: Program
+    private account: ProgramAccount
+    private offset: number
+    private data: Buffer
 
     constructor (program: Program, account: ProgramAccount, offset: number, data: Buffer) {
         this.program = program

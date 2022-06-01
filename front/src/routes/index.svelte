@@ -26,9 +26,15 @@
 		let user_tokens = await program.getUserTokens();
 		// console.log(user_tokens);
 		await program.fetchNFTMetadata(user_tokens[0])
-		console.log(user_tokens[0].program_account)
-		let signature = await program.initAccount(user_tokens[0])
-		console.log(signature)
+		if (!user_tokens[0].program_account) {
+			let signature = await program.initAccount(user_tokens[0])
+			console.log(signature)
+		} else {
+
+			let tasks = await program.syncChunks(user_tokens[0].program_account)
+			for (let task of tasks)
+				console.log(await task.execute())
+		}
 
 		// controller.wallet.connection.
 		// let result = await controller.wallet.signMessage("Hello world!")

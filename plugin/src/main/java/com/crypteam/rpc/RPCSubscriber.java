@@ -22,7 +22,7 @@ public class RPCSubscriber extends JedisPubSub {
             ReadDataRequest typed_request = (ReadDataRequest) request;
             Section sec = new Section(typed_request.area_id);
 
-            ReadDataResponse response = new ReadDataResponse(sec.getRegion());
+            ReadDataResponse response = new ReadDataResponse(typed_request, sec.getRegion());
 
             try {
                 RPCPublisher.publish(Serializer.serialize(response));

@@ -30,7 +30,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
     public void onEnable() {
         Section.setMapAccess();
         try {
-            SolanaProgramID.PROGRAM_ID = new PublicKey("BoJibLNDthR9j5A4SqpzSGTdULiR8d43kEat3bbbufhq");
+            SolanaProgramID.PROGRAM_ID = new PublicKey("u35VEZ9gPkPg1VAp3YAxPejRhKKu5q8FJagEc7vUs6Y");
         } catch (AddressFormatException e) {
             throw new RuntimeException(e);
         }

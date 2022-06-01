@@ -5,7 +5,6 @@ import java.util.Arrays;
 
 public class RegionAccountInfo extends AccountInfo {
     int id;
-    PublicKey daddy;
     PublicKey owner;
     byte[] payload;
 
@@ -15,9 +14,8 @@ public class RegionAccountInfo extends AccountInfo {
 
         ByteBuffer buffer = ByteBuffer.wrap(data);
         this.id = buffer.asIntBuffer().get(0);
-        this.daddy = new PublicKey(Arrays.copyOfRange(data, 4, 36));
-        this.owner = new PublicKey(Arrays.copyOfRange(data, 36, 68));
-        this.payload = Arrays.copyOfRange(data, 68, data.length);
+        this.owner = new PublicKey(Arrays.copyOfRange(data, 4, 36));
+        this.payload = Arrays.copyOfRange(data, 36, data.length);
     }
 
     public RegionAccountInfo(AccountInfo accountInfo) {
@@ -26,13 +24,8 @@ public class RegionAccountInfo extends AccountInfo {
         ByteBuffer buffer = ByteBuffer.wrap(data);
 
         this.id = buffer.asIntBuffer().get(0);
-        this.daddy = new PublicKey(Arrays.copyOfRange(data, 4, 36));
-        this.owner = new PublicKey(Arrays.copyOfRange(data, 36, 68));
-        this.payload = Arrays.copyOfRange(data, 68, data.length);
-    }
-
-    public PublicKey getDaddy() {
-        return daddy;
+        this.owner = new PublicKey(Arrays.copyOfRange(data, 4, 36));
+        this.payload = Arrays.copyOfRange(data, 36, data.length);
     }
 
     public PublicKey getOwner() {

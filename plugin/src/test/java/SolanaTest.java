@@ -1,4 +1,5 @@
 import com.crypteam.solana.SolanaRPC;
+import com.crypteam.solana.exceptions.AccountInfoNotFoundException;
 import com.crypteam.solana.exceptions.AddressFormatException;
 import com.crypteam.solana.exceptions.ApiRequestException;
 import com.crypteam.solana.misc.AccountInfo;
@@ -43,7 +44,6 @@ public class SolanaTest {
             RegionAccountInfo regionAccount = new RegionAccountInfo(accountInfo);
 
             assertEquals(regionAccount.getOwner().toString(), "s5E5TCxx2DNjoENQ6wmRQNR2pVjNFC1cy1tWfaFLQNV");
-            assertEquals(regionAccount.getDaddy().toString(), "HCMDYFaAWD3YuaBMLiftc5MzNKcLrPmjASRaciRdAAYU");
             assertArrayEquals(regionAccount.getPayload(), new byte[] { 1, 1, 1, 1, 1, 1, 1, 1 });
         } catch (ApiRequestException e) {
             System.out.println(e);
@@ -59,14 +59,13 @@ public class SolanaTest {
         for (AccountInfo account : accounts) {
             RegionAccountInfo accountInfo = new RegionAccountInfo(account);
             System.out.println(accountInfo.getPublicKey());
-            System.out.println(accountInfo.getDaddy());
             System.out.println(accountInfo.getId());
             System.out.println("");
         }
     }
 
     @Test
-    public void getRegionByIDTest () throws AddressFormatException, ApiRequestException, IOException {
+    public void getRegionByIDTest () throws AddressFormatException, ApiRequestException, IOException, AccountInfoNotFoundException {
         SolanaRPC rpc = new SolanaRPC("https://explorer-api.devnet.solana.com/");
         PublicKey pk = new PublicKey("BoJibLNDthR9j5A4SqpzSGTdULiR8d43kEat3bbbufhq");
 

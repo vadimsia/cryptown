@@ -1,5 +1,6 @@
 package com.crypteam.solana;
 
+import com.crypteam.solana.exceptions.AccountInfoNotFoundException;
 import com.crypteam.solana.exceptions.AddressFormatException;
 import com.crypteam.solana.exceptions.ApiRequestException;
 import com.crypteam.solana.misc.AccountInfo;
@@ -102,7 +103,7 @@ public class SolanaRPC {
         return result;
     }
 
-    public RegionAccountInfo getAccountInfoByRegionID (PublicKey programID, int id) throws AddressFormatException, ApiRequestException, IOException {
+    public RegionAccountInfo getAccountInfoByRegionID (PublicKey programID, int id) throws AddressFormatException, ApiRequestException, IOException, AccountInfoNotFoundException {
         List<AccountInfo> accounts = this.getProgramAccounts(programID);
 
         for (AccountInfo account : accounts) {
@@ -110,6 +111,6 @@ public class SolanaRPC {
             if (accountInfo.getId() == id) return accountInfo;
         }
 
-        return null;
+        throw new AccountInfoNotFoundException();
     }
 }

@@ -9,6 +9,8 @@ import com.crypteam.solana.misc.PublicKey;
 import com.crypteam.solana.misc.RegionAccountInfo;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
@@ -91,7 +93,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
                 try {
                     accountInfo = solanaRPC.getAccountInfoByRegionID(SolanaProgramID.PROGRAM_ID, areaID);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.DARK_PURPLE + e.toString());
                     return true;
                 }
 

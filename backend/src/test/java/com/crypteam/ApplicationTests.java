@@ -1,25 +1,71 @@
 package com.crypteam;
 
 import com.crypteam.crypto.TweetNaclFast;
-import com.crypteam.rcon.RConClient;
+import com.crypteam.rpc.*;
+import com.crypteam.rpc.exceptions.RPCWaitTimeout;
+import com.crypteam.rpc.requests.ReadDataRequest;
+import com.crypteam.rpc.requests.ReadDataResponse;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import redis.clients.jedis.JedisPool;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
-import java.security.PublicKey;
+import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
 class ApplicationTests {
 
 	@Test
-	void rconTest() throws IOException {
-		byte[] area = new RConClient().readArea(1);
-		System.out.println("Area 0 length: " + area.length);
+	void rpcTest() throws RPCWaitTimeout {
+		JedisPool pool = new JedisPool("localhost", 6379);
+		RPCRequest request = new ReadDataRequest(1);
+		RPCRequest response = new RPCWaitMessage(pool.getResource(), request, RPCCommand.READ_DATA_RESPONSE).waitMessage();
+		assertEquals(response, null);
+	}
 
-		area = new RConClient().readArea(36);
-		System.out.println("Area 35 length: " + area.length);
+	@Test
+	void byteCastTest () {
+		ByteBuffer buf = ByteBuffer.wrap(new byte[] {1,2,3,4});
+
+		short[] data = new short[buf.limit() / 2];
+		buf.asShortBuffer().get(data);
+
+		assertArrayEquals(new byte[] {1,2,3,4}, Utils.short2byte(data));
+	}
+
+	@Test
+	void rpcTest2() throws IOException, InterruptedException {
+		JedisPool pool = new JedisPool("localhost", 6379);
+		ReadDataRequest request = new ReadDataRequest(1);
+		ReadDataResponse fake_response = new ReadDataResponse(request, new short[] {1,2,3});
+
+		new RPCPublisher(pool.getResource());
+
+		AtomicReference<RPCRequest> response = new AtomicReference<>();
+		Thread thread = new Thread(() -> {
+			try {
+				response.set(new RPCWaitMessage(pool.getResource(), request, RPCCommand.READ_DATA_RESPONSE).waitMessage());
+			} catch (RPCWaitTimeout e) {
+				return;
+			}
+			System.out.println("response here");
+		});
+
+		thread.start();
+
+		Thread.sleep(1000);
+
+		RPCPublisher.publish(Serializer.serialize(fake_response));
+		while (thread.isAlive()) {
+			Thread.sleep(100);
+		}
+
+		assertNotEquals(response.get(), null);
 	}
 
 	@Test

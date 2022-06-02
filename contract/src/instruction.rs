@@ -2,15 +2,13 @@ use std::convert::{TryFrom, TryInto};
 use solana_program::program_error::ProgramError;
 use solana_program::msg;
 use crate::error::ChunkError::InvalidInstruction;
-use crate::processor::ChunkAccount;
+use crate::utils::Conversations;
 
 pub enum ChunkInstruction {
     // [chunk account]
     // [signer]
-    // [token]
-    InitChunk {
-        id: u32
-    },
+    // [metadata token]
+    InitChunk,
 
     // [chunk account]
     // [signer]
@@ -30,14 +28,11 @@ impl ChunkInstruction {
         msg!("Payload: {:?}", payload);
 
 
-
         Ok (
             match tag {
-                0 => Self::InitChunk {
-                    id: ChunkAccount::as_u32_le(payload.try_into().unwrap())
-                },
+                0 => Self::InitChunk,
                 1 => Self::UpdateChunk {
-                    offset: usize::try_from(ChunkAccount::as_u32_le(payload.split_at(4).0.try_into().unwrap())).unwrap(),
+                    offset: usize::try_from(Conversations::as_u32_le(payload.split_at(4).0.try_into().unwrap())).unwrap(),
                     data: Box::from(payload.split_at(4).1)
                 },
                 _ => return Err(InvalidInstruction.into())

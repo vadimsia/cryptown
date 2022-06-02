@@ -24,7 +24,7 @@
 
 		// Достает только участки авторизованного пользователя
 		let user_tokens = await program.getUserTokens();
-		// console.log(user_tokens);
+		console.log(user_tokens);
 		await program.fetchNFTMetadata(user_tokens[0])
 		if (!user_tokens[0].program_account) {
 			let signature = await program.initAccount(user_tokens[0])

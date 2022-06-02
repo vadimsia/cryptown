@@ -51,19 +51,16 @@ export class Program {
 		if (account.nft_metadata == null)
 			throw "Need nft metadata"
 
-		let command = Buffer.alloc(8)
-		command.writeUint32BE(0, 0) // command id - init
-		command.writeUint32LE(parseInt(account.nft_metadata?.name.split('#')[1]), 4) // id
-		
+
 		transaction.add(
 			new TransactionInstruction({
 				keys: [
 					{ pubkey: program_account.publicKey, isSigner: false, isWritable: true },
 					{ pubkey: this._wallet.publicKey, isSigner: true, isWritable: false },
-					{ pubkey: account.publicKey, isSigner: false, isWritable: false }
+					{ pubkey: await Metadata.getPDA(account.mint), isSigner: false, isWritable: false }
 				],
 				programId: this._programID,
-				data: command
+				data: Buffer.from([0, 0, 0, 0])
 			})
 		)
 
@@ -90,8 +87,6 @@ export class Program {
 				data: account.account.data.slice(36)
 			});
 		}
-
-		console.log(result)
 
 		return result;
 	}

@@ -1,4 +1,4 @@
-import anchor from '@project-serum/anchor';
+import * as anchor from '@project-serum/anchor';
 import { SystemProgram, Transaction } from '@solana/web3.js';
 import type { Wallet } from 'src/wallets/IWallet';
 import type { CandyMachineAccount } from './interfaces';
@@ -8,7 +8,7 @@ import {
 	SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
 	TOKEN_METADATA_PROGRAM_ID
 } from './programs';
-import { TOKEN_PROGRAM_ID, MintLayout, Token } from '@solana/spl-token';
+import { TOKEN_PROGRAM_ID, MintLayout, createMintToInstruction, createInitializeMintInstruction } from '@solana/spl-token';
 import { createAssociatedTokenAccountInstruction } from './instructions';
 
 export class CandyMachine {
@@ -133,25 +133,23 @@ export class CandyMachine {
 				fromPubkey: payer,
 				newAccountPubkey: mint.publicKey,
 				space: MintLayout.span,
-				lamports: await candyMachine.program.provider.connection.getMinimumBalanceForRentExemption(
-					MintLayout.span
-				),
+				lamports: await connection.getMinimumBalanceForRentExemption(MintLayout.span),
 				programId: TOKEN_PROGRAM_ID
 			}),
-			Token.createInitMintInstruction(TOKEN_PROGRAM_ID, mint.publicKey, 0, payer, payer),
+			createInitializeMintInstruction(mint.publicKey, 0, payer, null, TOKEN_PROGRAM_ID),
 			createAssociatedTokenAccountInstruction(
 				userTokenAccountAddress,
 				payer,
 				payer,
 				mint.publicKey
 			),
-			Token.createMintToInstruction(
-				TOKEN_PROGRAM_ID,
+			createMintToInstruction(
 				mint.publicKey,
 				userTokenAccountAddress,
 				payer,
+				1,
 				[],
-				1
+				TOKEN_PROGRAM_ID
 			),
             candyMachine.program.instruction.mintNft(creatorBump, {
 				accounts: {

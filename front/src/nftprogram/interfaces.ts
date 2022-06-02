@@ -1,4 +1,4 @@
-import type anchor from '@project-serum/anchor';
+import type * as anchor from '@project-serum/anchor';
 
 export interface CandyMachineState {
 	itemsAvailable: number;

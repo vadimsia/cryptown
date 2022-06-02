@@ -3,14 +3,20 @@
 	import type { IWalletController } from '../wallets/IWalletController';
 	import { Program } from '../program/program';
 
-	import { PublicKey } from '@solana/web3.js';
+	import { Keypair, PublicKey } from '@solana/web3.js';
 	import { CandyMachine } from '../nftprogram/candymachine';
+	import { onMount } from 'svelte';
+	import { Buffer } from 'buffer'
 
 	// ID программы по маинкрафту в солане
 	const PROGRAM_ID = new PublicKey('BZuqbnwSbcxTM5GyDw1V1vbM7YbPqXauYRGjViBMGCor');
 	const CANDY_MACHINE_ID = new PublicKey('BRV3fYXCFTYM4xYwj7pzwdYyPGPzuUHuV2XbTf7tLBrZ');
 
 	let controller: IWalletController;
+
+	onMount (() => {
+		window.Buffer = Buffer;
+	})
 
 	// Подключение кошелька
 	async function connectWallet() {
@@ -20,7 +26,8 @@
 
 	async function mint() {
 		let machine = new CandyMachine(CANDY_MACHINE_ID, controller.wallet)
-		console.log(await machine.getCandyMachineAccount())
+		let account = await machine.getCandyMachineAccount()
+		console.log(await machine.mintOneToken(account, controller.wallet.publicKey, Keypair.generate()))
 	}
 
 	async function updateChunk() {

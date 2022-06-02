@@ -60,10 +60,7 @@ export class CandyMachine {
 		};
 	}
 
-	private async getAtaForMint(
-		mint: anchor.web3.PublicKey,
-		buyer: anchor.web3.PublicKey
-	): Promise<anchor.web3.PublicKey> {
+	private async getAtaForMint(mint: anchor.web3.PublicKey, buyer: anchor.web3.PublicKey): Promise<anchor.web3.PublicKey> {
 		let address = await anchor.web3.PublicKey.findProgramAddress(
 			[buyer.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()],
 			SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID

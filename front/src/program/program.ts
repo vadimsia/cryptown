@@ -14,6 +14,7 @@ import type { TokenAccount } from './TokenAccount';
 import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
 import { UpdateTask } from './UpdateTask';
 import { APIController } from '../api/APIController';
+import type { NFTMetadata } from './NFTMetadata';
 
 export class Program {
 	private _TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
@@ -93,7 +94,7 @@ export class Program {
 	/**
 	 * @returns all user tokens (+ nfts)
 	 */
-	async getUserTokens(): Promise<TokenAccount[]> {
+	async getUserTokens(updateAuthority: PublicKey): Promise<TokenAccount[]> {
 		const program_accounts = await this.getProgramAccounts();
 
 		const result: TokenAccount[] = [];
@@ -102,26 +103,31 @@ export class Program {
 				programId: this._TOKEN_PROGRAM_ID
 			})
 		).value;
-
+		console.log(accounts)
 		for (const account of accounts) {
 			const amount = Number(account.account.data.readBigUInt64LE(64));
 			const mint = new PublicKey(account.account.data.slice(0, 32));
 			const owner = new PublicKey(account.account.data.slice(32, 64));
-			if (amount == 0) continue;
+			const program_account = program_accounts.find((account) => account.owner_token.toBase58() == mint.toBase58()) || null
 
-			result.push({
-				publicKey: account.pubkey,
-				mint,
-				owner,
-				nft_metadata: null,
-				program_account:
-					program_accounts.find((account) => account.owner_token.toBase58() == mint.toBase58()) ||
-					null,
-				amount
-			});
+			if (amount != 1) continue
+
+			try {
+				result.push({
+					publicKey: account.pubkey,
+					mint,
+					owner,
+					nft_metadata: await this.fetchNFTMetadata(mint),
+					program_account,
+					amount
+				});
+			} catch (e) {
+				console.log(e);
+				continue;
+			}
 		}
 
-		return result;
+		return result.filter((account) => account.nft_metadata.creator.toBase58() == updateAuthority.toBase58());
 	}
 
 	async updateChunk(account: ProgramAccount, offset: number, data: Buffer): Promise<string> {
@@ -157,15 +163,15 @@ export class Program {
 	 * Fetching nft metadata
 	 * @param program_account
 	 */
-	public async fetchNFTMetadata(token_account: TokenAccount): Promise<void> {
-		const pda = await Metadata.getPDA(token_account.mint);
+	private async fetchNFTMetadata(mint: PublicKey): Promise<NFTMetadata> {
+		const pda = await Metadata.getPDA(mint);
 		const metadata = await Metadata.load(this._wallet.connection, pda);
-
 		const response = await (await fetch(metadata.data.data.uri, { redirect: 'follow' })).json();
 
-		token_account.nft_metadata = {
+		return {
 			name: response.name,
-			image: response.image
+			image: response.image,
+			creator: new PublicKey(metadata.data.updateAuthority)
 		};
 	}
 

@@ -9,6 +9,7 @@ import com.crypteam.solana.misc.PublicKey;
 import com.crypteam.solana.misc.RegionAccountInfo;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.command.Command;
@@ -77,10 +78,10 @@ public final class PluginMain extends JavaPlugin implements Listener {
                 Section.removeRegions(Integer.parseInt(args[0]));
                 break;
             }
-            case "regionAccess":
+            case "setRegionAccess":
             {
                 Section sec = new Section(Integer.parseInt(args[0]));
-                sec.setRegionAccess(args[1]);
+                sec.setRegionAccess(BukkitAdapter.adapt(getServer().getPlayer(sender.getName())));
                 break;
             }
             case "refreshRegion":
@@ -124,6 +125,6 @@ public final class PluginMain extends JavaPlugin implements Listener {
     public void onLogout(PlayerQuitEvent event) {
         Player player = BukkitAdapter.adapt(event.getPlayer());
         Section.removeRegionAccess(player);
-        getLogger().info("Player " + event.getPlayer().getName() + " is logout");
+        getLogger().info("Player " + event.getPlayer().getName() + " logout");
     }
 }

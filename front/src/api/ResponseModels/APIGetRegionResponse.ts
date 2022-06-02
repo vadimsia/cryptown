@@ -1,7 +1,7 @@
-import type { APIResponse } from "../APIResponse";
+import type { APIResponse } from '../APIResponse';
 
 export interface APIGetRegionResponse extends APIResponse {
-    data: {
-        region_raw: string
-    }
+	data: {
+		region_raw: string;
+	};
 }

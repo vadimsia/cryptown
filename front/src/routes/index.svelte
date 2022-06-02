@@ -4,9 +4,11 @@
 	import { Program } from '../program/program';
 
 	import { PublicKey } from '@solana/web3.js';
+	import { CandyMachine } from '../nftprogram/candymachine';
 
 	// ID программы по маинкрафту в солане
-	const PROGRAM_ID = new PublicKey('u35VEZ9gPkPg1VAp3YAxPejRhKKu5q8FJagEc7vUs6Y');
+	const PROGRAM_ID = new PublicKey('BZuqbnwSbcxTM5GyDw1V1vbM7YbPqXauYRGjViBMGCor');
+	const CANDY_MACHINE_ID = new PublicKey('BRV3fYXCFTYM4xYwj7pzwdYyPGPzuUHuV2XbTf7tLBrZ');
 
 	let controller: IWalletController;
 
@@ -14,6 +16,11 @@
 	async function connectWallet() {
 		controller = new PhantomWallet();
 		await controller.connect();
+	}
+
+	async function mint() {
+		let machine = new CandyMachine(CANDY_MACHINE_ID, controller.wallet)
+		console.log(await machine.getCandyMachineAccount())
 	}
 
 	async function updateChunk() {
@@ -25,15 +32,13 @@
 		// Достает только участки авторизованного пользователя
 		let user_tokens = await program.getUserTokens();
 		console.log(user_tokens);
-		await program.fetchNFTMetadata(user_tokens[0])
+		await program.fetchNFTMetadata(user_tokens[0]);
 		if (!user_tokens[0].program_account) {
-			let signature = await program.initAccount(user_tokens[0])
-			console.log(signature)
+			let signature = await program.initAccount(user_tokens[0]);
+			console.log(signature);
 		} else {
-
-			let tasks = await program.syncChunks(user_tokens[0].program_account)
-			for (let task of tasks)
-				console.log(await task.execute())
+			let tasks = await program.syncChunks(user_tokens[0].program_account);
+			for (let task of tasks) console.log(await task.execute());
 		}
 
 		// controller.wallet.connection.
@@ -46,4 +51,5 @@
 <button on:click={connectWallet}>Authorize using Phantom</button>
 {#if controller}
 	<button on:click={updateChunk}>Update chunk</button>
+	<button on:click={mint}>Mint</button>
 {/if}

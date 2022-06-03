@@ -5,6 +5,7 @@ import com.crypteam.rpc.RPCCommand;
 import com.crypteam.rpc.RPCJedisPool;
 import com.crypteam.rpc.RPCPublisher;
 import com.crypteam.rpc.RPCWaitMessage;
+import com.crypteam.rpc.requests.AuthorizeRequest;
 import com.crypteam.rpc.requests.ReadDataRequest;
 import com.crypteam.rpc.requests.ReadDataResponse;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -86,6 +87,7 @@ public class APIController {
             return responseBuilder.makeFailed("Signature verification failed :/").build();
         }
 
+        RPCPublisher.publish(new AuthorizeRequest(key, uuid));
         return responseBuilder.setPayload(true).makeSuccess().build();
     }
 }

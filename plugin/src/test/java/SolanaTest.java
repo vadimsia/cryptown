@@ -73,7 +73,7 @@ public class SolanaTest {
 
 
 
-        RegionAccountInfo accountInfo = program.getAccountInfoByRegionID(4);
+        RegionAccountInfo accountInfo = program.getRegionByID(4);
 
         assertNotEquals(accountInfo, null);
         assertEquals(accountInfo.getId(), 4);
@@ -95,6 +95,22 @@ public class SolanaTest {
             System.out.println(token.getMint());
             System.out.println(token.getOwner());
             System.out.println(token.getAmount());
+        }
+    }
+
+    @Test
+    public void getRegionsByOwner () throws AddressFormatException, ApiRequestException, IOException {
+        PublicKey programID = new PublicKey("BZuqbnwSbcxTM5GyDw1V1vbM7YbPqXauYRGjViBMGCor");
+        PublicKey owner = new PublicKey("5Zk6n9TMeVm8qVUZAzuPzsJJNBJQf8CRYkUrLYrE5DgZ");
+
+        CryptownProgram program = new CryptownProgram(programID, "https://explorer-api.devnet.solana.com/");
+
+        List<RegionAccountInfo> regions = program.getRegionsByOwner(owner);
+        for (RegionAccountInfo region : regions) {
+            System.out.println(region.getId());
+            System.out.println(region.getPublicKey());
+            System.out.println(region.getOwner());
+
         }
     }
 }

@@ -3,7 +3,6 @@ import com.crypteam.rpc.RPCPublisher;
 import com.crypteam.rpc.RPCSubscriber;
 import com.crypteam.rpc.RPCThread;
 import com.crypteam.solana.SolanaProgramProperties;
-import com.crypteam.solana.SolanaRPC;
 import com.crypteam.solana.exceptions.AddressFormatException;
 import com.crypteam.solana.misc.PublicKey;
 import com.crypteam.solana.misc.RegionAccountInfo;
@@ -11,13 +10,14 @@ import com.crypteam.solana.program.CryptownProgram;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
 import org.bukkit.ChatColor;
+import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.checkerframework.checker.units.qual.C;
+import org.jetbrains.annotations.NotNull;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -28,10 +28,12 @@ import java.nio.ShortBuffer;
 public final class PluginMain extends JavaPlugin implements Listener {
 
     RPCSubscriber subscriber;
+    private static Server server;
 
     @Override
     public void onEnable() {
         Section.setMapAccess();
+
         try {
             SolanaProgramProperties.PROGRAM_ID = new PublicKey("u35VEZ9gPkPg1VAp3YAxPejRhKKu5q8FJagEc7vUs6Y");
             SolanaProgramProperties.RPC_ENDPOINT = "https://explorer-api.devnet.solana.com/";
@@ -41,15 +43,14 @@ public final class PluginMain extends JavaPlugin implements Listener {
         // Plugin startup logic
         getServer().getPluginManager().registerEvents(this, this);
         Section.downloadScriptData();
-//        Section.MapAccess();
-        JedisPool pool = new JedisPool("localhost", 6379);
-        Jedis subInstance = pool.getResource();
-        Jedis pubInstance = pool.getResource();
 
+        JedisPool pool = new JedisPool("localhost", 6379);
 
         subscriber = new RPCSubscriber();
-        new RPCThread(subInstance, subscriber).start();
-        new RPCPublisher(pubInstance);
+        new RPCThread(pool.getResource(), subscriber).start();
+        new RPCPublisher(pool.getResource());
+
+        server = getServer();
     }
 
 
@@ -93,7 +94,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
                 RegionAccountInfo accountInfo;
 
                 try {
-                    accountInfo = program.getAccountInfoByRegionID(areaID);
+                    accountInfo = program.getRegionByID(areaID);
                 } catch (Exception e) {
                     sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.DARK_PURPLE + e);
                     return true;
@@ -127,5 +128,10 @@ public final class PluginMain extends JavaPlugin implements Listener {
         Player player = BukkitAdapter.adapt(event.getPlayer());
         Section.removeRegionAccess(player);
         getLogger().info("Player " + event.getPlayer().getName() + " logout");
+    }
+
+    @NotNull
+    public static Server getBukkitServer() {
+        return server;
     }
 }

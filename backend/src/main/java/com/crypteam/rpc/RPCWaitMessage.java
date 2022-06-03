@@ -27,7 +27,7 @@ class Listener extends JedisPubSub {
         }
 
         if (incomingRequest.uuid.compareTo(request.uuid) == 0 && incomingRequest.command == waitCommand) {
-            result = request;
+            result = incomingRequest;
             unsubscribe();
             System.out.println("done");
         }

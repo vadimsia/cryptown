@@ -5,6 +5,7 @@ import com.crypteam.rpc.RPCCommand;
 import com.crypteam.rpc.RPCJedisPool;
 import com.crypteam.rpc.RPCPublisher;
 import com.crypteam.rpc.RPCWaitMessage;
+import com.crypteam.rpc.requests.AuthorizeRequest;
 import com.crypteam.rpc.requests.ReadDataRequest;
 import com.crypteam.rpc.requests.ReadDataResponse;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.nio.ShortBuffer;
 
 class APIResponse<T> {
@@ -86,6 +88,11 @@ public class APIController {
             return responseBuilder.makeFailed("Signature verification failed :/").build();
         }
 
+        try {
+            RPCPublisher.publish(new AuthorizeRequest(key, uuid));
+        } catch (IOException e) {
+            return responseBuilder.makeFailed("Internal server error...").build();
+        }
         return responseBuilder.setPayload(true).makeSuccess().build();
     }
 }

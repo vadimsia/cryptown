@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.nio.ShortBuffer;
 
 class APIResponse<T> {
@@ -87,7 +88,11 @@ public class APIController {
             return responseBuilder.makeFailed("Signature verification failed :/").build();
         }
 
-        RPCPublisher.publish(new AuthorizeRequest(key, uuid));
+        try {
+            RPCPublisher.publish(new AuthorizeRequest(key, uuid));
+        } catch (IOException e) {
+            return responseBuilder.makeFailed("Internal server error...").build();
+        }
         return responseBuilder.setPayload(true).makeSuccess().build();
     }
 }

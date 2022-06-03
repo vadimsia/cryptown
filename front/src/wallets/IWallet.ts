@@ -6,6 +6,7 @@ export type Wallet = {
 	connection: Connection;
 
 	sendTransaction(transaction: Transaction): Promise<string>;
-	signTransaction(transaction: Transaction) : Promise<Transaction>;
-	signMessage(message: string) : Promise<SignedMessage>
+	signTransaction(transaction: Transaction): Promise<Transaction>;
+	signAllTransactions(transactions: Transaction[]): Promise<Transaction[]>;
+	signMessage(message: string): Promise<SignedMessage>;
 };

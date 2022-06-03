@@ -8,6 +8,6 @@ export type TokenAccount = {
 	owner: PublicKey;
 	amount: number;
 
-	nft_metadata: NFTMetadata | null;
+	nft_metadata: NFTMetadata;
 	program_account: ProgramAccount | null;
 };

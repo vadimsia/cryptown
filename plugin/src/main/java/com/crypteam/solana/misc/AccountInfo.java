@@ -10,10 +10,6 @@ public class AccountInfo {
         this.data = data;
     }
 
-    public byte[] getData() {
-        return data;
-    }
-
     public PublicKey getPublicKey() {
         return publicKey;
     }

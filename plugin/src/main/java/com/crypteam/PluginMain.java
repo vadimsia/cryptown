@@ -2,22 +2,22 @@ package com.crypteam;
 import com.crypteam.rpc.RPCPublisher;
 import com.crypteam.rpc.RPCSubscriber;
 import com.crypteam.rpc.RPCThread;
-import com.crypteam.solana.SolanaProgramID;
+import com.crypteam.solana.SolanaProgramProperties;
 import com.crypteam.solana.SolanaRPC;
 import com.crypteam.solana.exceptions.AddressFormatException;
 import com.crypteam.solana.misc.PublicKey;
 import com.crypteam.solana.misc.RegionAccountInfo;
+import com.crypteam.solana.program.CryptownProgram;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.checker.units.qual.C;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -33,7 +33,8 @@ public final class PluginMain extends JavaPlugin implements Listener {
     public void onEnable() {
         Section.setMapAccess();
         try {
-            SolanaProgramID.PROGRAM_ID = new PublicKey("u35VEZ9gPkPg1VAp3YAxPejRhKKu5q8FJagEc7vUs6Y");
+            SolanaProgramProperties.PROGRAM_ID = new PublicKey("u35VEZ9gPkPg1VAp3YAxPejRhKKu5q8FJagEc7vUs6Y");
+            SolanaProgramProperties.RPC_ENDPOINT = "https://explorer-api.devnet.solana.com/";
         } catch (AddressFormatException e) {
             throw new RuntimeException(e);
         }
@@ -88,11 +89,11 @@ public final class PluginMain extends JavaPlugin implements Listener {
             {
                 int areaID = Integer.parseInt(args[0]);
 
-                SolanaRPC solanaRPC = new SolanaRPC("https://explorer-api.devnet.solana.com/");
+                CryptownProgram program = new CryptownProgram();
                 RegionAccountInfo accountInfo;
 
                 try {
-                    accountInfo = solanaRPC.getAccountInfoByRegionID(SolanaProgramID.PROGRAM_ID, areaID);
+                    accountInfo = program.getAccountInfoByRegionID(areaID);
                 } catch (Exception e) {
                     sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.DARK_PURPLE + e);
                     return true;

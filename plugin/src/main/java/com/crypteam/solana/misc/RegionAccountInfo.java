@@ -9,16 +9,6 @@ public class RegionAccountInfo extends AccountInfo {
     PublicKey owner;
     byte[] payload;
 
-
-    public RegionAccountInfo(PublicKey publicKey, byte[] data) {
-        super(publicKey, data);
-
-        ByteBuffer buffer = ByteBuffer.wrap(data);
-        this.id = buffer.asIntBuffer().get(0);
-        this.owner = new PublicKey(Arrays.copyOfRange(data, 4, 36));
-        this.payload = Arrays.copyOfRange(data, 36, data.length);
-    }
-
     public RegionAccountInfo(AccountInfo accountInfo) {
         super(accountInfo.publicKey, accountInfo.data);
 

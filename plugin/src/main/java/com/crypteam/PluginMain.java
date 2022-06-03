@@ -9,6 +9,9 @@ import com.crypteam.solana.misc.PublicKey;
 import com.crypteam.solana.misc.RegionAccountInfo;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
@@ -30,7 +33,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
     public void onEnable() {
         Section.setMapAccess();
         try {
-            SolanaProgramID.PROGRAM_ID = new PublicKey("BoJibLNDthR9j5A4SqpzSGTdULiR8d43kEat3bbbufhq");
+            SolanaProgramID.PROGRAM_ID = new PublicKey("u35VEZ9gPkPg1VAp3YAxPejRhKKu5q8FJagEc7vUs6Y");
         } catch (AddressFormatException e) {
             throw new RuntimeException(e);
         }
@@ -75,10 +78,10 @@ public final class PluginMain extends JavaPlugin implements Listener {
                 Section.removeRegions(Integer.parseInt(args[0]));
                 break;
             }
-            case "regionAccess":
+            case "setRegionAccess":
             {
                 Section sec = new Section(Integer.parseInt(args[0]));
-                sec.setRegionAccess(args[1]);
+                sec.setRegionAccess(BukkitAdapter.adapt(getServer().getPlayer(sender.getName())));
                 break;
             }
             case "refreshRegion":
@@ -91,7 +94,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
                 try {
                     accountInfo = solanaRPC.getAccountInfoByRegionID(SolanaProgramID.PROGRAM_ID, areaID);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.DARK_PURPLE + e);
                     return true;
                 }
 
@@ -104,6 +107,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
 
                 System.out.println("Region length: " + region.length);
                 System.out.println("Original region length: " + sec.getRegion().length);
+                sender.sendMessage(ChatColor.GREEN + "Region successfully refreshed from solana!");
             }
         }
 
@@ -121,6 +125,6 @@ public final class PluginMain extends JavaPlugin implements Listener {
     public void onLogout(PlayerQuitEvent event) {
         Player player = BukkitAdapter.adapt(event.getPlayer());
         Section.removeRegionAccess(player);
-        getLogger().info("Player " + event.getPlayer().getName() + " is logout");
+        getLogger().info("Player " + event.getPlayer().getName() + " logout");
     }
 }

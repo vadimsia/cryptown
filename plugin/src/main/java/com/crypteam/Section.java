@@ -222,9 +222,9 @@ public class Section {
         }
         Bukkit.getLogger().info("Complete");
     }
-    public void setRegionAccess(String name) {
+    public void setRegionAccess(Player player) {
         DefaultDomain domain = new DefaultDomain();
-        domain.addPlayer(name);
+        domain.addPlayer(player.getName());
         BlockVector3 start = BlockVector3.at(this.regionStartX, -60, this.regionStartZ);
         BlockVector3 end = BlockVector3.at(this.regionEndX, 4, this.regionEndZ);
         ProtectedRegion region = new ProtectedCuboidRegion("" + this.regionId, start, end);

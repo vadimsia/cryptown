@@ -1,6 +1,7 @@
 package com.crypteam.rpc;
 
 import com.crypteam.Section;
+import com.crypteam.rpc.requests.AuthorizeRequest;
 import com.crypteam.rpc.requests.ReadDataRequest;
 import com.crypteam.rpc.requests.ReadDataResponse;
 import redis.clients.jedis.JedisPubSub;
@@ -29,6 +30,10 @@ public class RPCSubscriber extends JedisPubSub {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+        else if (request.command == RPCCommand.AUTHORIZE_USER) {
+            AuthorizeRequest typed_request = (AuthorizeRequest) request;
+            
         }
     }
 

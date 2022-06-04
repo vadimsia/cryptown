@@ -24,7 +24,6 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
-import org.jetbrains.annotations.NotNull;
 
 
 public class Section {
@@ -114,7 +113,7 @@ public class Section {
         }
 
     }
-    public void setRegion(short @NotNull [] codingWorld) {
+    public void setRegion(short [] codingWorld) {
         if(codingWorld.length == regionSizeX*regionSizeY*regionSizeZ) {
             for (int y = 0; y < 64; ++y) {
                 for (int x = 0; x < this.regionSizeX; ++x) {

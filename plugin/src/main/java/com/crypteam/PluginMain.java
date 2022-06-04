@@ -11,15 +11,12 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -28,7 +25,6 @@ import java.nio.ShortBuffer;
 public final class PluginMain extends JavaPlugin implements Listener {
 
     RPCSubscriber subscriber;
-    private static Server server;
 
     @Override
     public void onEnable() {
@@ -37,7 +33,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
         try {
             SolanaProgramProperties.PROGRAM_ID = new PublicKey("BZuqbnwSbcxTM5GyDw1V1vbM7YbPqXauYRGjViBMGCor");
             SolanaProgramProperties.RPC_ENDPOINT = "https://explorer-api.devnet.solana.com/";
-            SolanaProgramProperties.FRONTEND_URL = "https://127.0.0.1:3000/";
+            SolanaProgramProperties.FRONTEND_URL = "http://127.0.0.1:3000/";
         } catch (AddressFormatException e) {
             throw new RuntimeException(e);
         }
@@ -50,10 +46,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
         subscriber = new RPCSubscriber();
         new RPCThread(pool.getResource(), subscriber).start();
         new RPCPublisher(pool.getResource());
-
-        server = getServer();
     }
-
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -139,10 +132,5 @@ public final class PluginMain extends JavaPlugin implements Listener {
         Player player = BukkitAdapter.adapt(event.getPlayer());
         Section.removeRegionAccess(player);
         getLogger().info("Player " + event.getPlayer().getName() + " logout");
-    }
-
-    @NotNull
-    public static Server getBukkitServer() {
-        return server;
     }
 }

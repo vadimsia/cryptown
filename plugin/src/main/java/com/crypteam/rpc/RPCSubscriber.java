@@ -10,6 +10,7 @@ import com.crypteam.solana.exceptions.ApiRequestException;
 import com.crypteam.solana.misc.RegionAccountInfo;
 import com.crypteam.solana.program.CryptownProgram;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.units.qual.C;
@@ -55,7 +56,7 @@ public class RPCSubscriber extends JedisPubSub {
             }
 
             for (RegionAccountInfo region : regions) {
-                Player player = PluginMain.getBukkitServer().getPlayer(UUID.fromString(typed_request.getUuid()));
+                Player player = Bukkit.getServer().getPlayer(UUID.fromString(typed_request.getUuid()));
                 player.sendMessage(ChatColor.GREEN + "You got region with id: " + region.getId());
                 new Section(region.getId()).setRegionAccess(BukkitAdapter.adapt(player));
             }

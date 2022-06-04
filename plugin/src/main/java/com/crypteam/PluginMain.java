@@ -9,6 +9,7 @@ import com.crypteam.solana.misc.RegionAccountInfo;
 import com.crypteam.solana.program.CryptownProgram;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -20,7 +21,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
@@ -88,12 +88,12 @@ public final class PluginMain extends JavaPlugin implements Listener {
             }
             case "refreshRegion":
             {
-                int areaID = Integer.parseInt(args[0]);
-
+                int areaID;
                 CryptownProgram program = new CryptownProgram();
                 RegionAccountInfo accountInfo;
 
                 try {
+                    areaID = Section.getPositionPlayer(BukkitAdapter.adapt(getServer().getPlayer(sender.getName())));
                     accountInfo = program.getRegionByID(areaID);
                 } catch (Exception e) {
                     sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.DARK_PURPLE + e);
@@ -110,6 +110,12 @@ public final class PluginMain extends JavaPlugin implements Listener {
                 System.out.println("Region length: " + region.length);
                 System.out.println("Original region length: " + sec.getRegion().length);
                 sender.sendMessage(ChatColor.GREEN + "Region successfully refreshed from solana!");
+                break;
+            }
+            case "getPlayerPosition":
+            {
+                int a = Section.getPositionPlayer(BukkitAdapter.adapt(getServer().getPlayer(sender.getName())));
+                Bukkit.getLogger().info(""+a);
             }
         }
 

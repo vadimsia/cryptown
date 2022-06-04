@@ -1,8 +1,10 @@
 package com.crypteam;
 
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.Flag;
@@ -244,5 +246,16 @@ public class Section {
         ProtectedRegion region = new GlobalProtectedRegion("__global__");
         region.setFlag(Flags.BUILD, StateFlag.State.DENY);
         regions.addRegion(region);
+    }
+
+    public static int getPositionPlayer(Player player) {
+        Map<String, ProtectedRegion> regionMap = regions.getRegions();
+        for(ProtectedRegion region : regionMap.values()) {
+            if (region.isOwner(player.getName()) && region.contains(player.getBlockIn().getBlockX(), player.getBlockIn().getBlockY(), player.getBlockIn().getBlockZ())) {
+                return Integer.parseInt(region.getId());
+            }
+        }
+
+        return Integer.parseInt("");
     }
 }

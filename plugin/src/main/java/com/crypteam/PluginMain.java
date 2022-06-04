@@ -35,9 +35,9 @@ public final class PluginMain extends JavaPlugin implements Listener {
         Section.setMapAccess();
 
         try {
-            SolanaProgramProperties.PROGRAM_ID = new PublicKey("u35VEZ9gPkPg1VAp3YAxPejRhKKu5q8FJagEc7vUs6Y");
+            SolanaProgramProperties.PROGRAM_ID = new PublicKey("BZuqbnwSbcxTM5GyDw1V1vbM7YbPqXauYRGjViBMGCor");
             SolanaProgramProperties.RPC_ENDPOINT = "https://explorer-api.devnet.solana.com/";
-            SolanaProgramProperties.FRONTEND_URL = "http://127.0.0.1:3000/";
+            SolanaProgramProperties.FRONTEND_URL = "https://127.0.0.1:3000/";
         } catch (AddressFormatException e) {
             throw new RuntimeException(e);
         }

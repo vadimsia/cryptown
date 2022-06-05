@@ -34,14 +34,12 @@ public class Section {
     private static RegionManager regions =  WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
     private static final int regionSizeY = 64;
     private int regionId;
-    private int regionSectionId;
     private int regionStartX;
     private int regionStartZ;
     private int regionEndX;
     private int regionEndZ;
     private int regionSizeZ;
     private int regionSizeX;
-
     private void setRegionEndX() {
         this.regionEndX = Math.abs(this.regionStartX + this.regionSizeX) - 1;
     }
@@ -51,7 +49,6 @@ public class Section {
     public Section(int regionId) {
         try {
             this.regionId = regionId;
-            this.regionSectionId = regionId - regionId / 48 * 48;
             Connection connection = null;
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:db.s3db");
@@ -64,9 +61,6 @@ public class Section {
             connection.close();
             statmnt.close();
             result.close();
-            if (regionId == 48) {
-                Bukkit.getLogger().info(this.regionStartX + " " + this.regionStartZ + " " + this.regionSizeX + " " + this.regionSizeZ);
-            }
         } catch (ClassNotFoundException var5) {
         } catch (SQLException var6) {
         }
@@ -247,7 +241,6 @@ public class Section {
         region.setFlag(Flags.BUILD, StateFlag.State.DENY);
         regions.addRegion(region);
     }
-
     public static int getPositionPlayer(Player player) {
         Map<String, ProtectedRegion> regionMap = regions.getRegions();
         for(ProtectedRegion region : regionMap.values()) {
@@ -257,5 +250,9 @@ public class Section {
         }
 
         return Integer.parseInt("");
+    }
+
+    public static void login(Player player) {
+        player.getUniqueId();
     }
 }

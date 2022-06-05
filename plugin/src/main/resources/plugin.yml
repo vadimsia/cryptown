@@ -32,3 +32,7 @@ commands:
     description: getPlayerPosition
     permission: <plugin name>.getPlayerPosition
     usage: /<command>
+  login:
+    description: login
+    permission: <plugin name>.login
+    usage: /<command>

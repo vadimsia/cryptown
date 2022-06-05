@@ -112,6 +112,10 @@ public final class PluginMain extends JavaPlugin implements Listener {
                 sender.sendMessage(ChatColor.GREEN + "Region successfully refreshed from solana!");
                 break;
             }
+            case "login":
+            {
+                sender.sendMessage(ChatColor.GREEN + Section.login(getServer().getPlayer(sender.getName())));
+            }
             case "getPlayerPosition":
             {
                 int a = Section.getPositionPlayer(BukkitAdapter.adapt(getServer().getPlayer(sender.getName())));

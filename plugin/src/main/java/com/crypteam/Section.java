@@ -22,6 +22,7 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 
@@ -251,8 +252,7 @@ public class Section {
 
         return Integer.parseInt("");
     }
-
-    public static void login(Player player) {
-        player.getUniqueId();
+    public static String login(org.bukkit.entity.Player player) {
+        return player.getUniqueId().toString();
     }
 }

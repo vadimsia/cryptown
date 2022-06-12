@@ -51,12 +51,16 @@ public class RPCSubscriber extends JedisPubSub {
             AuthorizeRequest typed_request = (AuthorizeRequest) request;
             List<RegionAccountInfo> regions;
 
+            System.out.println("PK: " + typed_request.key);
+
             try {
                  regions = program.getRegionsByOwner(new PublicKey(typed_request.key));
             } catch (Exception e) {
                 e.printStackTrace();
                 return;
             }
+
+            System.out.println("Regions: " + regions.size());
 
             for (RegionAccountInfo region : regions) {
                 Player player = Bukkit.getServer().getPlayer(UUID.fromString(typed_request.uuid));

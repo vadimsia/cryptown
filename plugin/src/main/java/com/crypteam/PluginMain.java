@@ -50,6 +50,8 @@ public final class PluginMain extends JavaPlugin implements Listener {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        Player player = BukkitAdapter.adapt(getServer().getPlayer(sender.getName()));
+
         switch (cmd.getName()) {
             case "getRegion":
             {
@@ -77,17 +79,16 @@ public final class PluginMain extends JavaPlugin implements Listener {
             case "setRegionAccess":
             {
                 Section sec = new Section(Integer.parseInt(args[0]));
-                sec.setRegionAccess(BukkitAdapter.adapt(getServer().getPlayer(sender.getName())));
+                sec.setRegionAccess(player);
                 break;
             }
             case "refreshRegion":
             {
-                int areaID;
+                int areaID = Section.getPlayerStandingAreaID(player);
                 CryptownProgram program = new CryptownProgram();
                 RegionAccountInfo accountInfo;
 
                 try {
-                    areaID = Section.getPositionPlayer(BukkitAdapter.adapt(getServer().getPlayer(sender.getName())));
                     accountInfo = program.getRegionByID(areaID);
                 } catch (Exception e) {
                     sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.DARK_PURPLE + e);
@@ -108,14 +109,12 @@ public final class PluginMain extends JavaPlugin implements Listener {
             }
             case "login":
             {
-                Player player = BukkitAdapter.adapt(getServer().getPlayer(sender.getName()));
                 sender.sendMessage(ChatColor.GREEN + SolanaProgramProperties.FRONTEND_URL + "?uuid=" + player.getUniqueId() + "&nick=" + player.getName());
                 break;
             }
             case "getPlayerPosition":
             {
-                int a = Section.getPositionPlayer(BukkitAdapter.adapt(getServer().getPlayer(sender.getName())));
-                Bukkit.getLogger().info(""+a);
+                Bukkit.getLogger().info("" + Section.getPlayerStandingAreaID(player));
             }
         }
 

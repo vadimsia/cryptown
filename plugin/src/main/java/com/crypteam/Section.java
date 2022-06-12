@@ -1,13 +1,10 @@
 package com.crypteam;
 
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.domains.DefaultDomain;
-import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -22,7 +19,6 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 
 
@@ -241,7 +237,7 @@ public class Section {
         region.setFlag(Flags.BUILD, StateFlag.State.DENY);
         regions.addRegion(region);
     }
-    public static int getPositionPlayer(Player player) {
+    public static int getPlayerStandingAreaID(Player player) {
         Map<String, ProtectedRegion> regionMap = regions.getRegions();
         for(ProtectedRegion region : regionMap.values()) {
             if (region.isOwner(player.getName()) && region.contains(player.getBlockIn().getBlockX(), player.getBlockIn().getBlockY(), player.getBlockIn().getBlockZ())) {
@@ -249,6 +245,6 @@ public class Section {
             }
         }
 
-        return Integer.parseInt("");
+        return -1;
     }
 }

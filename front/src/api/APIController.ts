@@ -10,4 +10,9 @@ export class APIController {
 		const response = (await this.get(`/api/get_region/${id}`)) as APIGetRegionResponse;
 		return response;
 	}
+
+	public static async makeLogin(uuid: string, pk: string, signature: string): Promise<APIGetRegionResponse> {
+		const response = (await this.get(`/api/login/?uuid=${uuid}&pk=${pk}&sig=${signature}`)) as APIGetRegionResponse;
+		return response;
+	}
 }

@@ -6,18 +6,18 @@ import com.crypteam.solana.exceptions.AddressFormatException;
 import com.crypteam.solana.misc.PublicKey;
 
 public class AuthorizeRequest extends RPCRequest {
-    PublicKey key;
+    byte[] key;
     String uuid;
 
     public AuthorizeRequest(byte[] key, String uuid) throws AddressFormatException {
         super(RPCCommand.AUTHORIZE_USER);
 
-        this.key = new PublicKey(key);
+        this.key = key;
         this.uuid = uuid;
     }
 
     public PublicKey getKey() {
-        return key;
+        return new PublicKey(key);
     }
 
     public String getUuid() {

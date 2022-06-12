@@ -7,6 +7,7 @@ import com.crypteam.rpc.requests.ReadDataRequest;
 import com.crypteam.rpc.requests.ReadDataResponse;
 import com.crypteam.solana.exceptions.AddressFormatException;
 import com.crypteam.solana.exceptions.ApiRequestException;
+import com.crypteam.solana.misc.PublicKey;
 import com.crypteam.solana.misc.RegionAccountInfo;
 import com.crypteam.solana.program.CryptownProgram;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
@@ -51,14 +52,14 @@ public class RPCSubscriber extends JedisPubSub {
             List<RegionAccountInfo> regions;
 
             try {
-                 regions = program.getRegionsByOwner(typed_request.getKey());
+                 regions = program.getRegionsByOwner(new PublicKey(typed_request.key));
             } catch (Exception e) {
                 e.printStackTrace();
                 return;
             }
 
             for (RegionAccountInfo region : regions) {
-                Player player = Bukkit.getServer().getPlayer(UUID.fromString(typed_request.getUuid()));
+                Player player = Bukkit.getServer().getPlayer(UUID.fromString(typed_request.uuid));
                 player.sendMessage(ChatColor.GREEN + "You got region with id: " + region.getId());
                 new Section(region.getId()).setRegionAccess(BukkitAdapter.adapt(player));
             }

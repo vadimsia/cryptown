@@ -251,7 +251,4 @@ public class Section {
 
         return Integer.parseInt("");
     }
-    public static String login(org.bukkit.entity.Player player) {
-        return player.getUniqueId().toString();
-    }
 }

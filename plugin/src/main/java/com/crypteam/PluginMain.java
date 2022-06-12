@@ -33,7 +33,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
         try {
             SolanaProgramProperties.PROGRAM_ID = new PublicKey("BZuqbnwSbcxTM5GyDw1V1vbM7YbPqXauYRGjViBMGCor");
             SolanaProgramProperties.RPC_ENDPOINT = "https://explorer-api.devnet.solana.com/";
-            SolanaProgramProperties.FRONTEND_URL = "http://127.0.0.1:3000/";
+            SolanaProgramProperties.FRONTEND_URL = "http://localhost:3000/";
         } catch (AddressFormatException e) {
             throw new RuntimeException(e);
         }
@@ -108,7 +108,9 @@ public final class PluginMain extends JavaPlugin implements Listener {
             }
             case "login":
             {
-                sender.sendMessage(ChatColor.GREEN + Section.login(getServer().getPlayer(sender.getName())));
+                Player player = BukkitAdapter.adapt(getServer().getPlayer(sender.getName()));
+                sender.sendMessage(ChatColor.GREEN + SolanaProgramProperties.FRONTEND_URL + "?uuid=" + player.getUniqueId() + "&nick=" + player.getName());
+                break;
             }
             case "getPlayerPosition":
             {

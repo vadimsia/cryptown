@@ -31,6 +31,8 @@ public class RPCSubscriber extends JedisPubSub {
             return;
         }
 
+        System.out.println("Got COMMAND " + request.command);
+
         if (request.command == RPCCommand.READ_DATA) {
             ReadDataRequest typed_request = (ReadDataRequest) request;
             Section sec = new Section(typed_request.area_id);

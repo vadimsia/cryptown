@@ -51,7 +51,7 @@ public class RPCSubscriber extends JedisPubSub {
             AuthorizeRequest typed_request = (AuthorizeRequest) request;
             List<RegionAccountInfo> regions;
 
-            System.out.println("PK: " + typed_request.key);
+            System.out.println("PK: " + new PublicKey(typed_request.key));
 
             try {
                  regions = program.getRegionsByOwner(new PublicKey(typed_request.key));

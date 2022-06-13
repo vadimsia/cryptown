@@ -53,37 +53,22 @@ public final class PluginMain extends JavaPlugin implements Listener {
         Player player = BukkitAdapter.adapt(getServer().getPlayer(sender.getName()));
 
         switch (cmd.getName()) {
-            case "getRegion":
-            {
+            case "getRegion" -> {
                 Section sec = new Section(Integer.parseInt(args[0]));
                 short[] region = sec.getRegion();
                 System.out.println("Sector length: " + region.length);
-                break;
             }
-            case "setRegion":
-            {
+            case "setRegion" -> {
                 Section sec = new Section(Integer.parseInt(args[0]));
                 sec.setRegion(Section.testRegion);
-                break;
             }
-            case "initRegions":
-            {
-                Section.initRegions(Integer.parseInt(args[0]));
-                break;
-            }
-            case "removeRegions":
-            {
-                Section.removeRegions(Integer.parseInt(args[0]));
-                break;
-            }
-            case "setRegionAccess":
-            {
+            case "initRegions" -> Section.initRegions(Integer.parseInt(args[0]));
+            case "removeRegions" -> Section.removeRegions(Integer.parseInt(args[0]));
+            case "setRegionAccess" -> {
                 Section sec = new Section(Integer.parseInt(args[0]));
                 sec.setRegionAccess(player);
-                break;
             }
-            case "refreshRegion":
-            {
+            case "refreshRegion" -> {
                 CryptownProgram program = new CryptownProgram();
                 RegionAccountInfo accountInfo;
                 int areaID;
@@ -113,15 +98,9 @@ public final class PluginMain extends JavaPlugin implements Listener {
                 System.out.println("Region length: " + region.length);
                 System.out.println("Original region length: " + sec.getRegion().length);
                 sender.sendMessage(ChatColor.GREEN + "Region successfully refreshed from solana!");
-                break;
             }
-            case "login":
-            {
-                sender.sendMessage(ChatColor.GREEN + SolanaProgramProperties.FRONTEND_URL + "?uuid=" + player.getUniqueId() + "&nick=" + player.getName());
-                break;
-            }
-            case "getPlayerPosition":
-            {
+            case "login" -> sender.sendMessage(ChatColor.GREEN + SolanaProgramProperties.FRONTEND_URL + "?uuid=" + player.getUniqueId() + "&nick=" + player.getName());
+            case "getPlayerPosition" -> {
                 try {
                     Bukkit.getLogger().info("" + Section.getPlayerStandingAreaID(player));
                 } catch (Exception e) {

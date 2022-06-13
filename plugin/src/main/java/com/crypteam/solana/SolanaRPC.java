@@ -1,20 +1,16 @@
 package com.crypteam.solana;
 
-import com.crypteam.solana.exceptions.AccountInfoNotFoundException;
 import com.crypteam.solana.exceptions.AddressFormatException;
 import com.crypteam.solana.exceptions.ApiRequestException;
 import com.crypteam.solana.misc.AccountInfo;
 import com.crypteam.solana.misc.PublicKey;
-import com.crypteam.solana.misc.RegionAccountInfo;
 import com.crypteam.solana.misc.TokenAccountInfo;
 import com.crypteam.solana.models.account.AccountInfoModel;
-import com.crypteam.solana.models.account.AccountInfoValue;
 import com.crypteam.solana.models.api.ErrorModel;
 import com.crypteam.solana.models.api.RequestModel;
 import com.crypteam.solana.models.programaccounts.ProgramAccount;
 import com.crypteam.solana.models.programaccounts.ProgramAccountsModel;
 import com.crypteam.solana.models.tokenaccounts.TokenAccountsModel;
-import com.crypteam.solana.models.tokenaccounts.TokenAccountsResult;
 import com.google.gson.Gson;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -38,10 +34,6 @@ public class SolanaRPC {
         this.endpoint = endpoint;
     }
     public SolanaRPC() { this.endpoint = SolanaProgramProperties.RPC_ENDPOINT; }
-
-    private void apiRequest (RequestModel requestModel) throws IOException, ApiRequestException {
-        apiRequest(new Gson().toJson(requestModel));
-    }
 
     private String apiRequest (String requestJson) throws IOException, ApiRequestException {
         CloseableHttpClient httpClient = HttpClients.createDefault();

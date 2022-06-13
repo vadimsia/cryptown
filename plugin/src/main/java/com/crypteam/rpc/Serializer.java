@@ -25,9 +25,7 @@ public class Serializer {
         in = new ObjectInputStream(bis);
         Object o = in.readObject();
 
-        if (in != null) {
-            in.close();
-        }
+        in.close();
 
         return o;
     }

@@ -15,7 +15,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,9 +25,9 @@ import org.bukkit.World;
 public class Section {
     public static short[] testRegion;
     static World world = Bukkit.getWorld("World");
-    private static Map<String, Short> worldScript = new HashMap();
-    private static Map<Short, String> worldDescriptor = new HashMap();
-    private static RegionManager regions =  WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
+    private static final Map<String, Short> worldScript = new HashMap<>();
+    private static final Map<Short, String> worldDescriptor = new HashMap<>();
+    private static final RegionManager regions =  WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
     private static final int regionSizeY = 64;
     private int regionId;
     private int regionStartX;
@@ -46,9 +45,8 @@ public class Section {
     public Section(int regionId) {
         try {
             this.regionId = regionId;
-            Connection connection = null;
             Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:db.s3db");
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:db.s3db");
             Statement statmnt = connection.createStatement();
             ResultSet result = statmnt.executeQuery("SELECT * FROM sectionRegions WHERE id=" + this.regionId);
             this.regionStartX = result.getInt("posX");
@@ -58,21 +56,19 @@ public class Section {
             connection.close();
             statmnt.close();
             result.close();
-        } catch (ClassNotFoundException var5) {
-        } catch (SQLException var6) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         this.setRegionEndX();
         this.setRegionEndZ();
     }
     public static void downloadScriptData() {
-        Connection connection = null;
-
         try {
             Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:db.s3db");
-            Statement statmnt = connection.createStatement();
-            ResultSet result = statmnt.executeQuery("SELECT * FROM descriptor");
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:db.s3db");
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery("SELECT * FROM descriptor");
 
             while(result.next()) {
                 short id = (short) result.getInt("id");
@@ -82,31 +78,29 @@ public class Section {
             }
 
             connection.close();
-            statmnt.close();
+            statement.close();
             result.close();
-        } catch (ClassNotFoundException var5) {
-        } catch (SQLException var6) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
     public static void uploadScriptData() {
-        Connection connection = null;
-
         try {
             Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:db.s3db");
-            Statement statmnt = connection.createStatement();
-            int start = statmnt.executeQuery("SELECT id FROM descriptor WHERE id=(SELECT MAX(id) FROM descriptor)").getInt("id") + 1;
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:db.s3db");
+            Statement statement = connection.createStatement();
+            int start = statement.executeQuery("SELECT id FROM descriptor WHERE id=(SELECT MAX(id) FROM descriptor)").getInt("id") + 1;
 
-            for(int i = start; i < worldScript.size(); ++i) {
-                String var10001 = (String) worldDescriptor.get(i);
-                statmnt.execute("INSERT INTO 'descriptor' ('blockData', 'id') VALUES ('" + var10001 + "', " + worldScript.get(worldDescriptor.get(i)) + ")");
+            for(short i = (short) start; i < worldScript.size(); ++i) {
+                String var10001 = worldDescriptor.get(i);
+                statement.execute("INSERT INTO 'descriptor' ('blockData', 'id') VALUES ('" + var10001 + "', " + worldScript.get(worldDescriptor.get(i)) + ")");
             }
 
             connection.close();
-            statmnt.close();
-        } catch (ClassNotFoundException var4) {
-        } catch (SQLException var5) {
+            statement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
@@ -116,7 +110,7 @@ public class Section {
                 for (int x = 0; x < this.regionSizeX; ++x) {
                     for (int z = 0; z < this.regionSizeZ; ++z) {
                         int id = y * this.regionSizeZ * this.regionSizeX + x * this.regionSizeZ + z;
-                        String s = (String) worldDescriptor.get(codingWorld[id]);
+                        String s = worldDescriptor.get(codingWorld[id]);
                         world.setBlockData(this.regionStartX + x, -60 + y, this.regionStartZ + z, Bukkit.createBlockData(s.substring(s.indexOf(":") + 1, s.indexOf("}"))));
                     }
                 }
@@ -135,7 +129,7 @@ public class Section {
                         worldScript.put(block, (short) worldScript.size());
                         worldDescriptor.put((short) (worldScript.size() - 1), block);
                     }
-                    codingWorld[id] = (short) worldScript.get(block);
+                    codingWorld[id] = worldScript.get(block);
                 }
             }
         }

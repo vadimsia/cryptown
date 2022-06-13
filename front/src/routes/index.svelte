@@ -39,6 +39,7 @@
 
 		// Достает только участки авторизованного пользователя
 		let user_tokens = await program.getUserTokens(UPDATE_AUTHORITY_ID);
+		console.log(user_tokens)
 		for (let token of user_tokens) {
 			if (!token.program_account) {
 				let signature = await program.initAccount(token);

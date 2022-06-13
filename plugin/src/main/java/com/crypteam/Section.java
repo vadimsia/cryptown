@@ -1,5 +1,6 @@
 package com.crypteam;
 
+import com.crypteam.exceptions.PlayerStandingUnknownRegionException;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -237,7 +238,7 @@ public class Section {
         region.setFlag(Flags.BUILD, StateFlag.State.DENY);
         regions.addRegion(region);
     }
-    public static int getPlayerStandingAreaID(Player player) {
+    public static Integer getPlayerStandingAreaID(Player player) throws PlayerStandingUnknownRegionException {
         Map<String, ProtectedRegion> regionMap = regions.getRegions();
         for(ProtectedRegion region : regionMap.values()) {
             if (region.isOwner(player.getName()) && region.contains(player.getBlockIn().getBlockX(), player.getBlockIn().getBlockY(), player.getBlockIn().getBlockZ())) {
@@ -245,6 +246,6 @@ public class Section {
             }
         }
 
-        return -1;
+        throw new PlayerStandingUnknownRegionException();
     }
 }

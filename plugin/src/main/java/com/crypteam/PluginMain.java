@@ -84,15 +84,23 @@ public final class PluginMain extends JavaPlugin implements Listener {
             }
             case "refreshRegion":
             {
-                int areaID = Section.getPlayerStandingAreaID(player);
                 CryptownProgram program = new CryptownProgram();
                 RegionAccountInfo accountInfo;
+                int areaID;
+
+                try {
+                    areaID = Section.getPlayerStandingAreaID(player);
+                } catch (Exception e) {
+                    sender.sendMessage(ChatColor.RED + "You need to stay in your own region to refresh it");
+                    return false;
+                }
+
 
                 try {
                     accountInfo = program.getRegionByID(areaID);
                 } catch (Exception e) {
                     sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.DARK_PURPLE + e);
-                    return true;
+                    return false;
                 }
 
                 ShortBuffer buf = ByteBuffer.wrap(accountInfo.getPayload()).order(ByteOrder.BIG_ENDIAN).asShortBuffer();
@@ -114,7 +122,11 @@ public final class PluginMain extends JavaPlugin implements Listener {
             }
             case "getPlayerPosition":
             {
-                Bukkit.getLogger().info("" + Section.getPlayerStandingAreaID(player));
+                try {
+                    Bukkit.getLogger().info("" + Section.getPlayerStandingAreaID(player));
+                } catch (Exception e) {
+                    Bukkit.getLogger().warning("Exception: " + e);
+                }
             }
         }
 

@@ -47,14 +47,14 @@ public class Section {
             this.regionId = regionId;
             Class.forName("org.sqlite.JDBC");
             Connection connection = DriverManager.getConnection("jdbc:sqlite:db.s3db");
-            Statement statmnt = connection.createStatement();
-            ResultSet result = statmnt.executeQuery("SELECT * FROM sectionRegions WHERE id=" + this.regionId);
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery("SELECT * FROM sectionRegions WHERE id=" + this.regionId);
             this.regionStartX = result.getInt("posX");
             this.regionStartZ = result.getInt("posZ");
             this.regionSizeX = result.getInt("sizeX");
             this.regionSizeZ = result.getInt("sizeZ");
             connection.close();
-            statmnt.close();
+            statement.close();
             result.close();
         } catch (Exception e) {
             e.printStackTrace();

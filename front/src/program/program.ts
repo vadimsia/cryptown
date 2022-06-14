@@ -82,7 +82,7 @@ export class Program {
 		for (const account of accounts) {
 			result.push({
 				publicKey: account.pubkey,
-				id: Buffer.from(account.account.data.slice(0, 4)).readInt32LE(),
+				id: Buffer.from(account.account.data.slice(0, 4)).readInt32BE(),
 				owner_token: new PublicKey(account.account.data.slice(4, 36)),
 				data: account.account.data.slice(36)
 			});

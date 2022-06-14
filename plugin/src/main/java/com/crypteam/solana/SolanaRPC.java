@@ -1,17 +1,16 @@
 package com.crypteam.solana;
 
-import com.crypteam.solana.exceptions.AccountInfoNotFoundException;
 import com.crypteam.solana.exceptions.AddressFormatException;
 import com.crypteam.solana.exceptions.ApiRequestException;
 import com.crypteam.solana.misc.AccountInfo;
 import com.crypteam.solana.misc.PublicKey;
-import com.crypteam.solana.misc.RegionAccountInfo;
+import com.crypteam.solana.misc.TokenAccountInfo;
 import com.crypteam.solana.models.account.AccountInfoModel;
-import com.crypteam.solana.models.account.AccountInfoValue;
 import com.crypteam.solana.models.api.ErrorModel;
 import com.crypteam.solana.models.api.RequestModel;
 import com.crypteam.solana.models.programaccounts.ProgramAccount;
 import com.crypteam.solana.models.programaccounts.ProgramAccountsModel;
+import com.crypteam.solana.models.tokenaccounts.TokenAccountsModel;
 import com.google.gson.Gson;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -25,6 +24,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SolanaRPC {
 
@@ -33,10 +33,7 @@ public class SolanaRPC {
     public SolanaRPC(String endpoint) {
         this.endpoint = endpoint;
     }
-
-    private void apiRequest (RequestModel requestModel) throws IOException, ApiRequestException {
-        apiRequest(new Gson().toJson(requestModel));
-    }
+    public SolanaRPC() { this.endpoint = SolanaProgramProperties.RPC_ENDPOINT; }
 
     private String apiRequest (String requestJson) throws IOException, ApiRequestException {
         CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -96,21 +93,42 @@ public class SolanaRPC {
         if (programAccountsModel.result == null) throw new ApiRequestException("Empty value");
 
         List<AccountInfo> result = new ArrayList<>();
-        for (ProgramAccount accountInfo : programAccountsModel.result) {
+        for (ProgramAccount accountInfo : programAccountsModel.result)
             result.add(new AccountInfo(new PublicKey(accountInfo.pubkey), Base64.decodeBase64(accountInfo.account.data.get(0).getBytes(StandardCharsets.UTF_8))));
-        }
 
         return result;
     }
 
-    public RegionAccountInfo getAccountInfoByRegionID (PublicKey programID, int id) throws AddressFormatException, ApiRequestException, IOException, AccountInfoNotFoundException {
-        List<AccountInfo> accounts = this.getProgramAccounts(programID);
+    public List<TokenAccountInfo> getTokenAccountsByOwner (PublicKey owner) throws ApiRequestException, IOException, AddressFormatException {
+        List<String> params = new ArrayList<>();
+        params.add(owner.toString());
+        params.add("%replace%");
+        params.add("%replace2%");
 
-        for (AccountInfo account : accounts) {
-            RegionAccountInfo accountInfo = new RegionAccountInfo(account);
-            if (accountInfo.getId() == id) return accountInfo;
+        RequestModel requestModel = new RequestModel();
+        requestModel.method = "getTokenAccountsByOwner";
+        requestModel.params = params;
+
+        String requestJson = new Gson().toJson(requestModel);
+        requestJson = requestJson.replace("\"%replace%\"", "{\"programId\": \"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA\"}");
+        requestJson = requestJson.replace("\"%replace2%\"", "{\"encoding\": \"base64\"}");
+
+        String response = apiRequest(requestJson);
+        TokenAccountsModel tokenAccountsModel = new Gson().fromJson(response, TokenAccountsModel.class);
+
+        if (tokenAccountsModel.result == null) throw new ApiRequestException("Empty value");
+
+        List<TokenAccountInfo> result = new ArrayList<>();
+        for (ProgramAccount account : tokenAccountsModel.result.value) {
+            AccountInfo accountInfo = new AccountInfo(
+                    new PublicKey(account.pubkey),
+                    Base64.decodeBase64(account.account.data.get(0).getBytes(StandardCharsets.UTF_8))
+            );
+
+            result.add(new TokenAccountInfo(accountInfo));
         }
 
-        throw new AccountInfoNotFoundException();
+
+        return result.stream().filter(token -> token.getAmount() == 1).collect(Collectors.toList());
     }
 }

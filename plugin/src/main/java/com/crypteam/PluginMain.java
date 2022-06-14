@@ -2,25 +2,22 @@ package com.crypteam;
 import com.crypteam.rpc.RPCPublisher;
 import com.crypteam.rpc.RPCSubscriber;
 import com.crypteam.rpc.RPCThread;
-import com.crypteam.solana.SolanaProgramID;
-import com.crypteam.solana.SolanaRPC;
+import com.crypteam.solana.SolanaProgramProperties;
 import com.crypteam.solana.exceptions.AddressFormatException;
 import com.crypteam.solana.misc.PublicKey;
 import com.crypteam.solana.misc.RegionAccountInfo;
+import com.crypteam.solana.program.CryptownProgram;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
@@ -32,70 +29,63 @@ public final class PluginMain extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         Section.setMapAccess();
+
         try {
-            SolanaProgramID.PROGRAM_ID = new PublicKey("u35VEZ9gPkPg1VAp3YAxPejRhKKu5q8FJagEc7vUs6Y");
+            SolanaProgramProperties.PROGRAM_ID = new PublicKey("BZuqbnwSbcxTM5GyDw1V1vbM7YbPqXauYRGjViBMGCor");
+            SolanaProgramProperties.RPC_ENDPOINT = "https://explorer-api.devnet.solana.com/";
+            SolanaProgramProperties.FRONTEND_URL = "http://localhost:3000/";
         } catch (AddressFormatException e) {
             throw new RuntimeException(e);
         }
         // Plugin startup logic
         getServer().getPluginManager().registerEvents(this, this);
         Section.downloadScriptData();
-//        Section.MapAccess();
-        JedisPool pool = new JedisPool("localhost", 6379);
-        Jedis subInstance = pool.getResource();
-        Jedis pubInstance = pool.getResource();
 
+        JedisPool pool = new JedisPool("localhost", 6379);
 
         subscriber = new RPCSubscriber();
-        new RPCThread(subInstance, subscriber).start();
-        new RPCPublisher(pubInstance);
+        new RPCThread(pool.getResource(), subscriber).start();
+        new RPCPublisher(pool.getResource());
     }
-
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        Player player = BukkitAdapter.adapt(getServer().getPlayer(sender.getName()));
+
         switch (cmd.getName()) {
-            case "getRegion":
-            {
+            case "getRegion" -> {
                 Section sec = new Section(Integer.parseInt(args[0]));
                 short[] region = sec.getRegion();
                 System.out.println("Sector length: " + region.length);
-                break;
             }
-            case "setRegion":
-            {
+            case "setRegion" -> {
                 Section sec = new Section(Integer.parseInt(args[0]));
                 sec.setRegion(Section.testRegion);
-                break;
             }
-            case "initRegions":
-            {
-                Section.initRegions(Integer.parseInt(args[0]));
-                break;
-            }
-            case "removeRegions":
-            {
-                Section.removeRegions(Integer.parseInt(args[0]));
-                break;
-            }
-            case "setRegionAccess":
-            {
+            case "initRegions" -> Section.initRegions(Integer.parseInt(args[0]));
+            case "removeRegions" -> Section.removeRegions(Integer.parseInt(args[0]));
+            case "setRegionAccess" -> {
                 Section sec = new Section(Integer.parseInt(args[0]));
-                sec.setRegionAccess(BukkitAdapter.adapt(getServer().getPlayer(sender.getName())));
-                break;
+                sec.setRegionAccess(player);
             }
-            case "refreshRegion":
-            {
-                int areaID = Integer.parseInt(args[0]);
-
-                SolanaRPC solanaRPC = new SolanaRPC("https://explorer-api.devnet.solana.com/");
+            case "refreshRegion" -> {
+                CryptownProgram program = new CryptownProgram();
                 RegionAccountInfo accountInfo;
+                int areaID;
 
                 try {
-                    accountInfo = solanaRPC.getAccountInfoByRegionID(SolanaProgramID.PROGRAM_ID, areaID);
+                    areaID = Section.getPlayerStandingAreaID(player);
+                } catch (Exception e) {
+                    sender.sendMessage(ChatColor.RED + "You need to stay in your own region to refresh it.");
+                    return false;
+                }
+
+
+                try {
+                    accountInfo = program.getRegionByID(areaID);
                 } catch (Exception e) {
                     sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.DARK_PURPLE + e);
-                    return true;
+                    return false;
                 }
 
                 ShortBuffer buf = ByteBuffer.wrap(accountInfo.getPayload()).order(ByteOrder.BIG_ENDIAN).asShortBuffer();
@@ -108,6 +98,14 @@ public final class PluginMain extends JavaPlugin implements Listener {
                 System.out.println("Region length: " + region.length);
                 System.out.println("Original region length: " + sec.getRegion().length);
                 sender.sendMessage(ChatColor.GREEN + "Region successfully refreshed from solana!");
+            }
+            case "login" -> sender.sendMessage(ChatColor.GREEN + SolanaProgramProperties.FRONTEND_URL + "?uuid=" + player.getUniqueId() + "&nick=" + player.getName());
+            case "getPlayerPosition" -> {
+                try {
+                    Bukkit.getLogger().info("" + Section.getPlayerStandingAreaID(player));
+                } catch (Exception e) {
+                    Bukkit.getLogger().warning("Exception: " + e);
+                }
             }
         }
 

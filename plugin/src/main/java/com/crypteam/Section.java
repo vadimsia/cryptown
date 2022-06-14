@@ -1,11 +1,12 @@
 package com.crypteam;
-
+import com.crypteam.exceptions.PlayerStandingUnknownRegionException;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
-import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -15,31 +16,27 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.jetbrains.annotations.NotNull;
 
 
 public class Section {
     public static short[] testRegion;
     static World world = Bukkit.getWorld("World");
-    private static Map<String, Short> worldScript = new HashMap();
-    private static Map<Short, String> worldDescriptor = new HashMap();
-    private static RegionManager regions =  WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
+    private static final Map<String, Short> worldScript = new HashMap<>();
+    private static final Map<Short, String> worldDescriptor = new HashMap<>();
+    private static final RegionManager regions =  WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
     private static final int regionSizeY = 64;
     private int regionId;
-    private int regionSectionId;
     private int regionStartX;
     private int regionStartZ;
     private int regionEndX;
     private int regionEndZ;
     private int regionSizeZ;
     private int regionSizeX;
-
     private void setRegionEndX() {
         this.regionEndX = Math.abs(this.regionStartX + this.regionSizeX) - 1;
     }
@@ -49,37 +46,29 @@ public class Section {
     public Section(int regionId) {
         try {
             this.regionId = regionId;
-            this.regionSectionId = regionId - regionId / 48 * 48;
-            Connection connection = null;
             Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:db.s3db");
-            Statement statmnt = connection.createStatement();
-            ResultSet result = statmnt.executeQuery("SELECT * FROM sectionRegions WHERE id=" + this.regionId);
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:db.s3db");
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery("SELECT * FROM sectionRegions WHERE id=" + this.regionId);
             this.regionStartX = result.getInt("posX");
             this.regionStartZ = result.getInt("posZ");
             this.regionSizeX = result.getInt("sizeX");
             this.regionSizeZ = result.getInt("sizeZ");
             connection.close();
-            statmnt.close();
+            statement.close();
             result.close();
-            if (regionId == 48) {
-                Bukkit.getLogger().info(this.regionStartX + " " + this.regionStartZ + " " + this.regionSizeX + " " + this.regionSizeZ);
-            }
-        } catch (ClassNotFoundException var5) {
-        } catch (SQLException var6) {
+            this.setRegionEndX();
+            this.setRegionEndZ();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        this.setRegionEndX();
-        this.setRegionEndZ();
     }
     public static void downloadScriptData() {
-        Connection connection = null;
-
         try {
             Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:db.s3db");
-            Statement statmnt = connection.createStatement();
-            ResultSet result = statmnt.executeQuery("SELECT * FROM descriptor");
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:db.s3db");
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery("SELECT * FROM descriptor");
 
             while(result.next()) {
                 short id = (short) result.getInt("id");
@@ -89,41 +78,39 @@ public class Section {
             }
 
             connection.close();
-            statmnt.close();
+            statement.close();
             result.close();
-        } catch (ClassNotFoundException var5) {
-        } catch (SQLException var6) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
     public static void uploadScriptData() {
-        Connection connection = null;
-
         try {
             Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:db.s3db");
-            Statement statmnt = connection.createStatement();
-            int start = statmnt.executeQuery("SELECT id FROM descriptor WHERE id=(SELECT MAX(id) FROM descriptor)").getInt("id") + 1;
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:db.s3db");
+            Statement statement = connection.createStatement();
+            int start = statement.executeQuery("SELECT id FROM descriptor WHERE id=(SELECT MAX(id) FROM descriptor)").getInt("id") + 1;
 
-            for(int i = start; i < worldScript.size(); ++i) {
-                String var10001 = (String) worldDescriptor.get(i);
-                statmnt.execute("INSERT INTO 'descriptor' ('blockData', 'id') VALUES ('" + var10001 + "', " + worldScript.get(worldDescriptor.get(i)) + ")");
+            for(short i = (short) start; i < worldScript.size(); ++i) {
+                String var10001 = worldDescriptor.get(i);
+                statement.execute("INSERT INTO 'descriptor' ('blockData', 'id') VALUES ('" + var10001 + "', " + worldScript.get(worldDescriptor.get(i)) + ")");
             }
 
             connection.close();
-            statmnt.close();
-        } catch (ClassNotFoundException var4) {
-        } catch (SQLException var5) {
+            statement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
-    public void setRegion(short @NotNull [] codingWorld) {
-        if(codingWorld.length == regionSizeX*regionSizeY*regionSizeZ) {
+    public void setRegion(short [] codingWorld) {
+        if(codingWorld.length == regionSizeX * regionSizeY * regionSizeZ) {
             for (int y = 0; y < 64; ++y) {
                 for (int x = 0; x < this.regionSizeX; ++x) {
                     for (int z = 0; z < this.regionSizeZ; ++z) {
                         int id = y * this.regionSizeZ * this.regionSizeX + x * this.regionSizeZ + z;
-                        String s = (String) worldDescriptor.get(codingWorld[id]);
+                        String s = worldDescriptor.get(codingWorld[id]);
                         world.setBlockData(this.regionStartX + x, -60 + y, this.regionStartZ + z, Bukkit.createBlockData(s.substring(s.indexOf(":") + 1, s.indexOf("}"))));
                     }
                 }
@@ -142,7 +129,7 @@ public class Section {
                         worldScript.put(block, (short) worldScript.size());
                         worldDescriptor.put((short) (worldScript.size() - 1), block);
                     }
-                    codingWorld[id] = (short) worldScript.get(block);
+                    codingWorld[id] = worldScript.get(block);
                 }
             }
         }
@@ -233,9 +220,10 @@ public class Section {
         regions.addRegion(region);
     }
     public static void removeRegionAccess(Player player) {
+        LocalPlayer wgPlayer = WorldGuardPlugin.inst().wrapPlayer(BukkitAdapter.adapt(player));
         Map<String, ProtectedRegion> regionMap =  regions.getRegions();
         for(ProtectedRegion region : regionMap.values()) {
-            if (region.isOwner(player.getName())) {
+            if (region.isOwner(wgPlayer)) {
                 regions.removeRegion(region.getId());
             }
         }
@@ -244,5 +232,16 @@ public class Section {
         ProtectedRegion region = new GlobalProtectedRegion("__global__");
         region.setFlag(Flags.BUILD, StateFlag.State.DENY);
         regions.addRegion(region);
+    }
+    public static Integer getPlayerStandingAreaID(Player player) throws PlayerStandingUnknownRegionException {
+        LocalPlayer wgPlayer = WorldGuardPlugin.inst().wrapPlayer(BukkitAdapter.adapt(player));
+        Map<String, ProtectedRegion> regionMap = regions.getRegions();
+        for(ProtectedRegion region : regionMap.values()) {
+            if (region.isOwner(wgPlayer) && region.contains(player.getBlockIn().getBlockX(), player.getBlockIn().getBlockY(), player.getBlockIn().getBlockZ())) {
+                return Integer.parseInt(region.getId());
+            }
+        }
+
+        throw new PlayerStandingUnknownRegionException();
     }
 }

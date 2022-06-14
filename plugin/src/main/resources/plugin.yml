@@ -28,3 +28,11 @@ commands:
     description: refreshing region from solana account
     permission: <plugin name>.removeRegions
     usage: /<command>
+  getPlayerPosition:
+    description: getPlayerPosition
+    permission: <plugin name>.getPlayerPosition
+    usage: /<command>
+  login:
+    description: login
+    permission: <plugin name>.login
+    usage: /<command>

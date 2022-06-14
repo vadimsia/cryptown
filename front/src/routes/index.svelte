@@ -45,8 +45,8 @@
 				let signature = await program.initAccount(token);
 				console.log(signature);
 			} else {
-				let tasks = await program.syncChunks(token.program_account);
-				for (let task of tasks) console.log(await task.execute());
+				let signatures = await program.updateChunk(token.program_account);
+				console.log(signatures)
 			}
 		}
 

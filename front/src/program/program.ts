@@ -12,7 +12,7 @@ import type { ProgramAccount } from './ProgramAccount';
 import type { TokenAccount } from './TokenAccount';
 
 import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
-import { UpdateTask } from './UpdateTask';
+import type { UpdateTask } from './UpdateTask';
 import { APIController } from '../api/APIController';
 import type { NFTMetadata } from './NFTMetadata';
 
@@ -130,18 +130,53 @@ export class Program {
 		return result.filter((account) => account.nft_metadata.creator.toBase58() == updateAuthority.toBase58());
 	}
 
-	async updateChunk(account: ProgramAccount, offset: number, data: Buffer): Promise<string> {
+	async updateChunk(account: ProgramAccount): Promise<string[]> {
 		const token = (
 			await this._wallet.connection.getTokenLargestAccounts(account.owner_token)
 		).value.filter((pair) => pair.uiAmount)[0].address;
 
+		const blockhash = (await this._wallet.connection.getLatestBlockhash()).blockhash;
+		const tasks = await this.syncChunks(account);
+
+		if (tasks.length == 0) {
+			console.log(`${account.publicKey.toBase58()} already has actual data`)
+			return [];
+		}
+
+
+		let promises: Promise<string>[] = []
+		let signatures: string[] = []
+		let transactions: Transaction[] = []
+
+		for (let task of tasks)
+			transactions.push(this.updateChunkTransaction(account, task, token, blockhash));
+
+		const signed = await this._wallet.signAllTransactions(transactions)
+
+		for (let transaction of signed)
+			promises.push(this._wallet.sendRawTransaction(transaction))
+
+		for (let promise of promises) {
+			try {
+				signatures.push(await promise)
+			} catch (e) {
+				console.log(`Error ${e} while processing transaction`)
+				signatures.push('')
+			}
+		}
+		
+		return signatures;
+	}
+
+	private updateChunkTransaction(account: ProgramAccount, task: UpdateTask, token: PublicKey, blockhash: string): Transaction {
+
 		let offset_buf = Buffer.alloc(4);
-		offset_buf.writeUint32LE(offset);
+		offset_buf.writeUint32LE(task.offset);
 
-		let buf = Buffer.from([1, 0, 0, 0].concat([...offset_buf]).concat([...data]));
+		let buf = Buffer.from([1, 0, 0, 0].concat([...offset_buf]).concat([...task.data]));
 
-		const transaction = new Transaction({
-			recentBlockhash: (await this._wallet.connection.getLatestBlockhash()).blockhash,
+		return new Transaction({
+			recentBlockhash: blockhash,
 			feePayer: this._wallet.publicKey
 		}).add(
 			new TransactionInstruction({
@@ -154,9 +189,6 @@ export class Program {
 				data: buf
 			})
 		);
-
-		const signature = await this._wallet.sendTransaction(transaction);
-		return signature;
 	}
 
 	/**
@@ -175,7 +207,7 @@ export class Program {
 		};
 	}
 
-	public async syncChunks(account: ProgramAccount): Promise<UpdateTask[]> {
+	private async syncChunks(account: ProgramAccount): Promise<UpdateTask[]> {
 		let result: UpdateTask[] = [];
 
 		const response = await APIController.getRegion(account.id);
@@ -185,7 +217,7 @@ export class Program {
 			if (data[i] != account.data[i]) {
 				console.log(i, data[i], account.data[i]);
 				const offset = Math.floor(i / 900) * 900;
-				result.push(new UpdateTask(this, account, offset, data.slice(offset, offset + 900)));
+				result.push({ offset: offset, data: data.slice(offset, offset + 900) });
 				i = offset + 900;
 			}
 		}

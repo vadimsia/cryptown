@@ -34,6 +34,8 @@ export class PhantomWallet implements IWalletController {
 			publicKey: Keypair.generate().publicKey,
 			connection: this._connection,
 			sendTransaction: this.sendTransaction.bind(this),
+			sendRawTransaction: this.sendRawTransaction.bind(this),
+			sendTransactions: this.sendTransactions.bind(this),
 			signTransaction: this.signTransaction.bind(this),
 			signAllTransactions: this.signAllTransactions.bind(this),
 			signMessage: this.signMessage.bind(this)
@@ -67,6 +69,38 @@ export class PhantomWallet implements IWalletController {
 			const signature = await this._connection.sendRawTransaction(signed.serialize());
 			await this._connection.confirmTransaction(signature);
 			return signature;
+		} else throw 'Cant find phantom wallet';
+	}
+
+	private async sendRawTransaction(transaction: Transaction): Promise<string> {
+		if (this._solana_interface) {
+			const signature = await this._connection.sendRawTransaction(transaction.serialize());
+			await this._connection.confirmTransaction(signature);
+			return signature;
+		} else throw 'Cant find phantom wallet';
+	}
+
+	private async sendTransactions(transactions: Transaction[]): Promise<string[]> {
+		if (this._solana_interface) {
+			let signatures: string[] = []
+
+			const signed = await this._solana_interface.signAllTransactions(transactions);
+			for (const transaction of signed) {
+				let signature: string;
+				
+				try {
+					signature = await this._connection.sendRawTransaction(transaction.serialize());
+					await this._connection.confirmTransaction(signature);
+				} catch (e) {
+					console.log("Send transaction error!! " + e);
+					continue;
+				}
+
+				signatures.push(signature)
+				
+			}
+
+			return signatures;
 		} else throw 'Cant find phantom wallet';
 	}
 

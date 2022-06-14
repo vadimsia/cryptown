@@ -77,7 +77,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
                     areaID = Section.getPlayerStandingAreaID(player);
                 } catch (Exception e) {
                     sender.sendMessage(ChatColor.RED + "You need to stay in your own region to refresh it.");
-                    return false;
+                    return true;
                 }
 
 
@@ -85,7 +85,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
                     accountInfo = program.getRegionByID(areaID);
                 } catch (Exception e) {
                     sender.sendMessage(ChatColor.RED + "Error: " + ChatColor.DARK_PURPLE + e);
-                    return false;
+                    return true;
                 }
 
                 ShortBuffer buf = ByteBuffer.wrap(accountInfo.getPayload()).order(ByteOrder.BIG_ENDIAN).asShortBuffer();

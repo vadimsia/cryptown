@@ -115,6 +115,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
+        Section.removeAllRegionAccess();
         // Plugin shutdown logic
         subscriber.unsubscribe();
     }

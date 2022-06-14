@@ -228,6 +228,13 @@ public class Section {
             }
         }
     }
+
+    public static void removeAllRegionAccess() {
+        Map<String, ProtectedRegion> regionMap =  regions.getRegions();
+        for(ProtectedRegion region : regionMap.values()) {
+            regions.removeRegion(region.getId());
+        }
+    }
     public static void setMapAccess() {
         ProtectedRegion region = new GlobalProtectedRegion("__global__");
         region.setFlag(Flags.BUILD, StateFlag.State.DENY);

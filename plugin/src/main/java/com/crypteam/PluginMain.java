@@ -76,7 +76,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
                 try {
                     areaID = Section.getPlayerStandingAreaID(player);
                 } catch (Exception e) {
-                    sender.sendMessage(ChatColor.RED + "You need to stay in your own region to refresh it");
+                    sender.sendMessage(ChatColor.RED + "You need to stay in your own region to refresh it.");
                     return false;
                 }
 

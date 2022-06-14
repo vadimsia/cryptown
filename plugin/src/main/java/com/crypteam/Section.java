@@ -1,10 +1,11 @@
 package com.crypteam;
-
 import com.crypteam.exceptions.PlayerStandingUnknownRegionException;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
@@ -56,12 +57,11 @@ public class Section {
             connection.close();
             statement.close();
             result.close();
+            this.setRegionEndX();
+            this.setRegionEndZ();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        this.setRegionEndX();
-        this.setRegionEndZ();
     }
     public static void downloadScriptData() {
         try {
@@ -105,7 +105,7 @@ public class Section {
 
     }
     public void setRegion(short [] codingWorld) {
-        if(codingWorld.length == regionSizeX*regionSizeY*regionSizeZ) {
+        if(codingWorld.length == regionSizeX * regionSizeY * regionSizeZ) {
             for (int y = 0; y < 64; ++y) {
                 for (int x = 0; x < this.regionSizeX; ++x) {
                     for (int z = 0; z < this.regionSizeZ; ++z) {
@@ -220,9 +220,10 @@ public class Section {
         regions.addRegion(region);
     }
     public static void removeRegionAccess(Player player) {
+        LocalPlayer wgPlayer = WorldGuardPlugin.inst().wrapPlayer(BukkitAdapter.adapt(player));
         Map<String, ProtectedRegion> regionMap =  regions.getRegions();
         for(ProtectedRegion region : regionMap.values()) {
-            if (region.isOwner(player.getName())) {
+            if (region.isOwner(wgPlayer)) {
                 regions.removeRegion(region.getId());
             }
         }
@@ -233,9 +234,10 @@ public class Section {
         regions.addRegion(region);
     }
     public static Integer getPlayerStandingAreaID(Player player) throws PlayerStandingUnknownRegionException {
+        LocalPlayer wgPlayer = WorldGuardPlugin.inst().wrapPlayer(BukkitAdapter.adapt(player));
         Map<String, ProtectedRegion> regionMap = regions.getRegions();
         for(ProtectedRegion region : regionMap.values()) {
-            if (region.isOwner(player.getName()) && region.contains(player.getBlockIn().getBlockX(), player.getBlockIn().getBlockY(), player.getBlockIn().getBlockZ())) {
+            if (region.isOwner(wgPlayer) && region.contains(player.getBlockIn().getBlockX(), player.getBlockIn().getBlockY(), player.getBlockIn().getBlockZ())) {
                 return Integer.parseInt(region.getId());
             }
         }

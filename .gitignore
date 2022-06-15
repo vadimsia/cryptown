@@ -2,3 +2,5 @@
 backend/.gradle
 backend/.idea
 backend/build
+eblomixer/mixed
+eblomixer/.cache

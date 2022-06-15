@@ -31,11 +31,12 @@ class Art:
     self.metadata = {
       "name": f"Cryptown Token #{index}",
       "symbol": "CRYPTOWN",
+      "description": "Minecraft Cryptown region owner token",
       "seller_fee_basis_points": 100,
       "image": f"{index}.png",
       "external_url": "https://cryptown.com",
       "attributes": [],
-      "collection": 'CRYPTOWN',
+      "collection": { "name": "CRYPTOWN", "family": "CRYPTOWN" },
       "properties": {
         "files": [
           {
@@ -43,7 +44,6 @@ class Art:
             "type": "image/png"
           }
         ],
-        "category": "image",
         "creators": [
           {
             "address": "HCMDYFaAWD3YuaBMLiftc5MzNKcLrPmjASRaciRdAAYU",
@@ -63,7 +63,7 @@ class Art:
       json.dump(self.metadata, f, indent=2)
 
 
-for i in range(0, 100):
+for i in range(0, 10):
   art = Art(512, 512, i)
   asset = Asset('images', 'background.png')
 

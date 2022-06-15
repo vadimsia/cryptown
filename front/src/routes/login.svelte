@@ -1,16 +1,10 @@
 <script lang="ts">
 	import { PhantomWallet } from '../wallets/PhantomWallet';
 	import type { IWalletController } from '../wallets/IWalletController';
-	import { Program } from '../program/program';
 
-	import { Keypair, PublicKey } from '@solana/web3.js';
 	import { onMount } from 'svelte';
 	import { Buffer } from 'buffer'
     import { APIController } from '../api/APIController';
-
-	// ID программы по маинкрафту в солане
-	const PROGRAM_ID = new PublicKey('BZuqbnwSbcxTM5GyDw1V1vbM7YbPqXauYRGjViBMGCor');
-	const UPDATE_AUTHORITY_ID = new PublicKey('HCMDYFaAWD3YuaBMLiftc5MzNKcLrPmjASRaciRdAAYU')
 
 	let controller: IWalletController;
 

@@ -103,6 +103,15 @@ export class CandyMachine {
 		return address;
 	}
 
+	private async getCollectionPDA (candyMachineAddress: anchor.web3.PublicKey): Promise<anchor.web3.PublicKey> {
+		const address = await anchor.web3.PublicKey.findProgramAddress(
+		  [Buffer.from('collection'), candyMachineAddress.toBuffer()],
+		  CANDY_MACHINE_PROGRAM,
+		);
+
+		return address[0];
+	  };
+
 	public async getCandyMachineAccount(): Promise<CandyMachineAccount> {
 		const idl = await anchor.Program.fetchIdl(CANDY_MACHINE_PROGRAM, this.provider);
 		if (idl) {
@@ -110,6 +119,21 @@ export class CandyMachine {
 			return await this.getCandyMachineMetadata(program, this.machineID);
 		} else throw 'Cant fetch idl';
 	}
+
+	private async getCollectionAuthorityRecordPDA(mint: anchor.web3.PublicKey, newAuthority: anchor.web3.PublicKey): Promise<anchor.web3.PublicKey> {
+		let address = await anchor.web3.PublicKey.findProgramAddress(
+		  [
+			Buffer.from('metadata'),
+			TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+			mint.toBuffer(),
+			Buffer.from('collection_authority'),
+			newAuthority.toBuffer(),
+		  ],
+		  TOKEN_METADATA_PROGRAM_ID,
+		);
+
+		return address[0];
+	  };
 
 	public async mintOneToken(
 		candyMachine: CandyMachineAccount,
@@ -124,6 +148,16 @@ export class CandyMachine {
 		const [candyMachineCreator, creatorBump] = await this.getCandyMachineCreator(candyMachineAddress);
 		const connection = candyMachine.program.provider.connection;
 		const wallet = candyMachine.program.provider.wallet;
+
+		const collectionPDA = await this.getCollectionPDA(candyMachineAddress);
+		const collectionPDAAccount = await this.provider.connection.getAccountInfo(collectionPDA);
+	
+		const collectionPdaData = (await candyMachine.program.account.collectionPda.fetch(collectionPDA)) as { mint: anchor.web3.PublicKey; };
+		const collectionMint = collectionPdaData.mint;
+		const collectionAuthorityRecord = await this.getCollectionAuthorityRecordPDA(collectionMint, collectionPDA)
+
+		const collectionMetadata = await this.getMetadata(collectionMint);
+		const collectionMasterEdition = await this.getMasterEdition(collectionMint);
 
 		const instructions = [
 			anchor.web3.SystemProgram.createAccount({
@@ -164,12 +198,29 @@ export class CandyMachine {
 					systemProgram: SystemProgram.programId,
 					rent: anchor.web3.SYSVAR_RENT_PUBKEY,
 					clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
-					recentBlockhashes: anchor.web3.SYSVAR_RECENT_BLOCKHASHES_PUBKEY,
+					recentBlockhashes: anchor.web3.SYSVAR_SLOT_HASHES_PUBKEY,
 					instructionSysvarAccount: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY
 				},
 				remainingAccounts: undefined
+			}),
+			candyMachine.program.instruction.setCollectionDuringMint({
+				accounts: {
+					candyMachine: candyMachineAddress,
+					metadata: metadataAddress,
+					payer: payer,
+					collectionPda: collectionPDA,
+					tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
+					instructions: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
+					collectionMint: collectionMint,
+					collectionMetadata,
+					collectionMasterEdition,
+					authority: candyMachine.state.treasury,
+					collectionAuthorityRecord,
+				},
 			})
 		];
+
+		console.log(instructions)
 
 		let transaction = new Transaction({
 			recentBlockhash: (await connection.getLatestBlockhash()).blockhash,

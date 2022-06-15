@@ -22,7 +22,10 @@
 	// Подключение кошелька
 	async function connectWallet() {
 		controller = new PhantomWallet();
-		await controller.connect();
+		try {
+			await controller.connect();
+		} catch (e) {}
+		controller.wallet.loggedIn = controller.wallet.loggedIn; // костыль шоб было реактивно, приколы свелте... В каждой бочке меда есть ложка дегтя
 	}
 
 	async function mint() {
@@ -58,7 +61,7 @@
 </script>
 
 <button on:click={connectWallet}>Authorize using Phantom</button>
-{#if controller}
+{#if controller && controller.wallet.loggedIn}
 	<button on:click={updateChunk}>Update chunk</button>
 	<button on:click={mint}>Mint</button>
 {/if}

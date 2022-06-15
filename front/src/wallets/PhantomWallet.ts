@@ -33,6 +33,7 @@ export class PhantomWallet implements IWalletController {
 		this._wallet = {
 			publicKey: Keypair.generate().publicKey,
 			connection: this._connection,
+			loggedIn: false,
 			sendTransaction: this.sendTransaction.bind(this),
 			sendRawTransaction: this.sendRawTransaction.bind(this),
 			sendTransactions: this.sendTransactions.bind(this),
@@ -107,7 +108,8 @@ export class PhantomWallet implements IWalletController {
 			const result = await this._solana_interface.connect();
 
 			this._wallet.publicKey = result.publicKey;
-		} else throw 'Cant find phantom wallet';
+			this._wallet.loggedIn = true;
+		} else throw 'Cant connect phantom wallet';
 	}
 
 	public get wallet(): Wallet {

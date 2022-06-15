@@ -40,8 +40,6 @@ export class PhantomWallet implements IWalletController {
 			signAllTransactions: this.signAllTransactions.bind(this),
 			signMessage: this.signMessage.bind(this)
 		};
-
-		console.log(this._solana_interface);
 	}
 
 	private async signMessage(message: string): Promise<SignedMessage> {

@@ -10,7 +10,7 @@
 
 	// ID программы по маинкрафту в солане
 	const PROGRAM_ID = new PublicKey('BZuqbnwSbcxTM5GyDw1V1vbM7YbPqXauYRGjViBMGCor');
-	const CANDY_MACHINE_ID = new PublicKey('BRV3fYXCFTYM4xYwj7pzwdYyPGPzuUHuV2XbTf7tLBrZ');
+	const CANDY_MACHINE_ID = new PublicKey('H82W1XdstGha16QW5SaDRcer9HzEPYWEub1KfGHhGssd');
 	const UPDATE_AUTHORITY_ID = new PublicKey('HCMDYFaAWD3YuaBMLiftc5MzNKcLrPmjASRaciRdAAYU')
 
 	let controller: IWalletController;
@@ -45,8 +45,8 @@
 				let signature = await program.initAccount(token);
 				console.log(signature);
 			} else {
-				let tasks = await program.syncChunks(token.program_account);
-				for (let task of tasks) console.log(await task.execute());
+				let signatures = await program.updateChunk(token.program_account);
+				console.log(signatures)
 			}
 		}
 

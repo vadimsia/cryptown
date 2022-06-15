@@ -16,9 +16,15 @@ import type { UpdateTask } from './UpdateTask';
 import { APIController } from '../api/APIController';
 import type { NFTMetadata } from './NFTMetadata';
 
+
 export class Program {
 	private _TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
 	private _BASE_ACCOUNT_SIZE = 36;
+
+	private _SMALL_ACCOUNT_SIZE = 16*16*64*2;
+	private _MEDIUM_ACCOUNT_SIZE = 38*38*64*2;
+	private _LARGE_ACCOUNT_SIZE = 76*76*64*2;
+
 
 	private _programID: PublicKey;
 	private _wallet: Wallet;
@@ -28,8 +34,21 @@ export class Program {
 		this._wallet = wallet;
 	}
 
+	private calcRegionSize (account: TokenAccount) : number {
+		const area_id = parseInt(account.nft_metadata.name.split('#')[1])
+
+		if (area_id % 49 < 36) return this._SMALL_ACCOUNT_SIZE;
+		if (area_id % 49 < 48) return this._MEDIUM_ACCOUNT_SIZE;
+		
+		return this._LARGE_ACCOUNT_SIZE;
+	}
+
 	async initAccount(account: TokenAccount): Promise<string> {
-		let account_space = 32768 + this._BASE_ACCOUNT_SIZE;
+		if (account.program_account != null) throw 'Already initialized';
+		if (account.nft_metadata == null) throw 'Need nft metadata';
+
+
+		let account_space = this.calcRegionSize(account) + this._BASE_ACCOUNT_SIZE;
 		let rent = await this._wallet.connection.getMinimumBalanceForRentExemption(account_space);
 		let program_account = Keypair.generate();
 
@@ -47,10 +66,6 @@ export class Program {
 				space: account_space
 			})
 		);
-
-		if (account.program_account != null) throw 'Already initialized';
-
-		if (account.nft_metadata == null) throw 'Need nft metadata';
 
 		transaction.add(
 			new TransactionInstruction({

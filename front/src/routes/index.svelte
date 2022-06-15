@@ -10,7 +10,7 @@
 
 	// ID программы по маинкрафту в солане
 	const PROGRAM_ID = new PublicKey('BZuqbnwSbcxTM5GyDw1V1vbM7YbPqXauYRGjViBMGCor');
-	const CANDY_MACHINE_ID = new PublicKey('H82W1XdstGha16QW5SaDRcer9HzEPYWEub1KfGHhGssd');
+	const CANDY_MACHINE_ID = new PublicKey('CurpUdNAHgWNeECdLZgFgWhvh4wDr73dNWEDpFX6MreF');
 	const UPDATE_AUTHORITY_ID = new PublicKey('HCMDYFaAWD3YuaBMLiftc5MzNKcLrPmjASRaciRdAAYU')
 
 	let controller: IWalletController;

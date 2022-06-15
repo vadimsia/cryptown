@@ -52,10 +52,14 @@ export class Program {
 		let rent = await this._wallet.connection.getMinimumBalanceForRentExemption(account_space);
 		let program_account = Keypair.generate();
 
+		if (!confirm(`${account.nft_metadata.name} initialization will cost ${rent / 1_000_000_000} SOL`))
+			throw 'User declined account initialization'
+
 		let transaction = new Transaction({
 			recentBlockhash: (await this._wallet.connection.getLatestBlockhash()).blockhash,
 			feePayer: this._wallet.publicKey
 		});
+		
 
 		transaction.add(
 			SystemProgram.createAccount({

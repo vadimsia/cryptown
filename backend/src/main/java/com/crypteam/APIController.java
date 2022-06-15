@@ -78,7 +78,7 @@ public class APIController {
 
     @GetMapping("/api/login")
     public APIResponse<Boolean> makeLogin (@RequestParam String uuid, @RequestParam String pk, @RequestParam String sig) {
-        byte[] key = Base64.decodeBase64(pk);
+        byte[] key = Base64.decodeBase64(pk.replaceAll(" ", "+"));
         byte[] signature = Base64.decodeBase64(sig.replaceAll(" ", "+"));
 
         TweetNaclFast.Signature sign = new TweetNaclFast.Signature(key, key);

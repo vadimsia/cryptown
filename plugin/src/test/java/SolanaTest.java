@@ -27,30 +27,7 @@ public class SolanaTest {
         assertEquals(key, pk.toString());
     }
 
-    @Test
-    public void RPCTest () throws AddressFormatException, IOException {
-        SolanaRPC rpc = new SolanaRPC("https://explorer-api.devnet.solana.com/");
-        PublicKey pk = new PublicKey("s5E5TCxx2DNjoENQ6wmRQNR2pVjNFC1cy1tWfaFLQNV");
 
-        try {
-            AccountInfo accountInfo = rpc.getAccountInfo(pk);
-            assertEquals(accountInfo.getPublicKey().toString(), pk.toString());
-        } catch (ApiRequestException e) {
-            System.out.println(e);
-        }
-
-        pk = new PublicKey("52UjnFqhUyPvRPxhbvdSWcgzJ7oDikHeD9DFe9q7EHHL");
-
-        try {
-            AccountInfo accountInfo = rpc.getAccountInfo(pk);
-            RegionAccountInfo regionAccount = new RegionAccountInfo(accountInfo);
-
-            assertEquals(regionAccount.getOwner().toString(), "s5E5TCxx2DNjoENQ6wmRQNR2pVjNFC1cy1tWfaFLQNV");
-            assertArrayEquals(regionAccount.getPayload(), new byte[] { 1, 1, 1, 1, 1, 1, 1, 1 });
-        } catch (ApiRequestException e) {
-            System.out.println(e);
-        }
-    }
     @Test
     public void getProgramAccountsTest () throws AddressFormatException, ApiRequestException, IOException {
         SolanaRPC rpc = new SolanaRPC("https://explorer-api.devnet.solana.com/");
@@ -68,7 +45,7 @@ public class SolanaTest {
 
     @Test
     public void getRegionByIDTest () throws AddressFormatException, ApiRequestException, IOException, AccountInfoNotFoundException {
-        PublicKey pk = new PublicKey("u35VEZ9gPkPg1VAp3YAxPejRhKKu5q8FJagEc7vUs6Y");
+        PublicKey pk = new PublicKey("BZuqbnwSbcxTM5GyDw1V1vbM7YbPqXauYRGjViBMGCor");
         CryptownProgram program = new CryptownProgram(pk, "https://explorer-api.devnet.solana.com/");
 
 

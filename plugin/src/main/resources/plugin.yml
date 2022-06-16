@@ -26,13 +26,13 @@ commands:
     usage: /<command>
   refreshRegion:
     description: refreshing region from solana account
-    permission: <plugin name>.removeRegions
+    permission: minecraft.command.me
     usage: /<command>
   getPlayerPosition:
     description: getPlayerPosition
     permission: <plugin name>.getPlayerPosition
-    usage: /<command>
+    usage: minecraft.command.me
   login:
     description: login
-    permission: <plugin name>.login
+    permission: minecraft.command.me
     usage: /<command>

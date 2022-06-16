@@ -33,7 +33,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
         try {
             SolanaProgramProperties.PROGRAM_ID = new PublicKey("FangADZappzjG1pNsfo3zTct4AZ2VXyYq7TMfgd4YRmy");
             SolanaProgramProperties.RPC_ENDPOINT = "https://explorer-api.devnet.solana.com/";
-            SolanaProgramProperties.FRONTEND_URL = "http://localhost:3000/";
+            SolanaProgramProperties.FRONTEND_URL = "https://cryptown.one:3000/";
         } catch (AddressFormatException e) {
             throw new RuntimeException(e);
         }
@@ -99,7 +99,10 @@ public final class PluginMain extends JavaPlugin implements Listener {
                 System.out.println("Original region length: " + sec.getRegion().length);
                 sender.sendMessage(ChatColor.GREEN + "Region successfully refreshed from solana!");
             }
-            case "login" -> sender.sendMessage(ChatColor.GREEN + SolanaProgramProperties.FRONTEND_URL + "?uuid=" + player.getUniqueId() + "&nick=" + player.getName());
+            case "login" -> {
+                sender.sendMessage(ChatColor.YELLOW + "Click the following link to make login");
+                sender.sendMessage(ChatColor.GREEN + SolanaProgramProperties.FRONTEND_URL + "?uuid=" + player.getUniqueId() + "&nick=" + player.getName());
+            }
             case "getPlayerPosition" -> {
                 try {
                     Bukkit.getLogger().info("" + Section.getPlayerStandingAreaID(player));

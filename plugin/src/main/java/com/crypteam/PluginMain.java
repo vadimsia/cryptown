@@ -33,7 +33,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
         try {
             SolanaProgramProperties.PROGRAM_ID = new PublicKey("FangADZappzjG1pNsfo3zTct4AZ2VXyYq7TMfgd4YRmy");
             SolanaProgramProperties.RPC_ENDPOINT = "https://explorer-api.devnet.solana.com/";
-            SolanaProgramProperties.FRONTEND_URL = "https://cryptown.one:3000/";
+            SolanaProgramProperties.FRONTEND_URL = "http://cryptown.one/";
         } catch (AddressFormatException e) {
             throw new RuntimeException(e);
         }

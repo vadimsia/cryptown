@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  nginx:
+    container_name: cryptown-nginx
+    restart: always
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - api
+  api:
+    container_name: cryptown-api
+    restart: always
+    build: backend
+    expose:
+      - 8080
+    depends_on:
+      - redis
+  redis:
+    container_name: cryptown-redis
+    image: redis:alpine
+    expose:
+      - 6379

@@ -53,22 +53,22 @@ public final class PluginMain extends JavaPlugin implements Listener {
         Player player = BukkitAdapter.adapt(getServer().getPlayer(sender.getName()));
 
         switch (cmd.getName()) {
-            case "getRegion" -> {
+            case "getRegion": {
                 Section sec = new Section(Integer.parseInt(args[0]));
                 short[] region = sec.getRegion();
                 System.out.println("Sector length: " + region.length);
             }
-            case "setRegion" -> {
+            case "setRegion": {
                 Section sec = new Section(Integer.parseInt(args[0]));
                 sec.setRegion(Section.testRegion);
             }
-            case "initRegions" -> Section.initRegions(Integer.parseInt(args[0]));
-            case "removeRegions" -> Section.removeRegions(Integer.parseInt(args[0]));
-            case "setRegionAccess" -> {
+            case "initRegions": Section.initRegions(Integer.parseInt(args[0]));
+            case "removeRegions": Section.removeRegions(Integer.parseInt(args[0]));
+            case "setRegionAccess": {
                 Section sec = new Section(Integer.parseInt(args[0]));
                 sec.setRegionAccess(player);
             }
-            case "refreshRegion" -> {
+            case "refreshRegion": {
                 CryptownProgram program = new CryptownProgram();
                 RegionAccountInfo accountInfo;
                 int areaID;
@@ -99,11 +99,11 @@ public final class PluginMain extends JavaPlugin implements Listener {
                 System.out.println("Original region length: " + sec.getRegion().length);
                 sender.sendMessage(ChatColor.GREEN + "Region successfully refreshed from solana!");
             }
-            case "login" -> {
+            case "login": {
                 sender.sendMessage(ChatColor.YELLOW + "Click the following link to make login");
                 sender.sendMessage(ChatColor.GREEN + SolanaProgramProperties.FRONTEND_URL + "?uuid=" + player.getUniqueId() + "&nick=" + player.getName());
             }
-            case "getPlayerPosition" -> {
+            case "getPlayerPosition": {
                 try {
                     Bukkit.getLogger().info("" + Section.getPlayerStandingAreaID(player));
                 } catch (Exception e) {

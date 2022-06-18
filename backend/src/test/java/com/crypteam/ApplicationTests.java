@@ -10,10 +10,7 @@ import org.junit.jupiter.api.Test;
 import redis.clients.jedis.JedisPool;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,11 +18,15 @@ import static org.junit.jupiter.api.Assertions.*;
 class ApplicationTests {
 
 	@Test
-	void rpcTest() throws RPCWaitTimeout {
+	void rpcTest() {
 		JedisPool pool = new JedisPool("localhost", 6379);
 		RPCRequest request = new ReadDataRequest(1);
-		RPCRequest response = new RPCWaitMessage(pool.getResource(), request, RPCCommand.READ_DATA_RESPONSE).waitMessage();
-		assertEquals(response, null);
+		try {
+			RPCRequest response = new RPCWaitMessage(pool.getResource(), request, RPCCommand.READ_DATA_RESPONSE).waitMessage();
+			assertNull(response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -40,11 +41,15 @@ class ApplicationTests {
 
 	@Test
 	void rpcTest2() throws IOException, InterruptedException {
-		JedisPool pool = new JedisPool("localhost", 6379);
+		JedisPool pool = new JedisPool("redis", 6379);
 		ReadDataRequest request = new ReadDataRequest(1);
 		ReadDataResponse fake_response = new ReadDataResponse(request, new short[] {1,2,3});
-
-		new RPCPublisher(pool.getResource());
+		try {
+			new RPCPublisher(pool.getResource());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
 
 		AtomicReference<RPCRequest> response = new AtomicReference<>();
 		Thread thread = new Thread(() -> {

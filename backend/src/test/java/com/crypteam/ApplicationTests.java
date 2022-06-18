@@ -41,11 +41,15 @@ class ApplicationTests {
 
 	@Test
 	void rpcTest2() throws IOException, InterruptedException {
-		JedisPool pool = new JedisPool("localhost", 6379);
+		JedisPool pool = new JedisPool("redis", 6379);
 		ReadDataRequest request = new ReadDataRequest(1);
 		ReadDataResponse fake_response = new ReadDataResponse(request, new short[] {1,2,3});
-
-		new RPCPublisher(pool.getResource());
+		try {
+			new RPCPublisher(pool.getResource());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
 
 		AtomicReference<RPCRequest> response = new AtomicReference<>();
 		Thread thread = new Thread(() -> {

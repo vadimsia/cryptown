@@ -7,7 +7,7 @@ public class RPCJedisPool {
     private static JedisPool pool;
 
     public RPCJedisPool () {
-        pool = new JedisPool("localhost",6379);
+        pool = new JedisPool("redis",6379);
     }
 
     public static Jedis getResource () {

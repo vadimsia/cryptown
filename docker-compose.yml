@@ -1,6 +1,11 @@
 version: '3.7'
 
 services:
+  redis:
+    container_name: cryptown-redis
+    image: redis:alpine
+    expose:
+      - 6379
   nginx:
     container_name: cryptown-nginx
     restart: always
@@ -16,12 +21,29 @@ services:
     container_name: cryptown-api
     restart: always
     build: backend
+    volumes:
+      - api-m2:/root/.m2
     expose:
       - 8080
     depends_on:
       - redis
-  redis:
-    container_name: cryptown-redis
-    image: redis:alpine
-    expose:
-      - 6379
+  server:
+    container_name: cryptown_server
+    restart: always
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    volumes:
+      - server-m2:/root/.m2
+      - server-world:/home/app/world
+    ports:
+      - 25565:25565
+    depends_on:
+      - redis
+    env_file:
+      - .env
+
+volumes:
+  server-m2:
+  server-world:
+  api-m2:

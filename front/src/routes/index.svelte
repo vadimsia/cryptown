@@ -9,9 +9,9 @@
 	import { Buffer } from 'buffer'
 
 	// ID программы по маинкрафту в солане
-	const PROGRAM_ID = new PublicKey('FangADZappzjG1pNsfo3zTct4AZ2VXyYq7TMfgd4YRmy');
-	const CANDY_MACHINE_ID = new PublicKey('9q2vhJgPo3ZC59ctdZoQ8gq84A5YYxc7wBPGKUf2EVrF');
-	const UPDATE_AUTHORITY_ID = new PublicKey('HCMDYFaAWD3YuaBMLiftc5MzNKcLrPmjASRaciRdAAYU')
+	const PROGRAM_ID = new PublicKey(import.meta.env.VITE_PROGRAM_ID || 'FangADZappzjG1pNsfo3zTct4AZ2VXyYq7TMfgd4YRmy');
+	const CANDY_MACHINE_ID = new PublicKey(import.meta.env.VITE_CANDY_MACHINE_ID || '9q2vhJgPo3ZC59ctdZoQ8gq84A5YYxc7wBPGKUf2EVrF');
+	const UPDATE_AUTHORITY_ID = new PublicKey(import.meta.env.VITE_UPDATE_AUTHORITY_ID || 'HCMDYFaAWD3YuaBMLiftc5MzNKcLrPmjASRaciRdAAYU')
 
 	let controller: IWalletController;
 

@@ -3,6 +3,7 @@ FROM node:lts-alpine as FRONT
 WORKDIR /front
 
 COPY front .
+COPY .env .
 
 RUN npm i
 RUN npm run build

@@ -29,11 +29,10 @@ public final class PluginMain extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         Section.setMapAccess();
-
         try {
-            SolanaProgramProperties.PROGRAM_ID = new PublicKey("FangADZappzjG1pNsfo3zTct4AZ2VXyYq7TMfgd4YRmy");
-            SolanaProgramProperties.RPC_ENDPOINT = "https://explorer-api.devnet.solana.com/";
-            SolanaProgramProperties.FRONTEND_URL = "http://cryptown.one/";
+            SolanaProgramProperties.PROGRAM_ID = new PublicKey(System.getenv("PROGRAM_ID"));
+            SolanaProgramProperties.RPC_ENDPOINT = System.getenv("SOLANA_RPC");
+            SolanaProgramProperties.FRONTEND_URL = System.getenv("FRONTEND_URL");
         } catch (AddressFormatException e) {
             throw new RuntimeException(e);
         }
@@ -41,7 +40,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
         Section.downloadScriptData();
 
-        JedisPool pool = new JedisPool("localhost", 6379);
+        JedisPool pool = new JedisPool("redis", 6379);
 
         subscriber = new RPCSubscriber();
         new RPCThread(pool.getResource(), subscriber).start();
@@ -57,16 +56,25 @@ public final class PluginMain extends JavaPlugin implements Listener {
                 Section sec = new Section(Integer.parseInt(args[0]));
                 short[] region = sec.getRegion();
                 System.out.println("Sector length: " + region.length);
+                break;
             }
             case "setRegion": {
                 Section sec = new Section(Integer.parseInt(args[0]));
                 sec.setRegion(Section.testRegion);
+                break;
             }
-            case "initRegions": Section.initRegions(Integer.parseInt(args[0]));
-            case "removeRegions": Section.removeRegions(Integer.parseInt(args[0]));
+            case "initRegions": {
+                Section.initRegions(Integer.parseInt(args[0]));
+                break;
+            }
+            case "removeRegions": {
+                Section.removeRegions(Integer.parseInt(args[0]));
+                break;
+            }
             case "setRegionAccess": {
                 Section sec = new Section(Integer.parseInt(args[0]));
                 sec.setRegionAccess(player);
+                break;
             }
             case "refreshRegion": {
                 CryptownProgram program = new CryptownProgram();
@@ -98,10 +106,12 @@ public final class PluginMain extends JavaPlugin implements Listener {
                 System.out.println("Region length: " + region.length);
                 System.out.println("Original region length: " + sec.getRegion().length);
                 sender.sendMessage(ChatColor.GREEN + "Region successfully refreshed from solana!");
+                break;
             }
             case "login": {
                 sender.sendMessage(ChatColor.YELLOW + "Click the following link to make login");
-                sender.sendMessage(ChatColor.GREEN + SolanaProgramProperties.FRONTEND_URL + "?uuid=" + player.getUniqueId() + "&nick=" + player.getName());
+                sender.sendMessage(ChatColor.GREEN + SolanaProgramProperties.FRONTEND_URL + "login?uuid=" + player.getUniqueId() + "&nick=" + player.getName());
+                break;
             }
             case "getPlayerPosition": {
                 try {
@@ -109,6 +119,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
                 } catch (Exception e) {
                     Bukkit.getLogger().warning("Exception: " + e);
                 }
+                break;
             }
         }
 

@@ -14,8 +14,10 @@
 	const UPDATE_AUTHORITY_ID = new PublicKey('HCMDYFaAWD3YuaBMLiftc5MzNKcLrPmjASRaciRdAAYU')
 
 	let controller: IWalletController;
-
+	let loaded = false;
+	$: loaded;
 	onMount (() => {
+		loaded = true;
 		window.Buffer = Buffer;
 	})
 
@@ -59,9 +61,82 @@
 		// console.log(controller.wallet.publicKey.toBytes().toString('base64'))
 	}
 </script>
+<div class="main">
+	<div class={loaded? "container-1 done": "container-1"}>
+		<div class="preloader">
+			<img alt="loader" src="/loader.svg" width="10%" height="10%">
+		</div>
+	</div>
+	<div class="container-2">
+		<div class="content">
+			<p class="button" id="connect-wallet" on:click={connectWallet}>Connect Wallet</p>
+			{#if controller && controller.wallet.loggedIn}
+				<p class="button" on:click={updateChunk}>Update chunk</p>
+				<p class="button" on:click={mint}>Mint</p>
+			{/if}
+		</div>
+	</div>
+</div>
 
-<button on:click={connectWallet}>Authorize using Phantom</button>
-{#if controller && controller.wallet.loggedIn}
-	<button on:click={updateChunk}>Update chunk</button>
-	<button on:click={mint}>Mint</button>
-{/if}
+
+<style>
+	.main {
+		position: relative;
+		width: 100%;
+		height: 100vh;
+	}
+	
+	.container-1 {
+		z-index: 2;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
+
+	.done {
+		display: none;
+	}
+
+	.container-2 {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
+
+	.preloader {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		z-index: 100;
+		width: 100%;
+		height: 100%;
+		background: rgb(164,77,87);
+		background: -moz-linear-gradient(221deg, rgba(164,77,87,1) 0%, rgba(104,81,150,1) 50%, rgba(27,85,230,1) 100%);
+		background: -webkit-linear-gradient(221deg, rgba(164,77,87,1) 0%, rgba(104,81,150,1) 50%, rgba(27,85,230,1) 100%);
+		background: linear-gradient(221deg, rgba(164,77,87,1) 0%, rgba(104,81,150,1) 50%, rgba(27,85,230,1) 100%);
+	}
+
+	.content {
+		display: flex;
+		width: 100%;
+		height: 100%;
+		background: no-repeat url('/background.png');
+		background-size: cover;
+	}
+
+	.button {
+		cursor: pointer;
+		border-radius: 4px;
+	}
+
+	#connect-wallet {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 160px;
+		height: 40px;
+		background: blue;
+	}
+
+</style>
+

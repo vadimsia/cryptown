@@ -17,27 +17,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RCONTest {
 
     @Test
-    public void readRegionTest () throws IOException {
-        Socket socket = new Socket();
-        socket.connect(new InetSocketAddress(4004));
-
-        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-        DataInputStream dis = new DataInputStream(socket.getInputStream());
-
-        dos.writeInt(0); // command
-        dos.writeInt(5); // region id
-
-        dos.flush();
-
-        int length = dis.readInt();
-
-        byte[] data = new byte[length * 2];
-        dis.readFully(data);
-
-        System.out.println(data.length);
-    }
-
-    @Test
     public void redisTest () throws InterruptedException, IOException {
         JedisPool pool = new JedisPool("localhost", 6379);
         Jedis subscriber = pool.getResource();

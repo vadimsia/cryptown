@@ -2,9 +2,8 @@ package com.crypteam;
 
 import com.crypteam.crypto.TweetNaclFast;
 import com.crypteam.rpc.RPCCommand;
-import com.crypteam.rpc.RPCJedisPool;
 import com.crypteam.rpc.RPCPublisher;
-import com.crypteam.rpc.RPCWaitMessage;
+import com.crypteam.rpc.RPCSubscriber;
 import com.crypteam.rpc.requests.AuthorizeRequest;
 import com.crypteam.rpc.requests.ReadDataRequest;
 import com.crypteam.rpc.requests.ReadDataResponse;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.nio.ShortBuffer;
 
 class APIResponse<T> {
     public boolean success = true;
@@ -65,8 +63,7 @@ public class APIController {
             ReadDataRequest request = new ReadDataRequest(id);
             RPCPublisher.publish(request);
 
-            RPCWaitMessage messageWaiter = new RPCWaitMessage(RPCJedisPool.getResource(), request, RPCCommand.READ_DATA_RESPONSE);
-            ReadDataResponse response = (ReadDataResponse) messageWaiter.waitMessage();
+            ReadDataResponse response = (ReadDataResponse) RPCSubscriber.waitMessage(request, RPCCommand.READ_DATA_RESPONSE);
 
             Region region = new Region(Utils.short2byte(response.payload));
             return responseBuilder.setPayload(region).makeSuccess().build();

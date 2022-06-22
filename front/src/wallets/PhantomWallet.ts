@@ -81,22 +81,21 @@ export class PhantomWallet implements IWalletController {
 
 	private async sendTransactions(transactions: Transaction[]): Promise<string[]> {
 		if (this._solana_interface) {
-			let signatures: string[] = []
+			let signatures: string[] = [];
 
 			const signed = await this._solana_interface.signAllTransactions(transactions);
 			for (const transaction of signed) {
 				let signature: string;
-				
+
 				try {
 					signature = await this._connection.sendRawTransaction(transaction.serialize());
 					await this._connection.confirmTransaction(signature);
 				} catch (e) {
-					console.log("Send transaction error!! " + e);
+					console.log('Send transaction error!! ' + e);
 					continue;
 				}
 
-				signatures.push(signature)
-				
+				signatures.push(signature);
 			}
 
 			return signatures;

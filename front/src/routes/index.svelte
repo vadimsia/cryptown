@@ -2,24 +2,31 @@
 	import { PhantomWallet } from '../wallets/PhantomWallet';
 	import type { IWalletController } from '../wallets/IWalletController';
 	import { Program } from '../program/program';
-
+	import { walletState } from '../store/store';
+	import Wallets from '../components/wallets.svelte';
 	import { Keypair, PublicKey } from '@solana/web3.js';
 	import { CandyMachine } from '../nftprogram/candymachine';
 	import { onMount } from 'svelte';
-	import { Buffer } from 'buffer'
+	import { Buffer } from 'buffer';
+	import Toolbar from '../components/toolbar.svelte';
 
 	// ID программы по маинкрафту в солане
 	const PROGRAM_ID = new PublicKey('FangADZappzjG1pNsfo3zTct4AZ2VXyYq7TMfgd4YRmy');
 	const CANDY_MACHINE_ID = new PublicKey('9q2vhJgPo3ZC59ctdZoQ8gq84A5YYxc7wBPGKUf2EVrF');
-	const UPDATE_AUTHORITY_ID = new PublicKey('HCMDYFaAWD3YuaBMLiftc5MzNKcLrPmjASRaciRdAAYU')
+	const UPDATE_AUTHORITY_ID = new PublicKey('HCMDYFaAWD3YuaBMLiftc5MzNKcLrPmjASRaciRdAAYU');
 
 	let controller: IWalletController;
 	let loaded = false;
-	$: loaded;
-	onMount (() => {
+
+	onMount(() => {
 		loaded = true;
 		window.Buffer = Buffer;
-	})
+	});
+
+	let walletState_value: boolean;
+	walletState.subscribe((value) => {
+		walletState_value = value;
+	});
 
 	// Подключение кошелька
 	async function connectWallet() {
@@ -31,9 +38,11 @@
 	}
 
 	async function mint() {
-		let machine = new CandyMachine(CANDY_MACHINE_ID, controller.wallet)
-		let account = await machine.getCandyMachineAccount()
-		console.log(await machine.mintOneToken(account, controller.wallet.publicKey, Keypair.generate()))
+		let machine = new CandyMachine(CANDY_MACHINE_ID, controller.wallet);
+		let account = await machine.getCandyMachineAccount();
+		console.log(
+			await machine.mintOneToken(account, controller.wallet.publicKey, Keypair.generate())
+		);
 	}
 
 	async function updateChunk() {
@@ -44,14 +53,14 @@
 
 		// Достает только участки авторизованного пользователя
 		let user_tokens = await program.getUserTokens(UPDATE_AUTHORITY_ID);
-		console.log(user_tokens)
+		console.log(user_tokens);
 		for (let token of user_tokens) {
 			if (!token.program_account) {
 				let signature = await program.initAccount(token);
 				console.log(signature);
 			} else {
 				let signatures = await program.updateChunk(token.program_account);
-				console.log(signatures)
+				console.log(signatures);
 			}
 		}
 
@@ -61,15 +70,19 @@
 		// console.log(controller.wallet.publicKey.toBytes().toString('base64'))
 	}
 </script>
+
 <div class="main">
-	<div class={loaded? "container-1 done": "container-1"}>
+	<div class={loaded ? 'container-1 done' : 'container-1'}>
 		<div class="preloader">
-			<img alt="loader" src="/loader.svg" width="10%" height="10%">
+			<img alt="loader" src="/loader.svg" width="10%" height="10%" />
 		</div>
 	</div>
 	<div class="container-2">
 		<div class="content">
-			<p class="button" id="connect-wallet" on:click={connectWallet}>Connect Wallet</p>
+			<Wallets />
+			<div class="toolbar-container">
+				<Toolbar />
+			</div>
 			{#if controller && controller.wallet.loggedIn}
 				<p class="button" on:click={updateChunk}>Update chunk</p>
 				<p class="button" on:click={mint}>Mint</p>
@@ -78,26 +91,15 @@
 	</div>
 </div>
 
-
 <style>
 	.main {
 		position: relative;
 		width: 100%;
 		height: 100vh;
 	}
-	
+
 	.container-1 {
 		z-index: 2;
-		position: absolute;
-		width: 100%;
-		height: 100%;
-	}
-
-	.done {
-		display: none;
-	}
-
-	.container-2 {
 		position: absolute;
 		width: 100%;
 		height: 100%;
@@ -110,10 +112,35 @@
 		z-index: 100;
 		width: 100%;
 		height: 100%;
-		background: rgb(164,77,87);
-		background: -moz-linear-gradient(221deg, rgba(164,77,87,1) 0%, rgba(104,81,150,1) 50%, rgba(27,85,230,1) 100%);
-		background: -webkit-linear-gradient(221deg, rgba(164,77,87,1) 0%, rgba(104,81,150,1) 50%, rgba(27,85,230,1) 100%);
-		background: linear-gradient(221deg, rgba(164,77,87,1) 0%, rgba(104,81,150,1) 50%, rgba(27,85,230,1) 100%);
+		background: rgb(164, 77, 87);
+		background: -moz-linear-gradient(
+			221deg,
+			rgba(164, 77, 87, 1) 0%,
+			rgba(104, 81, 150, 1) 50%,
+			rgba(27, 85, 230, 1) 100%
+		);
+		background: -webkit-linear-gradient(
+			221deg,
+			rgba(164, 77, 87, 1) 0%,
+			rgba(104, 81, 150, 1) 50%,
+			rgba(27, 85, 230, 1) 100%
+		);
+		background: linear-gradient(
+			221deg,
+			rgba(164, 77, 87, 1) 0%,
+			rgba(104, 81, 150, 1) 50%,
+			rgba(27, 85, 230, 1) 100%
+		);
+	}
+
+	.done {
+		display: none;
+	}
+
+	.container-2 {
+		position: absolute;
+		width: 100%;
+		height: 100%;
 	}
 
 	.content {
@@ -121,22 +148,13 @@
 		width: 100%;
 		height: 100%;
 		background: no-repeat url('/background.png');
+		background-attachment: fixed;
 		background-size: cover;
 	}
 
-	.button {
-		cursor: pointer;
-		border-radius: 4px;
-	}
-
-	#connect-wallet {
+	.toolbar-container {
 		display: flex;
 		justify-content: center;
-		align-items: center;
-		width: 160px;
-		height: 40px;
-		background: blue;
+		width: 100%;
 	}
-
 </style>
-

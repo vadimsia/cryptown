@@ -1,4 +1,4 @@
 export interface UpdateTask {
- 	offset: number;
+	offset: number;
 	data: Buffer;
 }

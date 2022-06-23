@@ -1,15 +1,16 @@
 <script lang="ts">
 	import type { IWalletController } from '../wallets/IWalletController';
-	import { walletState, walletController } from '../store/store';
+	import { walletState, walletController, toolbarItems } from '../store/store';
 	import { onMount } from 'svelte';
-	let toolbar_items = [
-		{ id: 0, name: 'Mint', state: true, walletDepends: false },
-		{ id: 1, name: 'Regions', state: false, walletDepends: true },
-		{ id: 2, name: 'Info', state: false, walletDepends: false }
-	];
-
-	onMount(async () => {});
-	function itemsChange() {}
+	// let toolbar_items = [
+	// 	{ id: 0, name: 'Mint', state: true, walletDepends: false },
+	// 	{ id: 1, name: 'Regions', state: false, walletDepends: true },
+	// 	{ id: 2, name: 'Info', state: false, walletDepends: false }
+	// ];
+	let toolbarItems_value: Object[];
+	toolbarItems.subscribe((value) => {
+		toolbarItems_value = value;
+	});
 
 	let walletState_value: boolean;
 	walletState.subscribe((value) => {
@@ -20,6 +21,15 @@
 	walletController.subscribe((value) => {
 		walletController_value = value;
 	});
+
+	function Toggle(this: any) {
+		toolbarItems_value.map((item) => {
+			if (item.state) {
+				item.state = false;
+			}
+		});
+		toolbarItems_value[this.id].state = true;
+	}
 </script>
 
 <div class="toolbar">
@@ -29,14 +39,26 @@
 			<div>Town</div>
 		</div>
 		<div class="toolbar-items">
-			{#each toolbar_items as item}
-				<div
-					class="toolbar-item {item.state ? 'active' : ''}"
-					id={'' + item.id}
-					on:click={itemsChange}
-				>
-					{item.name}
-				</div>
+			{#each toolbarItems_value as item}
+				{#if item.walletDepends}
+					{#if walletController_value?.wallet.loggedIn}
+						<div
+							class="toolbar-item {item.state ? 'active' : ''}"
+							id={'' + item.id}
+							on:click={Toggle}
+						>
+							{item.name}
+						</div>
+					{/if}
+				{:else}
+					<div
+						class="toolbar-item {item.state ? 'active' : ''}"
+						id={'' + item.id}
+						on:click={Toggle}
+					>
+						{item.name}
+					</div>
+				{/if}
 			{/each}
 		</div>
 		{#if !walletController_value?.wallet.loggedIn}

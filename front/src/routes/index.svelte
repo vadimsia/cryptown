@@ -9,6 +9,7 @@
 	import { onMount } from 'svelte';
 	import { Buffer } from 'buffer';
 	import Toolbar from '../components/toolbar.svelte';
+	import Server from '../components/server.svelte';
 
 	// ID программы по маинкрафту в солане
 	const PROGRAM_ID = new PublicKey('FangADZappzjG1pNsfo3zTct4AZ2VXyYq7TMfgd4YRmy');
@@ -71,17 +72,23 @@
 	}
 </script>
 
+<Wallets />
 <div class="main">
 	<div class={loaded ? 'container-1 done' : 'container-1'}>
 		<div class="preloader">
 			<img alt="loader" src="/loader.svg" width="10%" height="10%" />
 		</div>
 	</div>
+	
 	<div class="container-2">
 		<div class="content">
-			<Wallets />
+			
 			<div class="toolbar-container">
 				<Toolbar />
+			</div>
+			<div class="section">
+				<div style="background: black;"></div>
+				<Server />
 			</div>
 			{#if controller && controller.wallet.loggedIn}
 				<p class="button" on:click={updateChunk}>Update chunk</p>
@@ -139,12 +146,8 @@
 
 	.container-2 {
 		position: absolute;
-		width: 100%;
-		height: 100%;
-	}
-
-	.content {
 		display: flex;
+		justify-content: center;
 		width: 100%;
 		height: 100%;
 		background: no-repeat url('/background.png');
@@ -152,9 +155,22 @@
 		background-size: cover;
 	}
 
+	.content {
+		display: flex;
+		flex-direction: column;
+		width: 80%;
+		height: 100%;
+	}
+
 	.toolbar-container {
 		display: flex;
 		justify-content: center;
 		width: 100%;
+	}
+
+	.section {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
 	}
 </style>

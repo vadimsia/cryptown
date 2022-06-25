@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { IWalletController } from '../wallets/IWalletController';
 	import { walletState, walletController, toolbarItems } from '../store/store';
-	import { onMount } from 'svelte';
 	// let toolbar_items = [
 	// 	{ id: 0, name: 'Mint', state: true, walletDepends: false },
 	// 	{ id: 1, name: 'Regions', state: false, walletDepends: true },
@@ -84,8 +83,8 @@
 		align-items: center;
 		padding-right: 10px;
 		padding-left: 10px;
-		margin: 10px;
-		width: 80%;
+		margin-top: 10px;
+		width: 100%;
 		height: 60px;
 		background-color: #00000096;
 		border-radius: 4px;

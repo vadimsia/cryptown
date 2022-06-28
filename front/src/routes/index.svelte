@@ -4,16 +4,16 @@
 	import { Program } from '../program/program';
 	import { walletState } from '../store/store';
 	import Wallets from '../components/wallets.svelte';
-	import { Keypair, PublicKey } from '@solana/web3.js';
-	import { CandyMachine } from '../nftprogram/candymachine';
+	import { PublicKey } from '@solana/web3.js';
 	import { onMount } from 'svelte';
 	import { Buffer } from 'buffer';
 	import Toolbar from '../components/toolbar.svelte';
 	import Server from '../components/server.svelte';
+	import Mint from '../components/mint.svelte';
 
 	// ID программы по маинкрафту в солане
 	const PROGRAM_ID = new PublicKey('FangADZappzjG1pNsfo3zTct4AZ2VXyYq7TMfgd4YRmy');
-	const CANDY_MACHINE_ID = new PublicKey('9q2vhJgPo3ZC59ctdZoQ8gq84A5YYxc7wBPGKUf2EVrF');
+
 	const UPDATE_AUTHORITY_ID = new PublicKey('HCMDYFaAWD3YuaBMLiftc5MzNKcLrPmjASRaciRdAAYU');
 
 	let controller: IWalletController;
@@ -28,23 +28,6 @@
 	walletState.subscribe((value) => {
 		walletState_value = value;
 	});
-
-	// Подключение кошелька
-	async function connectWallet() {
-		controller = new PhantomWallet();
-		try {
-			await controller.connect();
-		} catch (e) {}
-		controller.wallet.loggedIn = controller.wallet.loggedIn; // костыль шоб было реактивно, приколы свелте... В каждой бочке меда есть ложка дегтя
-	}
-
-	async function mint() {
-		let machine = new CandyMachine(CANDY_MACHINE_ID, controller.wallet);
-		let account = await machine.getCandyMachineAccount();
-		console.log(
-			await machine.mintOneToken(account, controller.wallet.publicKey, Keypair.generate())
-		);
-	}
 
 	async function updateChunk() {
 		let program = new Program(PROGRAM_ID, controller.wallet);
@@ -79,20 +62,21 @@
 			<img alt="loader" src="/loader.svg" width="10%" height="10%" />
 		</div>
 	</div>
-	
+
 	<div class="container-2">
 		<div class="content">
-			
 			<div class="toolbar-container">
 				<Toolbar />
 			</div>
 			<div class="section">
-				<div style="background: black;"></div>
+				<div class="left">
+					<Mint />
+				</div>
+
 				<Server />
 			</div>
 			{#if controller && controller.wallet.loggedIn}
 				<p class="button" on:click={updateChunk}>Update chunk</p>
-				<p class="button" on:click={mint}>Mint</p>
 			{/if}
 		</div>
 	</div>
@@ -100,6 +84,7 @@
 
 <style>
 	.main {
+		overflow: hidden;
 		position: relative;
 		width: 100%;
 		height: 100vh;
@@ -158,8 +143,8 @@
 	.content {
 		display: flex;
 		flex-direction: column;
-		width: 80%;
 		height: 100%;
+		min-width: 1000px;
 	}
 
 	.toolbar-container {
@@ -172,5 +157,9 @@
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
+	}
+
+	.left {
+		display: flex;
 	}
 </style>

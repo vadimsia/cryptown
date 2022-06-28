@@ -79,6 +79,7 @@
 
 <style>
 	.toolbar {
+		min-width: 1000px;
 		display: flex;
 		align-items: center;
 		padding-right: 10px;
@@ -101,7 +102,7 @@
 
 	.logo {
 		display: flex;
-		font-size: 1.5rem;
+		font-size: calc(1rem + 0.5vw);
 		flex-direction: row;
 		padding-bottom: 1px;
 		margin-right: 15px;
@@ -134,6 +135,7 @@
 		margin-right: 5px;
 		border-bottom: 2px solid;
 		border-color: rgb(0, 0, 0, 0);
+		font-size: 1rem;
 	}
 	.active {
 		border-color: #2f83ff;

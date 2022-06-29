@@ -12,12 +12,12 @@
 	});
 
 	async function mint() {
-		let machine = new CandyMachine(CANDY_MACHINE_ID, walletController_value.wallet);
+		let machine = new CandyMachine(CANDY_MACHINE_ID, walletController_value?.wallet);
 		let account = await machine.getCandyMachineAccount();
 		console.log(
 			await machine.mintOneToken(
 				account,
-				walletController_value.wallet.publicKey,
+				walletController_value?.wallet.publicKey,
 				Keypair.generate()
 			)
 		);
@@ -40,7 +40,7 @@
 		</div>
 	</div>
 	<div class="button">
-		<div class="solana"><img alt="solana" src="/solana.png" height="15px" /></div>
+		<div class="solana"><img alt="solana" src="/solana-logo.svg" height="15px" /></div>
 		<div class="name" on:click={mint}>Mint</div>
 	</div>
 </div>
@@ -68,11 +68,12 @@
 	}
 
 	.area {
-		width: 2vw;
+		font-family: 'CALVIN';
+		width: 3.5vw;
 		border-radius: 4px;
 		padding: 5px;
 		text-align: center;
-		font-size: 1rem;
+		font-size: 0.7vw;
 		margin-bottom: 5px;
 	}
 

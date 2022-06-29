@@ -45,9 +45,10 @@
 	}
 
 	.name {
+		font-family: 'CALVIN';
 		padding: 5px;
 		border-radius: 7px;
-		font-size: 2rem;
+		font-size: 1.7rem;
 		border: 2px solid;
 	}
 
@@ -73,13 +74,6 @@
 		justify-content: center;
 		margin-top: 3px;
 		color: #e9e9e9e8;
-	}
-
-	.boop {
-		width: 1vw;
-		height: 1vw;
-		border-radius: 50%;
-		margin: 1vw;
 	}
 
 	.enable-param-boop {

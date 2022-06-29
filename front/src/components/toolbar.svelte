@@ -101,6 +101,7 @@
 	}
 
 	.logo {
+		font-family: 'CALVIN';
 		display: flex;
 		font-size: calc(1rem + 0.5vw);
 		flex-direction: row;
@@ -164,7 +165,7 @@
 		width: 160px;
 		height: 40px;
 		background: #2f83ff;
-		font-size: 1rem;
+		font-size: 0.8rem;
 	}
 	#connect-wallet img {
 		margin-right: 5px;

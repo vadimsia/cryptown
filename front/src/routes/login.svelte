@@ -43,23 +43,30 @@
 </script>
 
 <div class="login">
-	<div class="loader">
-		{#if !result}
-			<img alt="loader" src="/loader.svg" width="60px" height="60px" />
-		{:else}
-			<img alt="loader" src="/check.svg" width="60px" height="60px" />
+	{#if uuid}
+		<div class="loader">
+			{#if !result}
+				<img alt="loader" src="/loader.svg" width="60px" height="60px" />
+			{:else}
+				<img alt="loader" src="/check.svg" width="60px" height="60px" />
+			{/if}
+		</div>
+		<div class="nick">
+			<div class="name">Nick:</div>
+			<div class="value">{nick}</div>
+		</div>
+		<div class="uuid">
+			<div class="name">UUID:</div>
+			<div class="value">{uuid}</div>
+		</div>
+		{#if result}
+			Close this tab.
 		{/if}
-	</div>
-	<div class="nick">
-		<div class="name">Nick:</div>
-		<div class="value">{nick}</div>
-	</div>
-	<div class="uuid">
-		<div class="name">UUID:</div>
-		<div class="value">{uuid}</div>
-	</div>
-	{#if result}
-		Close this tab.
+	{:else}
+		<div class="error">
+			<div class="name">Error:</div>
+			<div class="value">undefined UUID.</div>
+		</div>
 	{/if}
 </div>
 
@@ -121,5 +128,19 @@
 		background-color: rgb(1, 173, 3);
 		color: #e9e9e9e8;
 		margin-right: 10px;
+	}
+
+	.error {
+		display: flex;
+		justify-content: center;
+		flex-direction: row;
+		text-align: center;
+	}
+	.error .name {
+		background-color: rgb(173, 12, 1);
+	}
+
+	.error .value {
+		padding: 4px;
 	}
 </style>

@@ -2,14 +2,15 @@
 	import { PhantomWallet } from '../wallets/PhantomWallet';
 	import type { IWalletController } from '../wallets/IWalletController';
 	import { Program } from '../program/program';
-	import { walletState } from '../store/store';
+	import { walletState, toolbarItems } from '../store/store';
 	import Wallets from '../components/wallets.svelte';
 	import { PublicKey } from '@solana/web3.js';
 	import { onMount } from 'svelte';
 	import { Buffer } from 'buffer';
 	import Toolbar from '../components/toolbar.svelte';
 	import Server from '../components/server.svelte';
-	import Mint from '../components/mint.svelte';
+	// import Mint from '../components/mint.svelte';
+	import { each } from 'svelte/internal';
 
 	// ID программы по маинкрафту в солане
 	const PROGRAM_ID = new PublicKey('FangADZappzjG1pNsfo3zTct4AZ2VXyYq7TMfgd4YRmy');
@@ -27,6 +28,12 @@
 	let walletState_value: boolean;
 	walletState.subscribe((value) => {
 		walletState_value = value;
+	});
+
+	let toolbarItems_value: Object[];
+
+	toolbarItems.subscribe((value) => {
+		toolbarItems_value = value;
 	});
 
 	async function updateChunk() {
@@ -59,10 +66,9 @@
 <div class="main">
 	<div class={loaded ? 'container-1 done' : 'container-1'}>
 		<div class="preloader">
-			<img alt="loader" src="/loader.svg" width="10%" height="10%" />
+			<img alt="loader" src="/loader.svg" width="50px" height="50px" />
 		</div>
 	</div>
-
 	<div class="container-2">
 		<div class="content">
 			<div class="toolbar-container">
@@ -70,9 +76,12 @@
 			</div>
 			<div class="section">
 				<div class="left">
-					<Mint />
+					{#each toolbarItems_value as item}
+						{#if item.state}
+							<svelte:component this={item.component} />
+						{/if}
+					{/each}
 				</div>
-
 				<Server />
 			</div>
 			{#if controller && controller.wallet.loggedIn}
@@ -144,7 +153,7 @@
 		display: flex;
 		flex-direction: column;
 		height: 100%;
-		min-width: 1000px;
+		min-width: 65%;
 	}
 
 	.toolbar-container {

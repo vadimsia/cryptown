@@ -83,7 +83,6 @@
 	}
 
 	#s1 {
-		height: 13vw;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -136,7 +135,6 @@
 		justify-content: center;
 		align-items: center;
 		flex-direction: column;
-		height: 13vw;
 		margin-top: 0.9vw;
 		border: 3px solid rgb(173, 12, 1);
 		border-radius: 4px;

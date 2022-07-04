@@ -23,11 +23,13 @@
 
 	function Toggle(this: any) {
 		toolbarItems_value.map((item) => {
+			console.log(item);
 			if (item.state) {
 				item.state = false;
 			}
 		});
 		toolbarItems_value[this.id].state = true;
+		toolbarItems.set(toolbarItems_value);
 	}
 </script>
 
@@ -79,7 +81,7 @@
 
 <style>
 	.toolbar {
-		min-width: 1000px;
+		/* min-width: 1000px; */
 		display: flex;
 		align-items: center;
 		padding-right: 10px;

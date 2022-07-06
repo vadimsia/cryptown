@@ -35,7 +35,7 @@
 			<img alt="" src="/animation.gif" />
 		</div>
 		<div id="s3">
-			<div class="area">34X34</div>
+			<div class="area">38X38</div>
 			<img alt="" src="/animation.gif" />
 		</div>
 	</div>

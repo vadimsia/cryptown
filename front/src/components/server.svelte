@@ -18,10 +18,12 @@
 				</div>
 				<div class="value">{'' + server_value.online + '/' + server_value.maxOnline}</div>
 			</div>
-			<!-- <div class="ip">
-                <div class={server_value.state? "param enable-param-boop": "param disable-param-boop"}>Server IP:</div>
-                <div class="value">minecraft.cryptown.one</div>
-            </div> -->
+			<div class="ip">
+				<div class={server_value.state ? 'param enable-param-boop' : 'param disable-param-boop'}>
+					Server IP:
+				</div>
+				<div class="value">minecraft.cryptown.one</div>
+			</div>
 		</div>
 	</div>
 </div>
@@ -56,8 +58,17 @@
 		justify-content: center;
 		display: flex;
 		flex-direction: row;
-		font-size: 1rem;
+		font-size: 15px;
+		margin-bottom: 10px;
 	}
+
+	.ip {
+		white-space: nowrap;
+		display: flex;
+		flex-direction: row;
+		font-size: 15px;
+	}
+
 	.params {
 		margin-top: 20px;
 	}
@@ -65,7 +76,7 @@
 	.param {
 		border-radius: 4px;
 		padding: 3px;
-		color: #e9e9e9e8;
+		/* color: #e9e9e9e8; */
 		margin-right: 5px;
 	}
 

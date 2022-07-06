@@ -138,7 +138,7 @@
 		margin-right: 5px;
 		border-bottom: 2px solid;
 		border-color: rgb(0, 0, 0, 0);
-		font-size: 1rem;
+		font-size: 15px;
 	}
 	.active {
 		border-color: #2f83ff;
@@ -167,7 +167,7 @@
 		width: 160px;
 		height: 40px;
 		background: #2f83ff;
-		font-size: 0.8rem;
+		font-size: 12px;
 	}
 	#connect-wallet img {
 		margin-right: 5px;

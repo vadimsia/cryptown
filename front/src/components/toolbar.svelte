@@ -156,7 +156,6 @@
 	.publick-key {
 		padding: 5px;
 		border-radius: 4px;
-		color: #e9e9e9e8;
 		background-color: #01ad03;
 	}
 

@@ -126,7 +126,7 @@
 		padding: 4px;
 		border-radius: 4px;
 		background-color: rgb(1, 173, 3);
-		color: #e9e9e9e8;
+		/* color: #e9e9e9e8; */
 		margin-right: 10px;
 	}
 

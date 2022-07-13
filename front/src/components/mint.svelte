@@ -52,7 +52,7 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		padding: 1vw;
+		padding: 30px;
 		background-color: #00000096;
 		width: 100%;
 		margin-top: 10px;

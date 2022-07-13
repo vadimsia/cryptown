@@ -58,7 +58,7 @@
 		justify-content: center;
 		display: flex;
 		flex-direction: row;
-		font-size: 15px;
+		font-size: 12px;
 		margin-bottom: 10px;
 	}
 
@@ -66,7 +66,7 @@
 		white-space: nowrap;
 		display: flex;
 		flex-direction: row;
-		font-size: 15px;
+		font-size: 12px;
 	}
 
 	.params {

@@ -23,7 +23,6 @@
 
 	function Toggle(this: any) {
 		toolbarItems_value.map((item) => {
-			console.log(item);
 			if (item.state) {
 				item.state = false;
 			}
@@ -138,7 +137,7 @@
 		margin-right: 5px;
 		border-bottom: 2px solid;
 		border-color: rgb(0, 0, 0, 0);
-		font-size: 15px;
+		font-size: 12px;
 	}
 	.active {
 		border-color: #2f83ff;

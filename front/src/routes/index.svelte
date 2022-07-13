@@ -93,7 +93,8 @@
 
 <style>
 	.main {
-		overflow: hidden;
+		display: flex;
+		overflow: scroll;
 		position: relative;
 		width: 100%;
 		height: 100vh;
@@ -143,7 +144,8 @@
 		display: flex;
 		justify-content: center;
 		width: 100%;
-		height: 100%;
+		min-width: 1156px;
+		min-height: 100%;
 		background: no-repeat url('/background.png');
 		background-attachment: fixed;
 		background-size: cover;
@@ -153,7 +155,8 @@
 		display: flex;
 		flex-direction: column;
 		height: 100%;
-		min-width: 65%;
+		width: 80%;
+		min-width: 1156px;
 	}
 
 	.toolbar-container {
@@ -171,5 +174,6 @@
 	.left {
 		display: flex;
 		width: 100%;
+		margin-bottom: 50px;
 	}
 </style>

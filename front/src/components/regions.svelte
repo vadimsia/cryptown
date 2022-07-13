@@ -30,24 +30,7 @@
 
 		// Достает только участки авторизованного пользователя
 		user_tokens = await program.getUserTokens(UPDATE_AUTHORITY_ID);
-		console.log(user_tokens);
-		// for(let token in user_tokens) {
-		//     console.log(token.publicKey);
-		// }
-		// for (let token of user_tokens) {
-		// 	if (!token.program_account) {
-		// 		let signature = await program.initAccount(token);
-		// 		console.log(signature);
-		// 	} else {
-		// 		let signatures = await program.updateChunk(token.program_account);
-		// 		console.log(signatures);
-		// 	}
-		// }
-
-		// controller.wallet.connection.
-		// let result = await controller.wallet.signMessage("Hello world!")
-		// console.log(result.signature.toString('base64'))
-		// console.log(controller.wallet.publicKey.toBytes().toString('base64'))
+		// console.log(user_tokens);
 	}
 </script>
 
@@ -121,7 +104,9 @@
 	}
 
 	.regions-box {
+		flex-wrap: wrap;
 		display: flex;
+		justify-content: center;
 		flex-direction: row;
 	}
 

@@ -88,7 +88,7 @@
 					</div>
 					<div class="social">
 						<a href="" alt="" class="button twitter"><img src="/twitter.svg" alt="" width="15px">Twitter</a>
-						<a href="" alt="" class="button discord"><img src="/twitter.svg" alt="" width="15px">Discord</a>
+						<a href="" alt="" class="button discord"><img src="/discord.svg" alt="" width="15px">Discord</a>
 					</div>
 					<div class="discord-box">
 						<iframe title="" src="https://discord.com/widget?id=899514519028645928&theme=dark" width="100%" height="300" allowtransparency="{true}" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>

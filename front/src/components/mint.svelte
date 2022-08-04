@@ -50,7 +50,7 @@ function getCandyMachneState() {
 			<img alt="" src="/animation.gif" />
 		</div>
 	</div>
-	{#if walletController_value}
+	{#if walletController_value && (countdown_days + countdown_hours + countdown_minutes + countdown_secundes == 0)}
 		<div class="button">
 			<div class="solana"><img alt="solana" src="/solana-logo.svg" height="15px" /></div>
 			<div class="name" on:click={mint}>Mint</div>

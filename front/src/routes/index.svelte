@@ -82,7 +82,18 @@
 						{/if}
 					{/each}
 				</div>
-				<Server />
+				<div class="right">
+					<div class="server">
+						<Server />
+					</div>
+					<div class="social">
+						<a href="" alt="" class="button twitter"><img src="/twitter.svg" alt="" width="15px">Twitter</a>
+						<a href="" alt="" class="button discord"><img src="/twitter.svg" alt="" width="15px">Discord</a>
+					</div>
+					<div class="discord-box">
+						<iframe title="" src="https://discord.com/widget?id=899514519028645928&theme=dark" width="100%" height="300" allowtransparency="{true}" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+					</div>
+				</div>
 			</div>
 			{#if controller && controller.wallet.loggedIn}
 				<p class="button" on:click={updateChunk}>Update chunk</p>
@@ -175,5 +186,43 @@
 		display: flex;
 		width: 100%;
 		margin-bottom: 50px;
+	}
+
+	.right div {
+		margin-bottom: 10px
+	}
+
+	.social {
+		background-color: #00000096;
+		display: flex;
+		padding: 10px;
+		justify-content: space-between;
+		align-items: center;
+		border-radius: 4px;
+	}
+
+	.button {
+		text-decoration: none;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin: 0;
+		cursor: pointer;
+		border-radius: 4px;
+		width: 140px;
+		height: 35px;
+		color: black;
+
+	}
+
+	.twitter {
+		background-color: #00ACEE; 
+	}
+
+	.discord {
+		background-color: #5865f2; 
+	}
+	.button img {
+		margin-right: 5px;
 	}
 </style>

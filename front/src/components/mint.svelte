@@ -6,6 +6,12 @@
 
 	const CANDY_MACHINE_ID = new PublicKey('9q2vhJgPo3ZC59ctdZoQ8gq84A5YYxc7wBPGKUf2EVrF');
 
+	let time_offset = 0;
+	$: countdown_days = Math.floor(time_offset / (1000 * 60 * 60 * 24))
+  $: countdown_hours = Math.floor((time_offset % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+  $: countdown_minutes = Math.floor((time_offset % (1000 * 60 * 60)) / (1000 * 60))
+  $: countdown_secundes = Math.floor((time_offset % (1000 * 60)) / 1000)
+
 	let walletController_value: IWalletController | null;
 	walletController.subscribe((value) => {
 		walletController_value = value;
@@ -22,6 +28,11 @@
 			)
 		);
 	}
+
+
+function getCandyMachneState() {
+	throw new Error('Function not implemented.');
+}
 </script>
 
 <div class="mint">
@@ -39,10 +50,15 @@
 			<img alt="" src="/animation.gif" />
 		</div>
 	</div>
-	<div class="button">
-		<div class="solana"><img alt="solana" src="/solana-logo.svg" height="15px" /></div>
-		<div class="name" on:click={mint}>Mint</div>
-	</div>
+	{#if walletController_value}
+		<div class="button">
+			<div class="solana"><img alt="solana" src="/solana-logo.svg" height="15px" /></div>
+			<div class="name" on:click={mint}>Mint</div>
+		</div>
+	{:else}
+		<div class="timer">{countdown_days}d {countdown_hours}h {countdown_minutes}m {countdown_secundes}s</div>
+	{/if}
+	
 </div>
 
 <style>
@@ -167,6 +183,10 @@
 		justify-content: center;
 		align-items: center;
 		margin-right: 4px;
+	}
+
+	.timer {
+		color: #2f83ff;
 	}
 
 	.name {

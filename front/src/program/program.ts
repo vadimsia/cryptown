@@ -32,7 +32,7 @@ export class Program {
 		this._wallet = wallet;
 	}
 
-	private calcRegionSize(account: TokenAccount): number {
+	public calcRegionSize(account: TokenAccount): number {
 		const area_id = parseInt(account.nft_metadata.name.split('#')[1]);
 
 		if (area_id % 49 < 36) return this._SMALL_ACCOUNT_SIZE;

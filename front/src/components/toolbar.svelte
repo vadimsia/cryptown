@@ -1,11 +1,7 @@
 <script lang="ts">
 	import type { IWalletController } from '../wallets/IWalletController';
 	import { walletState, walletController, toolbarItems } from '../store/store';
-	// let toolbar_items = [
-	// 	{ id: 0, name: 'Mint', state: true, walletDepends: false },
-	// 	{ id: 1, name: 'Regions', state: false, walletDepends: true },
-	// 	{ id: 2, name: 'Info', state: false, walletDepends: false }
-	// ];
+
 	let toolbarItems_value: Object[];
 	toolbarItems.subscribe((value) => {
 		toolbarItems_value = value;

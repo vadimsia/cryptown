@@ -12,6 +12,10 @@
 		walletController_value = value;
 	});
 
+	let regionSize = function(number: number) {
+		return "" + number + "X" + number;
+	}	
+
 	onMount(() => {
 		updateChunk();
 	});
@@ -23,7 +27,7 @@
 	let program = new Program(PROGRAM_ID, walletController_value?.wallet);
 
 	async function updateChunk() {
-		let program = new Program(PROGRAM_ID, walletController_value?.wallet);
+		program = new Program(PROGRAM_ID, walletController_value?.wallet);
 
 		// Достает все участки данной программы
 		//let program_accounts = await program.getProgramAccounts();
@@ -53,6 +57,14 @@
 							{('' + token.publicKey).substr(1, 3) +
 								'...' +
 								('' + token.publicKey).substr(('' + token.publicKey).length - 3, 3)}
+						</div>
+					</div>
+					<div class="public">
+						<div class="param {token.program_account ? 'not-active-param' : 'active-param'}">
+							Region Size
+						</div>
+						<div class="value">
+							{regionSize(Math.sqrt(program.calcRegionSize(token)/(64*2)))}
 						</div>
 					</div>
 					{#if !token.program_account}
@@ -148,13 +160,16 @@
 
 	.public {
 		display: flex;
+		width: 80%;
 		flex-direction: row;
+		justify-content: space-between;
+		margin-bottom: 5px;
 	}
 
 	.param {
 		border-radius: 4px;
 		padding: 3px;
-		margin-right: 5px;
+		/* margin-right: 5px; */
 	}
 
 	.value {

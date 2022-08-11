@@ -1,38 +1,50 @@
 <script lang="ts">
 	import { CandyMachine } from '../nftprogram/candymachine';
-	import { Keypair, PublicKey } from '@solana/web3.js';
+	import { Connection, Keypair, PublicKey } from '@solana/web3.js';
 	import { walletController } from '../store/store';
-	import type { IWalletController } from '../wallets/IWalletController';
+	import { onMount } from 'svelte';
+	import type { CandyMachineAccount } from 'src/nftprogram/interfaces';
+	import { PhantomWallet } from '../wallets/PhantomWallet';
+
 
 	const CANDY_MACHINE_ID = new PublicKey('9q2vhJgPo3ZC59ctdZoQ8gq84A5YYxc7wBPGKUf2EVrF');
-
+	
+	let machine: CandyMachine;
+	let account: CandyMachineAccount;
 	let time_offset = 0;
-	$: countdown_days = Math.floor(time_offset / (1000 * 60 * 60 * 24))
-  $: countdown_hours = Math.floor((time_offset % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-  $: countdown_minutes = Math.floor((time_offset % (1000 * 60 * 60)) / (1000 * 60))
-  $: countdown_secundes = Math.floor((time_offset % (1000 * 60)) / 1000)
-
-	let walletController_value: IWalletController | null;
-	walletController.subscribe((value) => {
-		walletController_value = value;
+	onMount(async () => {
+		let wal = new PhantomWallet();
+		machine = new CandyMachine(CANDY_MACHINE_ID, wal.wallet);
+		account = await machine.getCandyMachineAccount();
+		console.log(account.state.goLiveDate);
+		if(account.state.goLiveDate > new Date().getTime()) {
+			time_offset =account.state.goLiveDate - (new Date().getTime()/ 1000);
+			let inverval = setInterval(() => {
+				if (time_offset <= 0) {
+						clearInterval(inverval);
+						time_offset = 0;
+					} 
+				time_offset -= 1000;
+			}, 1000)
+		}
 	});
 
+
+
+	$: countdown_days = Math.floor(time_offset / (1000 * 60 * 60 * 24));
+	$: countdown_hours = Math.floor((time_offset % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+	$: countdown_minutes = Math.floor((time_offset % (1000 * 60 * 60)) / (1000 * 60));
+	$: countdown_secundes = Math.floor((time_offset % (1000 * 60)) / 1000);
+
 	async function mint() {
-		let machine = new CandyMachine(CANDY_MACHINE_ID, walletController_value?.wallet);
-		let account = await machine.getCandyMachineAccount();
 		console.log(
 			await machine.mintOneToken(
 				account,
-				walletController_value?.wallet.publicKey,
+				$walletController?.wallet.publicKey,
 				Keypair.generate()
 			)
 		);
 	}
-
-
-function getCandyMachneState() {
-	throw new Error('Function not implemented.');
-}
 </script>
 
 <div class="mint">
@@ -50,15 +62,22 @@ function getCandyMachneState() {
 			<img alt="" src="/animation.gif" />
 		</div>
 	</div>
-	{#if walletController_value && (countdown_days + countdown_hours + countdown_minutes + countdown_secundes == 0)}
+	{#if $walletController && time_offset == 0}
 		<div class="button">
 			<div class="solana"><img alt="solana" src="/solana-logo.svg" height="15px" /></div>
 			<div class="name" on:click={mint}>Mint</div>
 		</div>
 	{:else}
-		<div class="timer">{countdown_days}d {countdown_hours}h {countdown_minutes}m {countdown_secundes}s</div>
+		{#if !$walletController && time_offset == 0}
+			<div class="timer">
+				Connect Wallet First
+			</div>
+		{:else}
+			<div class="timer">
+				{countdown_days}d {countdown_hours}h {countdown_minutes}m {countdown_secundes}s
+			</div>
+		{/if}
 	{/if}
-	
 </div>
 
 <style>

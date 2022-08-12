@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { each, onMount } from 'svelte/internal';
+	import { onMount } from 'svelte/internal';
 	import { walletController } from '../store/store';
 	import { Program } from '../program/program';
 	import type { IWalletController } from '../wallets/IWalletController';
 	import { PublicKey } from '@solana/web3.js';
 	import type { TokenAccount } from 'src/program/TokenAccount';
-	import { publicKey, token } from '@project-serum/anchor/dist/cjs/utils';
 
 	let walletController_value: IWalletController | null;
 	walletController.subscribe((value) => {

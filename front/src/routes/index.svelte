@@ -117,7 +117,6 @@
 <style>
 	.main {
 		display: flex;
-		overflow: scroll;
 		position: relative;
 		width: 100%;
 		height: 100vh;

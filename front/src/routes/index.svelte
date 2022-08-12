@@ -2,37 +2,39 @@
 	import { PhantomWallet } from '../wallets/PhantomWallet';
 	import type { IWalletController } from '../wallets/IWalletController';
 	import { Program } from '../program/program';
-
-	import { Keypair, PublicKey } from '@solana/web3.js';
-	import { CandyMachine } from '../nftprogram/candymachine';
+	import { walletState, toolbarItems } from '../store/store';
+	import Wallets from '../components/wallets.svelte';
+	import { PublicKey } from '@solana/web3.js';
 	import { onMount } from 'svelte';
-	import { Buffer } from 'buffer'
+	import { Buffer } from 'buffer';
+	import Toolbar from '../components/toolbar.svelte';
+	import Server from '../components/server.svelte';
+	// import Mint from '../components/mint.svelte';
+	import { each } from 'svelte/internal';
 
 	// ID программы по маинкрафту в солане
-	const PROGRAM_ID = new PublicKey(import.meta.env.VITE_PROGRAM_ID || 'FangADZappzjG1pNsfo3zTct4AZ2VXyYq7TMfgd4YRmy');
-	const CANDY_MACHINE_ID = new PublicKey(import.meta.env.VITE_CANDY_MACHINE_ID || '9q2vhJgPo3ZC59ctdZoQ8gq84A5YYxc7wBPGKUf2EVrF');
-	const UPDATE_AUTHORITY_ID = new PublicKey(import.meta.env.VITE_UPDATE_AUTHORITY_ID || 'HCMDYFaAWD3YuaBMLiftc5MzNKcLrPmjASRaciRdAAYU')
+	const PROGRAM_ID = new PublicKey('FangADZappzjG1pNsfo3zTct4AZ2VXyYq7TMfgd4YRmy');
+
+	const UPDATE_AUTHORITY_ID = new PublicKey('HCMDYFaAWD3YuaBMLiftc5MzNKcLrPmjASRaciRdAAYU');
 
 	let controller: IWalletController;
+	let loaded = false;
 
-	onMount (() => {
+	onMount(() => {
+		loaded = true;
 		window.Buffer = Buffer;
-	})
+	});
 
-	// Подключение кошелька
-	async function connectWallet() {
-		controller = new PhantomWallet();
-		try {
-			await controller.connect();
-		} catch (e) {}
-		controller.wallet.loggedIn = controller.wallet.loggedIn; // костыль шоб было реактивно, приколы свелте... В каждой бочке меда есть ложка дегтя
-	}
+	let walletState_value: boolean;
+	walletState.subscribe((value) => {
+		walletState_value = value;
+	});
 
-	async function mint() {
-		let machine = new CandyMachine(CANDY_MACHINE_ID, controller.wallet)
-		let account = await machine.getCandyMachineAccount()
-		console.log(await machine.mintOneToken(account, controller.wallet.publicKey, Keypair.generate()))
-	}
+	let toolbarItems_value: Object[];
+
+	toolbarItems.subscribe((value) => {
+		toolbarItems_value = value;
+	});
 
 	async function updateChunk() {
 		let program = new Program(PROGRAM_ID, controller.wallet);
@@ -42,14 +44,14 @@
 
 		// Достает только участки авторизованного пользователя
 		let user_tokens = await program.getUserTokens(UPDATE_AUTHORITY_ID);
-		console.log(user_tokens)
+		console.log(user_tokens);
 		for (let token of user_tokens) {
 			if (!token.program_account) {
 				let signature = await program.initAccount(token);
 				console.log(signature);
 			} else {
 				let signatures = await program.updateChunk(token.program_account);
-				console.log(signatures)
+				console.log(signatures);
 			}
 		}
 
@@ -60,8 +62,178 @@
 	}
 </script>
 
-<button on:click={connectWallet}>Authorize using Phantom</button>
-{#if controller && controller.wallet.loggedIn}
-	<button on:click={updateChunk}>Update chunk</button>
-	<button on:click={mint}>Mint</button>
-{/if}
+<Wallets />
+<div class="main">
+	<div class={loaded ? 'container-1 done' : 'container-1'}>
+		<div class="preloader">
+			<img alt="loader" src="/loader.svg" width="50px" height="50px" />
+		</div>
+	</div>
+	<div class="container-2">
+		<div class="content">
+			<div class="toolbar-container">
+				<Toolbar />
+			</div>
+			<div class="section">
+				<div class="left">
+					{#each toolbarItems_value as item}
+						{#if item.state}
+							<svelte:component this={item.component} />
+						{/if}
+					{/each}
+				</div>
+				<div class="right">
+					<div class="server">
+						<Server />
+					</div>
+					<div class="social">
+						<a href="" alt="" class="button twitter"
+							><img src="/twitter.svg" alt="" width="15px" />Twitter</a
+						>
+						<a href="" alt="" class="button discord"
+							><img src="/discord.svg" alt="" width="15px" />Discord</a
+						>
+					</div>
+					<div class="discord-box">
+						<iframe
+							title=""
+							src="https://discord.com/widget?id=899514519028645928&theme=dark"
+							width="100%"
+							height="300"
+							allowtransparency={true}
+							frameborder="0"
+							sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+						/>
+					</div>
+				</div>
+			</div>
+			{#if controller && controller.wallet.loggedIn}
+				<p class="button" on:click={updateChunk}>Update chunk</p>
+			{/if}
+		</div>
+	</div>
+</div>
+
+<style>
+	.main {
+		display: flex;
+		overflow: scroll;
+		position: relative;
+		width: 100%;
+		height: 100vh;
+	}
+
+	.container-1 {
+		z-index: 2;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
+
+	.preloader {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		z-index: 100;
+		width: 100%;
+		height: 100%;
+		background: rgb(164, 77, 87);
+		background: -moz-linear-gradient(
+			221deg,
+			rgba(164, 77, 87, 1) 0%,
+			rgba(104, 81, 150, 1) 50%,
+			rgba(27, 85, 230, 1) 100%
+		);
+		background: -webkit-linear-gradient(
+			221deg,
+			rgba(164, 77, 87, 1) 0%,
+			rgba(104, 81, 150, 1) 50%,
+			rgba(27, 85, 230, 1) 100%
+		);
+		background: linear-gradient(
+			221deg,
+			rgba(164, 77, 87, 1) 0%,
+			rgba(104, 81, 150, 1) 50%,
+			rgba(27, 85, 230, 1) 100%
+		);
+	}
+
+	.done {
+		display: none;
+	}
+
+	.container-2 {
+		position: absolute;
+		display: flex;
+		justify-content: center;
+		width: 100%;
+		min-width: 1156px;
+		min-height: 100%;
+		background: no-repeat url('/background.png');
+		background-attachment: fixed;
+		background-size: cover;
+	}
+
+	.content {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		width: 80%;
+		min-width: 1156px;
+	}
+
+	.toolbar-container {
+		display: flex;
+		justify-content: center;
+		width: 100%;
+	}
+
+	.section {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+	.left {
+		display: flex;
+		width: 100%;
+		margin-bottom: 50px;
+	}
+
+	.right div {
+		margin-bottom: 10px;
+	}
+
+	.social {
+		background-color: #00000096;
+		display: flex;
+		padding: 10px;
+		justify-content: space-between;
+		align-items: center;
+		border-radius: 4px;
+	}
+
+	.button {
+		text-decoration: none;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin: 0;
+		cursor: pointer;
+		border-radius: 4px;
+		width: 140px;
+		height: 35px;
+		color: black;
+	}
+
+	.twitter {
+		background-color: #00acee;
+	}
+
+	.discord {
+		background-color: #5865f2;
+	}
+	.button img {
+		margin-right: 5px;
+	}
+</style>

@@ -5,7 +5,6 @@
 	import { onMount } from 'svelte';
 	import { Buffer } from 'buffer';
 	import { APIController } from '../api/APIController';
-	import { Wallet } from '@project-serum/anchor';
 
 	let controller: IWalletController;
 	let nick: string | null;

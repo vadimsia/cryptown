@@ -262,7 +262,6 @@ public class Section {
             Connection connection = DriverManager.getConnection("jdbc:sqlite:db.s3db");
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery("SELECT * FROM sectionRegions WHERE id=" + regionId);
-            world.getBlockAt(1,1,1);
             Vector3 vector = Vector3.at(result.getInt("posX") - 1, -55, result.getInt("posZ") - 1);
             wgPlayer.setPosition(vector);
         }

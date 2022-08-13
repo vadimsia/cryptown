@@ -110,6 +110,9 @@ public final class PluginMain extends JavaPlugin implements Listener {
                     Bukkit.getLogger().warning("Exception: " + e);
                 }
             }
+            case "goto" -> {
+                Section.goToRegion(Integer.parseInt(args[0]), player);
+            }
         }
 
         return true;

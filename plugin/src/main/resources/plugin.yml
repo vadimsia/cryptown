@@ -25,7 +25,7 @@ commands:
     permission: <plugin name>.removeRegions
     usage: /<command>
   refreshRegion:
-    description: refreshing region from solana account
+    description: Refreshing region from Solana account.
     permission: minecraft.command.me
     usage: /<command>
   getPlayerPosition:
@@ -33,6 +33,10 @@ commands:
     permission: <plugin name>.getPlayerPosition
     usage: minecraft.command.me
   login:
-    description: login
+    description: Login.
+    permission: minecraft.command.me
+    usage: /<command>
+  goto:
+    description: Teleport to region.
     permission: minecraft.command.me
     usage: /<command>

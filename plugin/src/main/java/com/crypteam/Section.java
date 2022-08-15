@@ -3,6 +3,7 @@ import com.crypteam.exceptions.PlayerStandingUnknownRegionException;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.util.Vector;
 
 
 public class Section {
@@ -250,5 +252,21 @@ public class Section {
         }
 
         throw new PlayerStandingUnknownRegionException();
+    }
+
+    public static void goToRegion(int regionId, Player player) {
+        LocalPlayer wgPlayer = WorldGuardPlugin.inst().wrapPlayer(BukkitAdapter.adapt(player));
+        Map<String, ProtectedRegion> regionMap = regions.getRegions();
+        try {
+            Class.forName("org.sqlite.JDBC");
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:db.s3db");
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery("SELECT * FROM sectionRegions WHERE id=" + regionId);
+            Vector3 vector = Vector3.at(result.getInt("posX") - 1, -55, result.getInt("posZ") - 1);
+            wgPlayer.setPosition(vector);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

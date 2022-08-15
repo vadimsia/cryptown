@@ -11,9 +11,9 @@
 		walletController_value = value;
 	});
 
-	let regionSize = function(number: number) {
-		return "" + number + "X" + number;
-	}	
+	let regionSize = function (number: number) {
+		return '' + number + 'X' + number;
+	};
 
 	onMount(() => {
 		updateChunk();
@@ -63,7 +63,7 @@
 							Region Size
 						</div>
 						<div class="value">
-							{regionSize(Math.sqrt(program.calcRegionSize(token)/(64*2)))}
+							{regionSize(Math.sqrt(program.calcRegionSize(token) / (64 * 2)))}
 						</div>
 					</div>
 					{#if !token.program_account}

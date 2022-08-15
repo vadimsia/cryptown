@@ -76,7 +76,7 @@
 
 <style>
 	.toolbar {
-		/* min-width: 1000px; */
+		/* min-width: 1250px; */
 		display: flex;
 		align-items: center;
 		padding-right: 10px;

@@ -236,7 +236,6 @@ export class Program {
 		const response = await APIController.getRegion(account.id);
 		let data = Buffer.from(response.data.region_raw, 'base64');
 
-
 		for (let i = 0; i < data.length; i++) {
 			if (data[i] != account.data[i]) {
 				console.log(i, data[i], account.data[i]);

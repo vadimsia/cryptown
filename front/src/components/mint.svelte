@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { CandyMachine } from '../nftprogram/candymachine';
-	import { Connection, Keypair, PublicKey } from '@solana/web3.js';
+	import { Keypair, PublicKey } from '@solana/web3.js';
 	import { walletController } from '../store/store';
 	import { onMount } from 'svelte';
 	import type { CandyMachineAccount } from 'src/nftprogram/interfaces';

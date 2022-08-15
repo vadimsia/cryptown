@@ -60,7 +60,7 @@
 				is allowed to teleport to any region on the server.
 			</span>
 			<span class="command">
-				<span class="server">/refrash</span> - downloads the selected region from the Solana network
+				<span class="server">/refresh</span> - downloads the selected region from the Solana network
 				to the server. To use this command, you must be located on the territory of the selected region
 				and be its owner.
 			</span>

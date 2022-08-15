@@ -1,14 +1,13 @@
 <script lang="ts">
 	import { CandyMachine } from '../nftprogram/candymachine';
-	import { Connection, Keypair, PublicKey } from '@solana/web3.js';
+	import { Keypair, PublicKey } from '@solana/web3.js';
 	import { walletController } from '../store/store';
 	import { onMount } from 'svelte';
 	import type { CandyMachineAccount } from 'src/nftprogram/interfaces';
 	import { PhantomWallet } from '../wallets/PhantomWallet';
 
-
 	const CANDY_MACHINE_ID = new PublicKey('9q2vhJgPo3ZC59ctdZoQ8gq84A5YYxc7wBPGKUf2EVrF');
-	
+
 	let machine: CandyMachine;
 	let account: CandyMachineAccount;
 	let time_offset = 0;
@@ -17,19 +16,17 @@
 		machine = new CandyMachine(CANDY_MACHINE_ID, wal.wallet);
 		account = await machine.getCandyMachineAccount();
 		console.log(account.state.goLiveDate);
-		if(account.state.goLiveDate > new Date().getTime()) {
-			time_offset =account.state.goLiveDate - (new Date().getTime()/ 1000);
+		if (account.state.goLiveDate > new Date().getTime()) {
+			time_offset = account.state.goLiveDate - new Date().getTime() / 1000;
 			let inverval = setInterval(() => {
 				if (time_offset <= 0) {
-						clearInterval(inverval);
-						time_offset = 0;
-					} 
+					clearInterval(inverval);
+					time_offset = 0;
+				}
 				time_offset -= 1000;
-			}, 1000)
+			}, 1000);
 		}
 	});
-
-
 
 	$: countdown_days = Math.floor(time_offset / (1000 * 60 * 60 * 24));
 	$: countdown_hours = Math.floor((time_offset % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -38,11 +35,7 @@
 
 	async function mint() {
 		console.log(
-			await machine.mintOneToken(
-				account,
-				$walletController?.wallet.publicKey,
-				Keypair.generate()
-			)
+			await machine.mintOneToken(account, $walletController?.wallet.publicKey, Keypair.generate())
 		);
 	}
 </script>
@@ -67,16 +60,12 @@
 			<div class="solana"><img alt="solana" src="/solana-logo.svg" height="15px" /></div>
 			<div class="name" on:click={mint}>Mint</div>
 		</div>
+	{:else if !$walletController && time_offset == 0}
+		<div class="timer">Connect Wallet First</div>
 	{:else}
-		{#if !$walletController && time_offset == 0}
-			<div class="timer">
-				Connect Wallet First
-			</div>
-		{:else}
-			<div class="timer">
-				{countdown_days}d {countdown_hours}h {countdown_minutes}m {countdown_secundes}s
-			</div>
-		{/if}
+		<div class="timer">
+			{countdown_days}d {countdown_hours}h {countdown_minutes}m {countdown_secundes}s
+		</div>
 	{/if}
 </div>
 

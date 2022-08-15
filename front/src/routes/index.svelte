@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { PhantomWallet } from '../wallets/PhantomWallet';
 	import type { IWalletController } from '../wallets/IWalletController';
 	import { Program } from '../program/program';
 	import { walletState, toolbarItems } from '../store/store';
@@ -9,8 +8,6 @@
 	import { Buffer } from 'buffer';
 	import Toolbar from '../components/toolbar.svelte';
 	import Server from '../components/server.svelte';
-	// import Mint from '../components/mint.svelte';
-	import { each } from 'svelte/internal';
 
 	// ID программы по маинкрафту в солане
 	const PROGRAM_ID = new PublicKey('FangADZappzjG1pNsfo3zTct4AZ2VXyYq7TMfgd4YRmy');

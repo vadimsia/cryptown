@@ -9,8 +9,10 @@
 <div class="info">
 	<div class="about">
 		<span class="main title">About</span>
-		Cryp<span class="town">Town</span> - is a project that connects Minecraft and the Solana network.
-		It allows you to immortalize your building in the network of Solana.
+		<span class="description">Cryp<span class="town">Town</span> - is a project that connects Minecraft and the Solana network.
+			It allows you to immortalize your building in the network of Solana.	
+		</span>
+		<img alt="" src="/ct.png" width="100%">
 	</div>
 	<div class="manual">
 		<span class="main title">Manual</span>
@@ -98,6 +100,9 @@
 	}
 
 	.about {
+		display: flex;
+		justify-content: center;
+		flex-direction: column;
 		margin-bottom: 50px;
 	}
 

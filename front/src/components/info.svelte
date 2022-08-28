@@ -23,7 +23,19 @@
 			<span class="region38">38x38x64</span>
 			and <span class="region76">76x76x64</span>. Each region includes a unique building. You will
 			randomly receive one of three types of region. The minting price will be 1 Sol.
+			<div class="regions-example">
+				<div class="region1">
+					<img alt="" src="/16.png" width="360px">
+				</div>
+				<div class="region2">
+					<img alt="" src="/38.png" width="360px">
+				</div>
+				<div class="region3">
+					<img alt="" src="/76.png" width="360px">
+				</div>
+			</div>
 		</span>
+		
 		<span class="title">2. Initialization and Update</span>
 		<span class="description init">
 			<span>
@@ -123,6 +135,21 @@
 		padding: 1.5px;
 		background-color: #2f83ff;
 	}
+
+	.regions-example {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		flex-direction: row;
+		padding: 4px;
+	}
+
+	.regions-example div {
+		margin-right: 10px;
+		margin-left: 10px;
+	}
+
+
 
 	.town {
 		border-radius: 2px;

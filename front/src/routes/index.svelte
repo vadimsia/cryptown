@@ -117,6 +117,7 @@
 		position: relative;
 		width: 100%;
 		height: 100vh;
+		overflow: scroll;
 	}
 
 	.container-1 {
@@ -174,7 +175,7 @@
 		display: flex;
 		flex-direction: column;
 		height: 100%;
-		width: 80%;
+		width: 85%;
 		min-width: 1156px;
 	}
 

@@ -1,25 +1,19 @@
 <script lang="ts">
-	import { server } from '../store/store';
-
-	let server_value: object;
-	server.subscribe((value) => {
-		server_value = value;
-	});
 </script>
 
 <div class="server">
 	<div class="content">
-		<div class={server_value.state ? 'name enable-name' : 'name disable-name'}>CrypTown</div>
+		<div class="name enable-name">CrypTown</div>
 		<!-- <div class={server_value.state? "boop enable-param-boop": "boop disable-param-boop"}></div> -->
 		<div class="params">
 			<div class="online">
-				<div class={server_value.state ? 'param enable-param-boop' : 'param disable-param-boop'}>
-					Online:
+				<div class='param enable-param-boop'>
+					Minecraft version:
 				</div>
-				<div class="value">{'' + server_value.online + '/' + server_value.maxOnline}</div>
+				<div class="value">1.18.2</div>
 			</div>
 			<div class="ip">
-				<div class={server_value.state ? 'param enable-param-boop' : 'param disable-param-boop'}>
+				<div class='param enable-param-boop'>
 					Server IP:
 				</div>
 				<div class="value">minecraft.cryptown.one</div>
@@ -29,9 +23,6 @@
 </div>
 
 <style>
-	.server {
-	}
-
 	.content {
 		margin-top: 10px;
 		border-radius: 4px;
@@ -89,14 +80,6 @@
 
 	.enable-param-boop {
 		background-color: rgb(1, 173, 3);
-	}
-
-	.disable-param-boop {
-		background-color: rgb(173, 12, 1);
-	}
-
-	.disable-name {
-		color: rgb(173, 12, 1);
 	}
 
 	.enable-name {

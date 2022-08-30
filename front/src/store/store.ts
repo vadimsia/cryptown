@@ -11,4 +11,3 @@ export const toolbarItems: Writable<Object[]> = writable([
 ]);
 export const walletState: Writable<boolean> = writable(false);
 export const walletController: Writable<IWalletController | null> = writable(null);
-export const server: Writable<Object> = writable({ state: true, online: 0, maxOnline: 2000 });

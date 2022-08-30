@@ -44,15 +44,15 @@
 	<div class="regions">
 		<div id="s1">
 			<div class="area">16X16</div>
-			<img alt="" src="/animation.gif" />
+			<img alt="" src="/16.gif">
 		</div>
 		<div id="s2">
 			<div class="area">76X76</div>
-			<img alt="" src="/animation.gif" />
+			<img alt="" src="/76.gif">
 		</div>
 		<div id="s3">
 			<div class="area">38X38</div>
-			<img alt="" src="/animation.gif" />
+			<img alt="" src="/38.gif">
 		</div>
 	</div>
 	{#if $walletController && time_offset == 0}
@@ -76,7 +76,7 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		padding: 30px;
+		padding: 15px;
 		background-color: #00000096;
 		width: 100%;
 		margin-top: 10px;
@@ -102,8 +102,8 @@
 	}
 
 	.regions img {
-		width: 10vw;
-		min-width: 140px;
+		width: 17vw;
+		min-width: 200px;
 	}
 
 	#s1 {
@@ -112,11 +112,9 @@
 		justify-content: center;
 		align-items: center;
 		border: 3px solid #01ad03;
-		margin-top: 0.9vw;
 		border-radius: 4px;
 		padding: 10px;
 		margin-right: 2.5vw;
-		transform: perspective(1000px) rotateY(-25deg);
 	}
 
 	#s1 .area {
@@ -125,7 +123,6 @@
 	}
 
 	#s1:hover {
-		transform: perspective(1000px) rotateY(-25deg) scale(1.1);
 		box-shadow: 0px 0px 100px #01ad03;
 	}
 
@@ -144,14 +141,8 @@
 		border: 3px solid #2f83ff;
 	}
 
-	#s2 img {
-		width: 13vw;
-		min-width: 160px;
-	}
-
 	#s2:hover {
 		box-shadow: 0px 0px 100px #2f83ff;
-		transform: scale(1.1);
 	}
 
 	#s3 {
@@ -159,12 +150,10 @@
 		justify-content: center;
 		align-items: center;
 		flex-direction: column;
-		margin-top: 0.9vw;
 		border: 3px solid rgb(173, 12, 1);
 		border-radius: 4px;
 		padding: 10px;
 		margin-left: 2.5vw;
-		transform: perspective(1000px) rotateY(25deg);
 	}
 
 	#s3 .area {
@@ -173,7 +162,6 @@
 	}
 
 	#s3:hover {
-		transform: perspective(1000px) rotateY(25deg) scale(1.1);
 		box-shadow: 0px 0px 100px rgb(173, 12, 1);
 	}
 

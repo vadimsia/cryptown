@@ -9,8 +9,10 @@
 <div class="info">
 	<div class="about">
 		<span class="main title">About</span>
-		Cryp<span class="town">Town</span> - is a project that connects Minecraft and the Solana network.
-		It allows you to immortalize your building in the network of Solana.
+		<span class="description">Cryp<span class="town">Town</span> - is a project that connects Minecraft and the Solana network.
+			It allows you to immortalize your building in the network of Solana.	
+		</span>
+		<img alt="" src="/ct.png" width="100%">
 	</div>
 	<div class="manual">
 		<span class="main title">Manual</span>
@@ -21,7 +23,19 @@
 			<span class="region38">38x38x64</span>
 			and <span class="region76">76x76x64</span>. Each region includes a unique building. You will
 			randomly receive one of three types of region. The minting price will be 1 Sol.
+			<div class="regions-example">
+				<div class="region1">
+					<img alt="" src="/16.png" width="360px">
+				</div>
+				<div class="region2">
+					<img alt="" src="/38.png" width="360px">
+				</div>
+				<div class="region3">
+					<img alt="" src="/76.png" width="360px">
+				</div>
+			</div>
 		</span>
+		
 		<span class="title">2. Initialization and Update</span>
 		<span class="description init">
 			<span>
@@ -60,7 +74,7 @@
 				is allowed to teleport to any region on the server.
 			</span>
 			<span class="command">
-				<span class="server">/refrash</span> - downloads the selected region from the Solana network
+				<span class="server">/refresh</span> - downloads the selected region from the Solana network
 				to the server. To use this command, you must be located on the territory of the selected region
 				and be its owner.
 			</span>
@@ -98,6 +112,9 @@
 	}
 
 	.about {
+		display: flex;
+		justify-content: center;
+		flex-direction: column;
 		margin-bottom: 50px;
 	}
 
@@ -118,6 +135,21 @@
 		padding: 1.5px;
 		background-color: #2f83ff;
 	}
+
+	.regions-example {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		flex-direction: row;
+		padding: 4px;
+	}
+
+	.regions-example div {
+		margin-right: 10px;
+		margin-left: 10px;
+	}
+
+
 
 	.town {
 		border-radius: 2px;

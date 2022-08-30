@@ -6,7 +6,7 @@
 	import type { CandyMachineAccount } from 'src/nftprogram/interfaces';
 	import { PhantomWallet } from '../wallets/PhantomWallet';
 
-	const CANDY_MACHINE_ID = new PublicKey('9q2vhJgPo3ZC59ctdZoQ8gq84A5YYxc7wBPGKUf2EVrF');
+	const CANDY_MACHINE_ID = new PublicKey('89EXeeTSy6nxM89vhpiLw1mVta6LWY3FGkjZ6xEwuNbe');
 
 	let machine: CandyMachine;
 	let account: CandyMachineAccount;
@@ -15,7 +15,9 @@
 		let wal = new PhantomWallet();
 		machine = new CandyMachine(CANDY_MACHINE_ID, wal.wallet);
 		account = await machine.getCandyMachineAccount();
-		console.log(account.state.goLiveDate);
+
+
+		console.log(parseInt(account.state.goLiveDate));
 		if (account.state.goLiveDate > new Date().getTime()) {
 			time_offset = account.state.goLiveDate - new Date().getTime() / 1000;
 			let inverval = setInterval(() => {

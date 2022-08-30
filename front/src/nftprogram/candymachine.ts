@@ -250,7 +250,7 @@ export class CandyMachine {
 		transaction.sign(...signers);
 
 		const tx = await wallet.signTransaction(transaction);
-
+		console.log(wallet)
 		const signature = await connection.sendRawTransaction(tx.serialize());
 		await connection.confirmTransaction(signature);
 

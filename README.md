@@ -1,4 +1,7 @@
 # Cryptown
 
-actual dev contract pk: FangADZappzjG1pNsfo3zTct4AZ2VXyYq7TMfgd4YRmy
-actual dev candy machine pk: 9q2vhJgPo3ZC59ctdZoQ8gq84A5YYxc7wBPGKUf2EVrF
+actual dev contract pk: 4DFVfzHvvRWXUcuFSjQ5RRgn4mtkqfnJwmNNSZwKtAVC
+
+actual dev candy machine pk: 89EXeeTSy6nxM89vhpiLw1mVta6LWY3FGkjZ6xEwuNbe
+
+actual dev owner address: ECCjGknHtdDMkjn8fJ2jPKT143AxsHWzHAd2Uw3iqj4g

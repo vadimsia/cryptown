@@ -121,7 +121,7 @@ public final class PluginMain extends JavaPlugin implements Listener {
                 }
                 break;
             }
-            case "goto" -> {
+            case "goto": {
                 Section.goToRegion(Integer.parseInt(args[0]), player);
                 sender.sendMessage(ChatColor.GREEN + "Region" + Integer.parseInt(args[0]));
             }

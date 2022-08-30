@@ -9,16 +9,40 @@
 		return '' + number + 'X' + number;
 	};
 
-
-	const PROGRAM_ID = new PublicKey('37qbCA5AHyy973SCWa1tsjZNs92eiVkJAe6g4s5YgSBA');
-	const UPDATE_AUTHORITY_ID = new PublicKey('ECCjGknHtdDMkjn8fJ2jPKT143AxsHWzHAd2Uw3iqj4g');
+	const PROGRAM_ID = new PublicKey(import.meta.env.VITE_PROGRAM_ID || '4DFVfzHvvRWXUcuFSjQ5RRgn4mtkqfnJwmNNSZwKtAVC');
+	const UPDATE_AUTHORITY_ID = new PublicKey(import.meta.env.VITE_UPDATE_AUTHORITY_ID || 'ECCjGknHtdDMkjn8fJ2jPKT143AxsHWzHAd2Uw3iqj4g');
 
 	let user_tokens: TokenAccount[];
 	let program = new Program(PROGRAM_ID, $walletController.wallet);
 
 	onMount(async () => {
-		user_tokens = await program.getUserTokens(UPDATE_AUTHORITY_ID);
+		loadUserTokens()
 	});
+
+
+	async function loadUserTokens () {
+		user_tokens = []
+		user_tokens = await program.getUserTokens(UPDATE_AUTHORITY_ID);
+	}
+
+	async function initRegion (token: TokenAccount) {
+		let signature = await program.initAccount(token)	
+
+		console.log(signature)
+
+		await loadUserTokens()
+	}
+
+	async function updateChunk (token: TokenAccount) {
+		alert('Wait a bit while updating chunk....')
+		
+		if (token.program_account) {
+			await program.updateChunk(token.program_account);
+			alert('Chunk updated!')
+		}
+		loadUserTokens()
+	}
+
 </script>
 
 <div class="regions">
@@ -51,21 +75,11 @@
 						</div>
 					</div>
 					{#if !token.program_account}
-						<p
-							class="init"
-							on:click={async () => {
-								await program.initAccount(token);
-							}}
-						>
+						<p class="init" on:click={() => initRegion(token)}>
 							Initialization
 						</p>
 					{:else}
-						<p
-							class="update"
-							on:click={async () => {
-								await program.updateChunk(token.program_account);
-							}}
-						>
+						<p class="update" on:click={() => updateChunk(token)}>
 							Update
 						</p>
 					{/if}

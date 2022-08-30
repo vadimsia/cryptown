@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 import json
 
 from hashlib import md5
@@ -46,7 +46,7 @@ class Art:
         ],
         "creators": [
           {
-            "address": "HCMDYFaAWD3YuaBMLiftc5MzNKcLrPmjASRaciRdAAYU",
+            "address": "ECCjGknHtdDMkjn8fJ2jPKT143AxsHWzHAd2Uw3iqj4g",
             "share": 100
           }
         ]
@@ -55,6 +55,13 @@ class Art:
 
   def putAsset(self, trait_type: str, asset: Asset) -> None:
     self.background.paste(asset.image, (0, 0), asset.image)
+  
+  def putIndex(self, index: int) -> None:
+    draw = ImageDraw.ImageDraw(self.background)
+
+    font = ImageFont.truetype("Roboto-Bold.ttf", 28)
+
+    draw.text((10, 10), f"#{index}", font=font)
 
   def save(self, dir: str, name: str):
     self.background.save(f'{dir}/{name}.png')
@@ -68,5 +75,6 @@ for i in range(0, 10):
   asset = Asset('images', 'background.png')
 
   art.putAsset('', asset)
+  art.putIndex(i)
 
   art.save('mixed', str(i))

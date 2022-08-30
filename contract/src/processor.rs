@@ -55,7 +55,7 @@ impl Processor {
     }
 
     pub fn init_chunk(chunk_account: &AccountInfo, metadata_token: &AccountInfo) -> ProgramResult {
-        let creator = Pubkey::from_str("HCMDYFaAWD3YuaBMLiftc5MzNKcLrPmjASRaciRdAAYU").unwrap();
+        let creator = Pubkey::from_str("ECCjGknHtdDMkjn8fJ2jPKT143AxsHWzHAd2Uw3iqj4g").unwrap();
         let metadata_owner = Pubkey::from_str("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s").unwrap();
 
         msg!("Init instruction");

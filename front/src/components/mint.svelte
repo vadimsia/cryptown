@@ -5,7 +5,7 @@
 	import { onMount } from 'svelte';
 	import type { CandyMachineAccount } from '../nftprogram/interfaces';
 
-	const CANDY_MACHINE_ID = new PublicKey('89EXeeTSy6nxM89vhpiLw1mVta6LWY3FGkjZ6xEwuNbe');
+	const CANDY_MACHINE_ID = new PublicKey(import.meta.env.VITE_CANDY_MACHINE_ID || '89EXeeTSy6nxM89vhpiLw1mVta6LWY3FGkjZ6xEwuNbe');
 
 	let machine: CandyMachine;
 	let account: CandyMachineAccount;

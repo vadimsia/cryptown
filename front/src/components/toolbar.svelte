@@ -1,30 +1,14 @@
 <script lang="ts">
-	import type { IWalletController } from '../wallets/IWalletController';
 	import { walletState, walletController, toolbarItems } from '../store/store';
 
-	let toolbarItems_value: Object[];
-	toolbarItems.subscribe((value) => {
-		toolbarItems_value = value;
-	});
-
-	let walletState_value: boolean;
-	walletState.subscribe((value) => {
-		walletState_value = value;
-	});
-
-	let walletController_value: IWalletController | null;
-	walletController.subscribe((value) => {
-		walletController_value = value;
-	});
-
 	function Toggle(this: any) {
-		toolbarItems_value.map((item) => {
-			if (item.state) {
+		$toolbarItems.map((item) => {
+			if (item.state)
 				item.state = false;
-			}
 		});
-		toolbarItems_value[this.id].state = true;
-		toolbarItems.set(toolbarItems_value);
+
+		$toolbarItems[this.id].state = true;
+		$toolbarItems = $toolbarItems
 	}
 </script>
 
@@ -35,9 +19,9 @@
 			<div>Town</div>
 		</div>
 		<div class="toolbar-items">
-			{#each toolbarItems_value as item}
+			{#each $toolbarItems as item}
 				{#if item.walletDepends}
-					{#if walletController_value?.wallet.loggedIn}
+					{#if $walletController.wallet.loggedIn}
 						<div
 							class="toolbar-item {item.state ? 'active' : ''}"
 							id={'' + item.id}
@@ -57,16 +41,16 @@
 				{/if}
 			{/each}
 		</div>
-		{#if !walletController_value?.wallet.loggedIn}
-			<p class="button" id="connect-wallet" on:click={() => ($walletState = true)}>
+		{#if !$walletController.wallet.loggedIn}
+			<p class="button" id="connect-wallet" on:click={() => $walletState = true}>
 				<img alt="credit card" src="/credit-card.svg" width="25px" />Connect Wallet
 			</p>
 		{:else}
 			<div class="publick-key">
-				{('' + walletController_value?.wallet.publicKey).substr(1, 3) +
+				{('' + $walletController.wallet.publicKey).substr(1, 3) +
 					'...' +
-					('' + walletController_value?.wallet.publicKey).substr(
-						('' + walletController_value?.wallet.publicKey).length - 3,
+					('' + $walletController.wallet.publicKey).substr(
+						('' + $walletController.wallet.publicKey).length - 3,
 						3
 					)}
 			</div>

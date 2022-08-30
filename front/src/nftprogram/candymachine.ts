@@ -240,8 +240,6 @@ export class CandyMachine {
 			})
 		];
 
-		console.log(instructions);
-
 		let transaction = new Transaction({
 			recentBlockhash: (await connection.getLatestBlockhash()).blockhash,
 			feePayer: wallet.publicKey
@@ -250,7 +248,6 @@ export class CandyMachine {
 		transaction.sign(...signers);
 
 		const tx = await wallet.signTransaction(transaction);
-
 		const signature = await connection.sendRawTransaction(tx.serialize());
 		await connection.confirmTransaction(signature);
 

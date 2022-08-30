@@ -3,45 +3,38 @@
 	import type { IWalletController } from '../wallets/IWalletController';
 	import { walletState, walletController } from '../store/store';
 
-	let walletState_value: boolean;
-	walletState.subscribe((value) => {
-		walletState_value = value;
-	});
-
-	function Close() {
-		walletState.set(false);
-	}
-
 	let wallets = [
 		{
 			name: 'Phantom',
 			logo: '/phantom.svg',
-			wallet() {
-				let controller: IWalletController;
-				controller = new PhantomWallet();
-				return controller;
+			wallet() : IWalletController {
+				return new PhantomWallet;
 			}
 		}
 	];
 
+	function close () {
+		$walletState = false
+	}
+
 	async function connectWallet(walletItem: IWalletController) {
 		let controller = walletItem;
-		try {
-			await controller.connect();
-		} catch (e) {}
+		await controller.connect();
+
+		console.log(controller)
 		controller.wallet.loggedIn = controller.wallet.loggedIn; // костыль шоб было реактивно, приколы свелте... В каждой бочке меда есть ложка дегтя
 		if (controller.wallet.loggedIn) {
-			walletController.set(controller);
-			Close();
+			$walletController = controller
+			close()
 		}
 	}
 </script>
 
-<div class="wallets {walletState_value ? '' : 'hide'}">
+<div class="wallets {$walletState ? '' : 'hide'}">
 	<div class="wallets-container">
 		<div class="top">
 			<div class="name">Select your wallet</div>
-			<div class="close" on:click={Close}>
+			<div class="close" on:click={close}>
 				<img alt="" src="/close.svg" width="25px" height="25px" />
 			</div>
 		</div>

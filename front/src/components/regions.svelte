@@ -2,39 +2,23 @@
 	import { onMount } from 'svelte/internal';
 	import { walletController } from '../store/store';
 	import { Program } from '../program/program';
-	import type { IWalletController } from '../wallets/IWalletController';
 	import { PublicKey } from '@solana/web3.js';
 	import type { TokenAccount } from 'src/program/TokenAccount';
-
-	let walletController_value: IWalletController | null;
-	walletController.subscribe((value) => {
-		walletController_value = value;
-	});
 
 	let regionSize = function (number: number) {
 		return '' + number + 'X' + number;
 	};
 
-	onMount(() => {
-		updateChunk();
-	});
 
-	const PROGRAM_ID = new PublicKey('FangADZappzjG1pNsfo3zTct4AZ2VXyYq7TMfgd4YRmy');
-	const UPDATE_AUTHORITY_ID = new PublicKey('HCMDYFaAWD3YuaBMLiftc5MzNKcLrPmjASRaciRdAAYU');
+	const PROGRAM_ID = new PublicKey('37qbCA5AHyy973SCWa1tsjZNs92eiVkJAe6g4s5YgSBA');
+	const UPDATE_AUTHORITY_ID = new PublicKey('ECCjGknHtdDMkjn8fJ2jPKT143AxsHWzHAd2Uw3iqj4g');
 
 	let user_tokens: TokenAccount[];
-	let program = new Program(PROGRAM_ID, walletController_value?.wallet);
+	let program = new Program(PROGRAM_ID, $walletController.wallet);
 
-	async function updateChunk() {
-		program = new Program(PROGRAM_ID, walletController_value?.wallet);
-
-		// Достает все участки данной программы
-		//let program_accounts = await program.getProgramAccounts();
-
-		// Достает только участки авторизованного пользователя
+	onMount(async () => {
 		user_tokens = await program.getUserTokens(UPDATE_AUTHORITY_ID);
-		// console.log(user_tokens);
-	}
+	});
 </script>
 
 <div class="regions">

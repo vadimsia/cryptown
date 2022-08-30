@@ -3,17 +3,16 @@
 	import { Keypair, PublicKey } from '@solana/web3.js';
 	import { walletController } from '../store/store';
 	import { onMount } from 'svelte';
-	import type { CandyMachineAccount } from 'src/nftprogram/interfaces';
-	import { PhantomWallet } from '../wallets/PhantomWallet';
+	import type { CandyMachineAccount } from '../nftprogram/interfaces';
 
 	const CANDY_MACHINE_ID = new PublicKey('89EXeeTSy6nxM89vhpiLw1mVta6LWY3FGkjZ6xEwuNbe');
 
 	let machine: CandyMachine;
 	let account: CandyMachineAccount;
 	let time_offset = 0;
+
 	onMount(async () => {
-		let wal = new PhantomWallet();
-		machine = new CandyMachine(CANDY_MACHINE_ID, wal.wallet);
+		machine = new CandyMachine(CANDY_MACHINE_ID, $walletController.wallet);
 		account = await machine.getCandyMachineAccount();
 
 
@@ -36,8 +35,11 @@
 	$: countdown_secundes = Math.floor((time_offset % (1000 * 60)) / 1000);
 
 	async function mint() {
+		machine = new CandyMachine(CANDY_MACHINE_ID, $walletController.wallet);
+		account = await machine.getCandyMachineAccount();
+
 		console.log(
-			await machine.mintOneToken(account, $walletController?.wallet.publicKey, Keypair.generate())
+			await machine.mintOneToken(account, $walletController.wallet.publicKey, Keypair.generate())
 		);
 	}
 </script>

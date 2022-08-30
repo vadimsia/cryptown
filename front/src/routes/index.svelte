@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { toolbarItems } from '../store/store';
+	import { toolbarItems} from '../store/store';
 	import Wallets from '../components/wallets.svelte';
 	import { onMount } from 'svelte';
 	import { Buffer } from 'buffer';
@@ -12,12 +12,7 @@
 		loaded = true;
 		window.Buffer = Buffer;
 	});
-
-	let toolbarItems_value: Object[];
-
-	toolbarItems.subscribe((value) => {
-		toolbarItems_value = value;
-	});
+	
 </script>
 
 <Wallets />
@@ -34,7 +29,7 @@
 			</div>
 			<div class="section">
 				<div class="left">
-					{#each toolbarItems_value as item}
+					{#each $toolbarItems as item}
 						{#if item.state}
 							<svelte:component this={item.component} />
 						{/if}

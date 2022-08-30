@@ -26,7 +26,9 @@ export class PhantomWallet implements IWalletController {
 	private _connection: Connection;
 
 	constructor() {
-		this._solana_interface = window.solana;
+		if (globalThis.window != undefined)
+			this._solana_interface = window.solana;
+
 		this._connection = new Connection(
 			import.meta.env.VITE_SOLANA_RPC || 'https://api.devnet.solana.com'
 		);

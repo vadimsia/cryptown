@@ -1,0 +1,42 @@
+name: SolanaRegionPlugin
+version: '${project.version}'
+main: com.crypteam.PluginMain
+api-version: 1.18
+depend: [WorldGuard]
+commands:
+  getRegion:
+    description: getRegion
+    permission: <plugin name>.getRegion
+    usage: /<command>
+  setRegion:
+    description: setRegion
+    permission: <plugin name>.setRegion
+    usage: /<command>
+  setRegionAccess:
+    description: setRegionAccess
+    permission: <plugin name>.setRegionAccess
+    usage: /<command>
+  initRegions:
+    description: initRegions
+    permission: <plugin name>.initRegions
+    usage: /<command>
+  removeRegions:
+    description: removeRegions
+    permission: <plugin name>.removeRegions
+    usage: /<command>
+  refreshRegion:
+    description: Refreshing region from Solana account.
+    permission: minecraft.command.me
+    usage: /<command>
+  getPlayerPosition:
+    description: getPlayerPosition
+    permission: <plugin name>.getPlayerPosition
+    usage: minecraft.command.me
+  login:
+    description: Login.
+    permission: minecraft.command.me
+    usage: /<command>
+  goto:
+    description: Teleport to region.
+    permission: minecraft.command.me
+    usage: /<command>

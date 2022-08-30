@@ -1,0 +1,1 @@
+upload sample command: `ts-node ~/metaplex/js/packages/cli/src/candy-machine-v2-cli.ts upload -e devnet -k ~/.config/solana/id.json -cp config.json -c cryptown ./mixed`

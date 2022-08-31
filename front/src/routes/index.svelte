@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { toolbarItems} from '../store/store';
+	import { toolbarItems } from '../store/store';
 	import Wallets from '../components/wallets.svelte';
 	import { onMount } from 'svelte';
 	import { Buffer } from 'buffer';
@@ -12,7 +12,6 @@
 		loaded = true;
 		window.Buffer = Buffer;
 	});
-	
 </script>
 
 <Wallets />
@@ -40,12 +39,19 @@
 						<Server />
 					</div>
 					<div class="social">
-						<a href="" alt="" class="button twitter"
-							><img src="/twitter.svg" alt="" width="15px" />Twitter</a
-						>
-						<a href="" alt="" class="button discord"
-							><img src="/discord.svg" alt="" width="15px" />Discord</a
-						>
+						<div class="first-level">
+							<a href="" alt="" class="button twitter"
+								><img src="/twitter.svg" alt="" width="15px" />Twitter</a
+							>
+							<a href="" alt="" class="button discord"
+								><img src="/discord.svg" alt="" width="15px" />Discord</a
+							>
+						</div>
+						<div class="second-level">
+							<a href="" alt="" class="button telegram"
+								><img src="/telegram.svg" alt="" width="15px" />Telegram</a
+							>
+						</div>
 					</div>
 					<div class="discord-box">
 						<iframe
@@ -161,6 +167,21 @@
 		justify-content: space-between;
 		align-items: center;
 		border-radius: 4px;
+		flex-direction: column;
+	}
+
+	.first-level {
+		display: flex;
+		width: 100%;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.second-level {
+		display: flex;
+		justify-content: center;
+		width: 100%;
 	}
 
 	.button {
@@ -183,6 +204,11 @@
 	.discord {
 		background-color: #5865f2;
 	}
+
+	.telegram {
+		background-color: #229ed9;
+	}
+
 	.button img {
 		margin-right: 5px;
 	}

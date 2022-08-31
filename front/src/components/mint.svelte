@@ -15,7 +15,6 @@
 		machine = new CandyMachine(CANDY_MACHINE_ID, $walletController.wallet);
 		account = await machine.getCandyMachineAccount();
 
-
 		console.log(parseInt(account.state.goLiveDate));
 		if (account.state.goLiveDate > new Date().getTime()) {
 			time_offset = account.state.goLiveDate - new Date().getTime() / 1000;
@@ -48,15 +47,15 @@
 	<div class="regions">
 		<div id="s1">
 			<div class="area">16X16</div>
-			<img alt="" src="/16.gif">
+			<img alt="" src="/16.gif" />
 		</div>
 		<div id="s2">
 			<div class="area">76X76</div>
-			<img alt="" src="/76.gif">
+			<img alt="" src="/76.gif" />
 		</div>
 		<div id="s3">
 			<div class="area">38X38</div>
-			<img alt="" src="/38.gif">
+			<img alt="" src="/38.gif" />
 		</div>
 	</div>
 	{#if $walletController && time_offset == 0}

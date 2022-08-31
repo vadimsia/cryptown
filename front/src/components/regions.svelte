@@ -9,7 +9,6 @@
 		return '' + number + 'X' + number;
 	};
 
-
 	const PROGRAM_ID = new PublicKey('37qbCA5AHyy973SCWa1tsjZNs92eiVkJAe6g4s5YgSBA');
 	const UPDATE_AUTHORITY_ID = new PublicKey('ECCjGknHtdDMkjn8fJ2jPKT143AxsHWzHAd2Uw3iqj4g');
 

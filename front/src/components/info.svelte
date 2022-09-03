@@ -26,13 +26,13 @@
 			randomly receive one of three types of region. The minting price will be 3 Sol.
 			<div class="regions-example">
 				<div class="region1">
-					<img alt="" src="/16.png" width="360px" />
+					<img alt="" src="/16.png" width="100%" />
 				</div>
 				<div class="region2">
-					<img alt="" src="/38.png" width="360px" />
+					<img alt="" src="/38.png" width="100%" />
 				</div>
 				<div class="region3">
-					<img alt="" src="/76.png" width="360px" />
+					<img alt="" src="/76.png" width="100%" />
 				</div>
 			</div>
 		</span>
@@ -119,6 +119,18 @@
 		margin-bottom: 50px;
 	}
 
+	.region1 {
+		width: 33%;
+	}
+
+	.region2 {
+		width: 33%;
+	}
+
+	.region3 {
+		width: 33%;
+	}
+
 	.region16 {
 		border-radius: 3px;
 		padding: 1.5px;
@@ -160,6 +172,7 @@
 		display: flex;
 		flex-direction: column;
 		margin-bottom: 50px;
+		width: 100%;
 	}
 
 	.last {

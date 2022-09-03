@@ -75,8 +75,8 @@
 		display: flex;
 		position: relative;
 		width: 100%;
-		height: 100vh;
-		/* overflow: scroll; */
+		height: 100%;
+		min-height: 100vh;
 	}
 
 	.container-1 {
@@ -119,15 +119,17 @@
 	}
 
 	.container-2 {
-		position: absolute;
+		/* position: absolute; */
+		width: 100%;
+		height: 100%;
 		display: flex;
 		justify-content: center;
-		width: 100%;
-		min-width: 1156px;
-		min-height: 100%;
+		min-width: 1500px;
+		min-height: 100vh;
 		background: no-repeat url('/background.png');
 		background-attachment: fixed;
 		background-size: cover;
+		overflow: auto;
 	}
 
 	.content {
@@ -135,7 +137,7 @@
 		flex-direction: column;
 		height: 100%;
 		width: 85%;
-		min-width: 1156px;
+		min-width: 1500px;
 	}
 
 	.toolbar-container {
@@ -152,8 +154,14 @@
 
 	.left {
 		display: flex;
-		width: 100%;
+		width: 80%;
 		margin-bottom: 50px;
+	}
+
+	.right {
+		display: flex;
+		flex-direction: column;
+		width: 20%;
 	}
 
 	.right div {

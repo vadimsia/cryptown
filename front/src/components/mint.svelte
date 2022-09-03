@@ -47,15 +47,15 @@
 	<div class="regions">
 		<div id="s1">
 			<div class="area">16X16</div>
-			<img alt="" src="/16.gif" />
+			<img alt="" src="/16.gif" width="100%" />
 		</div>
 		<div id="s2">
 			<div class="area">76X76</div>
-			<img alt="" src="/76.gif" />
+			<img alt="" src="/76.gif" width="100%" />
 		</div>
 		<div id="s3">
 			<div class="area">38X38</div>
-			<img alt="" src="/38.gif" />
+			<img alt="" src="/38.gif" width="100%" />
 		</div>
 	</div>
 	{#if $walletController && time_offset == 0}

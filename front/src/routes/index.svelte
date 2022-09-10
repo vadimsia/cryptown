@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { toolbarItems} from '../store/store';
+	import { toolbarItems } from '../store/store';
 	import Wallets from '../components/wallets.svelte';
 	import { onMount } from 'svelte';
 	import { Buffer } from 'buffer';
@@ -12,7 +12,6 @@
 		loaded = true;
 		window.Buffer = Buffer;
 	});
-	
 </script>
 
 <Wallets />
@@ -40,12 +39,19 @@
 						<Server />
 					</div>
 					<div class="social">
-						<a href="" alt="" class="button twitter"
-							><img src="/twitter.svg" alt="" width="15px" />Twitter</a
-						>
-						<a href="" alt="" class="button discord"
-							><img src="/discord.svg" alt="" width="15px" />Discord</a
-						>
+						<div class="first-level">
+							<a href="" alt="" class="button twitter"
+								><img src="/twitter.svg" alt="" width="15px" />Twitter</a
+							>
+							<a href="" alt="" class="button discord"
+								><img src="/discord.svg" alt="" width="15px" />Discord</a
+							>
+						</div>
+						<div class="second-level">
+							<a href="" alt="" class="button telegram"
+								><img src="/telegram.svg" alt="" width="15px" />Telegram</a
+							>
+						</div>
 					</div>
 					<div class="discord-box">
 						<iframe
@@ -69,8 +75,8 @@
 		display: flex;
 		position: relative;
 		width: 100%;
-		height: 100vh;
-		/* overflow: scroll; */
+		height: 100%;
+		min-height: 100vh;
 	}
 
 	.container-1 {
@@ -113,15 +119,17 @@
 	}
 
 	.container-2 {
-		position: absolute;
+		/* position: absolute; */
+		width: 100%;
+		height: 100%;
 		display: flex;
 		justify-content: center;
-		width: 100%;
-		min-width: 1156px;
-		min-height: 100%;
+		min-width: 1500px;
+		min-height: 100vh;
 		background: no-repeat url('/background.png');
 		background-attachment: fixed;
 		background-size: cover;
+		overflow: auto;
 	}
 
 	.content {
@@ -129,7 +137,7 @@
 		flex-direction: column;
 		height: 100%;
 		width: 85%;
-		min-width: 1156px;
+		min-width: 1500px;
 	}
 
 	.toolbar-container {
@@ -146,8 +154,14 @@
 
 	.left {
 		display: flex;
-		width: 100%;
+		width: 80%;
 		margin-bottom: 50px;
+	}
+
+	.right {
+		display: flex;
+		flex-direction: column;
+		width: 20%;
 	}
 
 	.right div {
@@ -161,6 +175,21 @@
 		justify-content: space-between;
 		align-items: center;
 		border-radius: 4px;
+		flex-direction: column;
+	}
+
+	.first-level {
+		display: flex;
+		width: 100%;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.second-level {
+		display: flex;
+		justify-content: center;
+		width: 100%;
 	}
 
 	.button {
@@ -183,6 +212,11 @@
 	.discord {
 		background-color: #5865f2;
 	}
+
+	.telegram {
+		background-color: #229ed9;
+	}
+
 	.button img {
 		margin-right: 5px;
 	}

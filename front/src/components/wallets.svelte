@@ -7,25 +7,25 @@
 		{
 			name: 'Phantom',
 			logo: '/phantom.svg',
-			wallet() : IWalletController {
-				return new PhantomWallet;
+			wallet(): IWalletController {
+				return new PhantomWallet();
 			}
 		}
 	];
 
-	function close () {
-		$walletState = false
+	function close() {
+		$walletState = false;
 	}
 
 	async function connectWallet(walletItem: IWalletController) {
 		let controller = walletItem;
 		await controller.connect();
 
-		console.log(controller)
+		console.log(controller);
 		controller.wallet.loggedIn = controller.wallet.loggedIn; // костыль шоб было реактивно, приколы свелте... В каждой бочке меда есть ложка дегтя
 		if (controller.wallet.loggedIn) {
-			$walletController = controller
-			close()
+			$walletController = controller;
+			close();
 		}
 	}
 </script>

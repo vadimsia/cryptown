@@ -7,11 +7,11 @@ import Regions from '../components/regions.svelte';
 import { PhantomWallet } from '../wallets/PhantomWallet';
 
 export interface ToolbarItem {
-	id: number,
-	name: string,
-	state: boolean,
-	walletDepends: boolean,
-	component: any
+	id: number;
+	name: string;
+	state: boolean;
+	walletDepends: boolean;
+	component: any;
 }
 
 export const toolbarItems: Writable<ToolbarItem[]> = writable([

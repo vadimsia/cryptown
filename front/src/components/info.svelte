@@ -9,10 +9,11 @@
 <div class="info">
 	<div class="about">
 		<span class="main title">About</span>
-		<span class="description">Cryp<span class="town">Town</span> - is a project that connects Minecraft and the Solana network.
-			It allows you to immortalize your building in the network of Solana.	
+		<span class="description"
+			>Cryp<span class="town">Town</span> - is a project that connects Minecraft and the Solana network.
+			It allows you to immortalize your building in the network of Solana.
 		</span>
-		<img alt="" src="/ct.png" width="100%">
+		<img alt="" src="/ct.png" width="100%" />
 	</div>
 	<div class="manual">
 		<span class="main title">Manual</span>
@@ -22,20 +23,20 @@
 			in the NFT format. There are 3 types of regions: <span class="region16">16x16x64</span>,
 			<span class="region38">38x38x64</span>
 			and <span class="region76">76x76x64</span>. Each region includes a unique building. You will
-			randomly receive one of three types of region. The minting price will be 1 Sol.
+			randomly receive one of three types of region. The minting price will be 3 Sol.
 			<div class="regions-example">
 				<div class="region1">
-					<img alt="" src="/16.png" width="360px">
+					<img alt="" src="/16.png" width="100%" />
 				</div>
 				<div class="region2">
-					<img alt="" src="/38.png" width="360px">
+					<img alt="" src="/38.png" width="100%" />
 				</div>
 				<div class="region3">
-					<img alt="" src="/76.png" width="360px">
+					<img alt="" src="/76.png" width="100%" />
 				</div>
 			</div>
 		</span>
-		
+
 		<span class="title">2. Initialization and Update</span>
 		<span class="description init">
 			<span>
@@ -51,7 +52,7 @@
 				<span class="region38">38x38x64</span> - 1.29 Sol
 			</span>
 			<span>
-				<span class="region76">76x76x64</span> - 5.12 Sol
+				<span class="region76">76x76x64</span> - 5.4 Sol
 			</span>
 			<span>
 				After initialization, access to updating the region data. This operation allows you to put
@@ -118,6 +119,18 @@
 		margin-bottom: 50px;
 	}
 
+	.region1 {
+		width: 33%;
+	}
+
+	.region2 {
+		width: 33%;
+	}
+
+	.region3 {
+		width: 33%;
+	}
+
 	.region16 {
 		border-radius: 3px;
 		padding: 1.5px;
@@ -149,8 +162,6 @@
 		margin-left: 10px;
 	}
 
-
-
 	.town {
 		border-radius: 2px;
 		padding: 2px;
@@ -161,6 +172,7 @@
 		display: flex;
 		flex-direction: column;
 		margin-bottom: 50px;
+		width: 100%;
 	}
 
 	.last {

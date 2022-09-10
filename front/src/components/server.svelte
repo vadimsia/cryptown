@@ -7,15 +7,11 @@
 		<!-- <div class={server_value.state? "boop enable-param-boop": "boop disable-param-boop"}></div> -->
 		<div class="params">
 			<div class="online">
-				<div class='param enable-param-boop'>
-					Minecraft version:
-				</div>
+				<div class="param enable-param-boop">Minecraft version:</div>
 				<div class="value">1.18.2</div>
 			</div>
 			<div class="ip">
-				<div class='param enable-param-boop'>
-					Server IP:
-				</div>
+				<div class="param enable-param-boop">Server IP:</div>
 				<div class="value">minecraft.cryptown.one</div>
 			</div>
 		</div>

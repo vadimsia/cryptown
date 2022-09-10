@@ -3,12 +3,11 @@
 
 	function Toggle(this: any) {
 		$toolbarItems.map((item) => {
-			if (item.state)
-				item.state = false;
+			if (item.state) item.state = false;
 		});
 
 		$toolbarItems[this.id].state = true;
-		$toolbarItems = $toolbarItems
+		$toolbarItems = $toolbarItems;
 	}
 </script>
 
@@ -42,7 +41,7 @@
 			{/each}
 		</div>
 		{#if !$walletController.wallet.loggedIn}
-			<p class="button" id="connect-wallet" on:click={() => $walletState = true}>
+			<p class="button" id="connect-wallet" on:click={() => ($walletState = true)}>
 				<img alt="credit card" src="/credit-card.svg" width="25px" />Connect Wallet
 			</p>
 		{:else}

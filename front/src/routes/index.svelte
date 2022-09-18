@@ -119,7 +119,6 @@
 	}
 
 	.container-2 {
-		/* position: absolute; */
 		width: 100%;
 		height: 100%;
 		display: flex;
@@ -127,8 +126,7 @@
 		min-width: 1500px;
 		min-height: 100vh;
 		background: no-repeat url('/background.png');
-		background-attachment: fixed;
-		background-size: cover;
+		background-size: 100% 100%;
 		overflow: auto;
 	}
 

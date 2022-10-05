@@ -40,15 +40,15 @@
 					</div>
 					<div class="social">
 						<div class="first-level">
-							<a href="" alt="" class="button twitter"
+							<a href="https://twitter.com/CrypTowngogo" alt="" class="button twitter"
 								><img src="/twitter.svg" alt="" width="15px" />Twitter</a
 							>
-							<a href="" alt="" class="button discord"
+							<a href="https://discord.com/invite/ycrcKtgu" alt="" class="button discord"
 								><img src="/discord.svg" alt="" width="15px" />Discord</a
 							>
 						</div>
 						<div class="second-level">
-							<a href="" alt="" class="button telegram"
+							<a href="https://t.me/CrypTownLol" alt="" class="button telegram"
 								><img src="/telegram.svg" alt="" width="15px" />Telegram</a
 							>
 						</div>
@@ -56,7 +56,7 @@
 					<div class="discord-box">
 						<iframe
 							title=""
-							src="https://discord.com/widget?id=899514519028645928&theme=dark"
+							src="https://discord.com/widget?id=1020045866037415946&theme=dark"
 							width="100%"
 							height="300"
 							allowtransparency={true}
@@ -119,7 +119,6 @@
 	}
 
 	.container-2 {
-		/* position: absolute; */
 		width: 100%;
 		height: 100%;
 		display: flex;
@@ -127,8 +126,7 @@
 		min-width: 1500px;
 		min-height: 100vh;
 		background: no-repeat url('/background.png');
-		background-attachment: fixed;
-		background-size: cover;
+		background-size: 100% 100%;
 		overflow: auto;
 	}
 

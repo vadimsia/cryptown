@@ -10,14 +10,14 @@
 	let machine: CandyMachine;
 	let account: CandyMachineAccount;
 	let time_offset = 0;
+	let mint_date = new Date(Date.UTC(2022, 9, 30, 18, 0))
 
 	onMount(async () => {
 		machine = new CandyMachine(CANDY_MACHINE_ID, $walletController.wallet);
 		account = await machine.getCandyMachineAccount();
 
-		console.log(parseInt(account.state.goLiveDate));
-		if (account.state.goLiveDate > new Date().getTime()) {
-			time_offset = account.state.goLiveDate - new Date().getTime() / 1000;
+		if (mint_date.getTime() > new Date().getTime()) {
+			time_offset = mint_date.getTime() - new Date().getTime();
 			let inverval = setInterval(() => {
 				if (time_offset <= 0) {
 					clearInterval(inverval);
